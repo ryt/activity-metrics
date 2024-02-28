@@ -57,5 +57,6 @@ Notes
 2. <span id="n2">[XKCD 1179](https://xkcd.com/1179/)</span>
 
 
---
+License
+-------
 <small>Copyright &copy; 2024 Ray Mentose.</small>
