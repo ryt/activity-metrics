@@ -43,7 +43,7 @@ Additionally data files can also be imported from other tracking services such a
 
 Inspirations
 ------------
-List of authors and companies who inspired this project:
+List of authors and organizations who inspired this project:
 
 * [Cal Newport, Bestselling Author & Assoc. Prof. of CS @ Georgetown University](https://calnewport.com/deep-habits-should-you-track-hours-or-milestones/)
 * [Stephen Wolfram, Founder & CEO of Wolfram Research](https://web.archive.org/web/20140608105232/http://www.wired.com/2012/03/opinion-wolfram-life-analytics/all/)
