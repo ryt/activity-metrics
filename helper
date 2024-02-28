@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+v="0.0.1"
 help=$(cat <<-END
 
 Bash helper to create date files and month directories.
@@ -44,6 +45,9 @@ elif [ "$com" = "makedirs" ]; then
 elif [ "$com" = "help" ] || [ "$com" = "-h" ]; then
   echo "$help"
 
+elif [ "$com" = "-v" ]; then
+  echo "Version $v"
+  
 else
   echo "Use the help or -h command for proper usage."
 
