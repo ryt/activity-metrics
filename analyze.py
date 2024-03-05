@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 
-"""
+v='0.0.2'
+man="""
 Copyright (c) 2024 Ray Mentose.
 
 Tool for managing and analyzing personal analytics logs.
 
 Usage:
 
-  ./analyze.py
-  ./analyze.py list
+  ./analyze.py (show|-s)
+  ./analyze.py (list|-l)
 
-  ./analyze.py today
+  ./analyze.py (today|-t)
+
+  ./analyze.py (man|help|--help|-h)
+  ./analyze.py (--version|-v)
 
 """
 
@@ -92,31 +96,30 @@ def analyze_files(logs_dir, nl, bl, list_files=False):
     #  print(fd)
 
     valid_count = sum(1 for d in files_list if d.get('valid') == True)
-    invalid_count = sum(1 for d in files_list if d.get('valid') == False)
     custom_count = sum(1 for d in files_list if d.get('custom') == True)
     ymd_count = sum(1 for d in files_list if d.get('ymd') == True)
+    invalid_count = sum(1 for d in files_list if d.get('valid') == False)
 
     print(nl + 'Analysis:')
     print('-', len(files_list), 'total files found.')
-    print('-', valid_count, 'valid files.')
-    print('-', invalid_count, 'invalid files. These will be ignored.') if invalid_count else ''
-    print('-', custom_count, 'of the valid files have custom text.') if custom_count else ''
+    print('-', valid_count, 'valid files.', (str(custom_count) + ' have custom text.' if custom_count else '') )
     print('-', ymd_count, 'files in valid Y-m-d format.') if ymd_count else ''
+    print('-', invalid_count, 'invalid files. These will be ignored.') if invalid_count else ''
 
     if list_files:
       valid_files = [d for d in files_list if d.get('valid') == True]
-      invalid_files = [d for d in files_list if d.get('valid') == False]
       custom_files = [d for d in files_list if d.get('custom') == True]
       ymd_files = [d for d in files_list if d.get('ymd') == True]
+      invalid_files = [d for d in files_list if d.get('valid') == False]
       print(nl + 'Listing files:')
       print(valid_count, 'valid files:')
       print('- ' + "\n- ".join([d['file'] for d in valid_files if 'file' in d]) + nl)
-      print(invalid_count, 'invalid files. These will be ignored:') if invalid_count else ''
-      print('- ' + "\n- ".join([d['file'] for d in invalid_files if 'file' in d]) + nl) if invalid_count else ''
       print(custom_count, 'of the valid files have custom text:') if custom_count else ''
       print('- ' + "\n- ".join([d['file'] for d in custom_files if 'file' in d]) + nl) if custom_count else ''
       print(ymd_count, 'files in valid Y-m-d format:') if ymd_count else ''
       print('- ' + "\n- ".join([d['file'] for d in ymd_files if 'file' in d])) if ymd_count else ''
+      print(invalid_count, 'invalid files. These will be ignored:') if invalid_count else ''
+      print('- ' + "\n- ".join([d['file'] for d in invalid_files if 'file' in d]) + nl) if invalid_count else ''
 
     """
 
@@ -149,7 +152,7 @@ if len(sys.argv) > 1:
   if sys.argv[1]:
     arg1 = sys.argv[1]
 
-    if arg1 == 'today':
+    if arg1 in ('today','-t'):
       today = datetime.today()
       today_date = today.strftime('%Y-%m-%d')
       print(nl + "Analyzing data for today, " + today_date + ":")
@@ -162,9 +165,25 @@ if len(sys.argv) > 1:
 
       print(bl)
 
-    elif arg1 == 'list':
+    elif arg1 in ('show','-s'):
+      analyze_files(logs_dir, nl, bl)
+
+    elif arg1 in ('list','-l'):
       analyze_files(logs_dir, nl, bl, True)
 
 
+    # help & manual
+
+    elif arg1 in ('--version','-v'):
+      print('Version', v)
+
+    elif arg1 in ('--help','-h','man','help'):
+      print(man.strip() + nl)
+
+    else:
+      print("Invalid command '" + arg1 +  "'. " + "Use 'man' or 'help' for proper usage.")
+
 else:
+  # run 'show' by default
   analyze_files(logs_dir, nl, bl)
+
