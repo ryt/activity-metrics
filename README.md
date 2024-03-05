@@ -33,10 +33,10 @@ Additionally data files can also be imported from other tracking services such a
 **Common Categories for Analytics:**
 
 * Work
-* Projects
 * Finances
-* Fitness
 * Academics
+* Projects
+* Fitness
 * Nutrition
 * Lifestyle
 
