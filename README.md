@@ -45,10 +45,10 @@ Additionally data files can also be imported from other tracking services such a
 
 List of inspirations for this project:
 
-* [Deep Habits: Should You Track Hours or Milestones](https://calnewport.com/deep-habits-should-you-track-hours-or-milestones/), *Article by Cal Newport Author & Assoc. Prof. of CS @ Georgetown University*
-* [Opinion: Wolfram Life Analytics](https://web.archive.org/web/20140608105232/http://www.wired.com/2012/03/opinion-wolfram-life-analytics/all/), *Profile on Stephen Wolfram, Founder & CEO of Wolfram Research*
-* [Productivity Text File](https://jeffhuang.com/productivity_text_file/), *Blog Entry by Jeff Huang, Researcher & Assoc. Prof. of CS @ Brown University*
-* [Inspiration: Deep Work](https://todoist.com/inspiration/deep-work), *Guide by Todoist / Doist, Company Specializing in Productivity Tools*
+* "[Deep Habits: Should You Track Hours or Milestones?](https://calnewport.com/deep-habits-should-you-track-hours-or-milestones/)", *Article by Cal Newport, Author & Assoc. Prof. of CS @ Georgetown University*
+* "[The Personal Analytics of My Life](https://web.archive.org/web/20140608105232/http://www.wired.com/2012/03/opinion-wolfram-life-analytics/all/)", *Op-Ed by Stephen Wolfram, Founder & CEO of Wolfram Research*
+* "[My productivity app is a never-ending .txt file](https://jeffhuang.com/productivity_text_file/)", *Article by Jeff Huang, Researcher & Assoc. Prof. of CS @ Brown University*
+* [The Complete Guide to Deep Work](https://todoist.com/inspiration/deep-work), *Guide by Todoist / Doist, Company Specializing in Productivity Tools*
 
 
 <h2><small>Notes</small></h2>
