@@ -51,12 +51,11 @@ List of authors and organizations who inspired this project:
 * [Todoist / Doist, Company Specializing in Productivity Tools](https://todoist.com/inspiration/deep-work)
 
 
-Notes
------
-1. <span id="n1">[ISO 8601 Format](https://en.wikipedia.org/wiki/ISO_8601)</span>
-2. <span id="n2">[XKCD 1179](https://xkcd.com/1179/)</span>
+<h3 style="border-bottom:1px solid #ccc;">Notes</h3>
+
+1. <f-n id="n1" />[ISO 8601 Format](https://en.wikipedia.org/wiki/ISO_8601)
+2. <f-n id="n2" />[XKCD 1179](https://xkcd.com/1179/)
 
 
-License
--------
+<h3 style="border-bottom:1px solid #ccc;"> License </h3>
 <small>Copyright &copy; 2024 Ray Mentose.</small>
