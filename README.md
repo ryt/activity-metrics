@@ -42,6 +42,7 @@ Additionally data files can also be imported from other tracking services such a
 
 
 <h2><small>Inspirations</small></h2>
+
 List of inspirations for this project:
 
 * [Deep Habits: Should You Track Hours or Milestones](https://calnewport.com/deep-habits-should-you-track-hours-or-milestones/), *Article by Cal Newport Author & Assoc. Prof. of CS @ Georgetown University*
@@ -51,8 +52,9 @@ List of inspirations for this project:
 
 
 <h2><small>Notes</small></h2>
-1. <i id="n1"></i>[ISO 8601 Format](https://en.wikipedia.org/wiki/ISO_8601)
-2. <i id="n2"></i>[XKCD 1179](https://xkcd.com/1179/)
+
+1. <i id="n1"></i> [ISO 8601 Format](https://en.wikipedia.org/wiki/ISO_8601)
+2. <i id="n2"></i> [XKCD 1179](https://xkcd.com/1179/)
 
 
 <h2><small>License</small></h2>
