@@ -26,7 +26,7 @@ from datetime import datetime
 logs_dir = '../logs/'
 gen_dir = '../gen/'
 
-nl = "\n"
+nl = '\n'
 bl = ''
 
 
@@ -42,7 +42,7 @@ def get_all_files(dir):
 
 def analyze_files(logs_dir, nl, bl, list_files=False):
 
-  print(nl + "Analyzing logs from directory " + logs_dir + ":")
+  print(f'{nl}Analyzing logs from directory {logs_dir} :')
   all_files = get_all_files(logs_dir)
 
   if all_files:
