@@ -13,21 +13,25 @@ Usage:
 
   ./analyze.py (today|-t)
 
+  ./analyze.py (gencsv|-g) (Y-m-d)
+
   ./analyze.py (man|help|--help|-h)
   ./analyze.py (--version|-v)
 
 """
 
-import sys, os, re
+import sys, os, re, macros
 from datetime import datetime
 
 logs_dir = '../logs/'
+gen_dir = '../gen/'
 
 nl = "\n"
 bl = ''
 
 
 def get_all_files(dir):
+  """Returns a list of all files in given directory (dir)"""
   files_list = []
   for root, dirs, files in os.walk(dir):
     for filename in files:
@@ -144,7 +148,45 @@ def analyze_files(logs_dir, nl, bl, list_files=False):
 
   print(bl)
 
+def cap_macro(input):
+  return macros.cap_description(input)
 
+def time_macro(input):
+  return macros.raw_time_to_excel_sum(input)
+
+def escape_for_csv(input):
+  """Prepares the given input for csv output"""
+  # escape a double quote (") with additional double quote ("")
+  value = input.replace('"', '""')
+  value = '"' + value + '"'
+  return value
+
+def convert_to_csv(entries, ymd):
+  """Receives the contents of a log txt file (entries) with date (ymd) and returns a generated csv content string"""
+  lines = entries.splitlines()
+  conv = []
+  conv.append('Date,Hours,Raw Time,Description')
+  dateobj = datetime.strptime(ymd, "%Y-%m-%d")
+  datefrm = dateobj.strftime("%m/%d/%Y")
+  for line in lines:
+
+    # parse individual entries
+    # group 1: time intervals (e.g. 7a|7am|7:30a|3.21s|5m|1.5h|30m|1:30h etc...)
+    # group 2: description text
+
+    # regex101 (ryt) v2: https://regex101.com/r/lrm5IQ/2
+
+    pattern = r'^-(\s*(?:[\d\:\.]+(?:m|h|s|am|pm|a|p)[\s\,]*[\s\;]*)+)(.*)$'
+    match = re.search(pattern, line)
+    newline = ''
+    if match:
+      rawtime = time_macro(match.group(1))
+      rawdesc = str(rawtime[2]) + cap_macro(match.group(2))
+      newline = ','.join([datefrm, rawtime[1], escape_for_csv(rawtime[0]), escape_for_csv(rawdesc)])
+      #newline = match.group(1) + ',' + match.group(2)
+    if newline:
+      conv.append(newline)
+  return '\n'.join(conv);
 
 # Start parsing arguments. 
 
@@ -164,6 +206,28 @@ if len(sys.argv) > 1:
       print("- Looking for " + today_date + "{custom}.txt in " + logs_dir)
 
       print(bl)
+
+    elif arg1 in ('gencsv','-g'):
+      if len(sys.argv) > 2:
+        rname = sys.argv[2]
+        fname = rname.replace('-','/')
+        filename = logs_dir + fname + '.txt'
+        if os.path.exists(filename):
+
+          # open individual log txt file
+          with open(filename, 'r') as file:
+            entries = file.read()
+          entries = convert_to_csv(entries, rname)
+          # generate individual log csv file
+          genfile = gen_dir + rname + '.csv'
+          with open(genfile, 'w') as file:
+            file.write(entries)
+          print(f"CSV file {genfile} successfully generated.")
+
+        else:
+          print(f"Log file '{filename}' does not exist.")
+      else:
+        print("Please specify a valid date (Y-m-d), month (Y-m), or year (Y).")
 
     elif arg1 in ('show','-s'):
       analyze_files(logs_dir, nl, bl)
