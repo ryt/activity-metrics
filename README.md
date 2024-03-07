@@ -41,21 +41,19 @@ Additionally data files can also be imported from other tracking services such a
 * Lifestyle
 
 
-Inspirations
-------------
-List of authors and organizations who inspired this project:
+<h2><small>Inspirations</small></h2>
+List of inspirations for this project:
 
-* [Cal Newport, Bestselling Author & Assoc. Prof. of CS @ Georgetown University](https://calnewport.com/deep-habits-should-you-track-hours-or-milestones/)
-* [Stephen Wolfram, Founder & CEO of Wolfram Research](https://web.archive.org/web/20140608105232/http://www.wired.com/2012/03/opinion-wolfram-life-analytics/all/)
-* [Jeff Huang, Researcher & Assoc. Prof. of CS @ Brown University](https://jeffhuang.com/productivity_text_file/)
-* [Todoist / Doist, Company Specializing in Productivity Tools](https://todoist.com/inspiration/deep-work)
-
-
-<h3 style="border-bottom:1px solid #ccc;">Notes</h3>
-
-1. <f-n id="n1" />[ISO 8601 Format](https://en.wikipedia.org/wiki/ISO_8601)
-2. <f-n id="n2" />[XKCD 1179](https://xkcd.com/1179/)
+* [Deep Habits: Should You Track Hours or Milestones](https://calnewport.com/deep-habits-should-you-track-hours-or-milestones/), *Article by Cal Newport Author & Assoc. Prof. of CS @ Georgetown University*
+* [Opinion: Wolfram Life Analytics](https://web.archive.org/web/20140608105232/http://www.wired.com/2012/03/opinion-wolfram-life-analytics/all/), *Profile on Stephen Wolfram, Founder & CEO of Wolfram Research*
+* [Productivity Text File](https://jeffhuang.com/productivity_text_file/), *Blog Entry by Jeff Huang, Researcher & Assoc. Prof. of CS @ Brown University*
+* [Inspiration: Deep Work](https://todoist.com/inspiration/deep-work), *Guide by Todoist / Doist, Company Specializing in Productivity Tools*
 
 
-<h3 style="border-bottom:1px solid #ccc;"> License </h3>
+<h2><small>Notes</small></h2>
+1. <i id="n1"></i>[ISO 8601 Format](https://en.wikipedia.org/wiki/ISO_8601)
+2. <i id="n2"></i>[XKCD 1179](https://xkcd.com/1179/)
+
+
+<h2><small>License</small></h2>
 <small>Copyright &copy; 2024 Ray Mentose.</small>
