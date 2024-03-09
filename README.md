@@ -21,13 +21,14 @@ In the above example, let's assume the date for the entry was **Jan 1, 2024**. H
 - Optional custom text after the date number is allowed (e.g. `01abc.txt`). 
 - For proper usage, files must be inside of **month** and **year** directories that correspond to the correct dates, respectively.
 - In this example, both of these files would be valid: `2024/01/01.txt` or `2024/01/01abc.txt`.
+- To recap from the Basics section, the location of the folder `2024/` would be `logs/2024/`.
 
 #### Full Date Log Files
 - Additionally, for the sake of utility, log files can also be named in the `YYYY-mm-dd.txt` format<sup>[1](#n1) [2](#n2)</sup>.
 - For example: `2024-01-01.txt` or `2024-01-01abc.txt` would be valid log files.
 - Full date log files can be parsed from anywhere within the `logs/` directory.
 
-Valid structure example:
+Valid location structure example:
 
 ```
 ../logs/
