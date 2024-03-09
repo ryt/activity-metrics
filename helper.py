@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Originally written in bash.
+# Note: originally written as bash script. Initial basic conversion with ChatGPT.
 
 v = "0.0.2"
 help_text = """

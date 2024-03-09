@@ -2,7 +2,7 @@
 
 """
 Custom macros & helper functions for parsing entries.
-All of these functions were originally written as Google Apps script macros for Google Sheets.
+Note: text conversion functions originally written as apps script macros for Google Sheets.
 """
 
 import re

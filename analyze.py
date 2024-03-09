@@ -8,15 +8,23 @@ Tool for managing and analyzing personal analytics logs.
 
 Usage:
 
-  ./analyze.py (show|-s)
-  ./analyze.py (list|-l)
+  Analyze        Command
+  ------------------------
+  ./analyze.py   (show|-s)
+  ./analyze.py   (list|-l)
 
-  ./analyze.py (today|-t)
+  Analyze        Date
+  -------------------------
+  ./analyze.py   (today|-t)
 
-  ./analyze.py (gencsv|-g) (Y-m-d)
+  Analyze        Generate CSV    Date 
+  -----------------------------------------
+  ./analyze.py   (gencsv|-g)     (Y-m-d)
 
-  ./analyze.py (man|help|--help|-h)
-  ./analyze.py (--version|-v)
+  Analyze        Help & About
+  ---------------------------------------
+  ./analyze.py   (man|help|--help|-h)
+  ./analyze.py   (--version|-v)
 
 """
 
@@ -28,6 +36,7 @@ gen_dir = '../gen/'
 
 nl = '\n'
 bl = ''
+hr = '-' * 100
 
 
 def get_all_files(dir):
@@ -42,7 +51,9 @@ def get_all_files(dir):
 
 def analyze_files(logs_dir, nl, bl, list_files=False):
 
-  print(f'{nl}Analyzing logs from directory {logs_dir} :')
+  head_text = f'Analyzing logs from directory {logs_dir}:'
+  head_text_len = len(head_text)
+  print(hr[0:head_text_len] + f'{nl}{head_text}')
   all_files = get_all_files(logs_dir)
 
   if all_files:
@@ -126,7 +137,6 @@ def analyze_files(logs_dir, nl, bl, list_files=False):
       print('- ' + "\n- ".join([d['file'] for d in invalid_files if 'file' in d]) + nl) if invalid_count else ''
 
     """
-
     years = [fname[:4] for fname in all_files]
     months = [fname[:7] for fname in all_files]
 
@@ -146,7 +156,7 @@ def analyze_files(logs_dir, nl, bl, list_files=False):
       print('-', year + ':', ', '.join(sorted(months)))
     """
 
-  print(bl)
+  print(f'{bl}' + hr[0:head_text_len])
 
 def cap_macro(input):
   return macros.cap_description(input)
@@ -188,66 +198,69 @@ def convert_to_csv(entries, ymd):
       conv.append(newline)
   return '\n'.join(conv);
 
-# Start parsing arguments. 
 
-if len(sys.argv) > 1:
-  if sys.argv[1]:
-    arg1 = sys.argv[1]
+def main():
+  # Start parsing arguments
+  if len(sys.argv) > 1:
+    if sys.argv[1]:
+      arg1 = sys.argv[1]
 
-    if arg1 in ('today','-t'):
-      today = datetime.today()
-      today_date = today.strftime('%Y-%m-%d')
-      print(nl + "Analyzing data for today, " + today_date + ":")
+      if arg1 in ('today','-t'):
+        today = datetime.today()
+        today_date = today.strftime('%Y-%m-%d')
+        print(f'{hr}{nl}Analyzing data for today, {today_date}:')
 
-      # look for files
-      print("- Looking for " + today.strftime('%Y/%m/%d') + ".txt in " + logs_dir)
-      print("- Looking for " + today.strftime('%Y/%m/%d') + "{custom}.txt in " + logs_dir)
-      print("- Looking for " + today_date + ".txt in " + logs_dir)
-      print("- Looking for " + today_date + "{custom}.txt in " + logs_dir)
+        # look for files
+        print("- Looking for " + today.strftime('%Y/%m/%d') + ".txt in " + logs_dir)
+        print("- Looking for " + today.strftime('%Y/%m/%d') + "{custom}.txt in " + logs_dir)
+        print("- Looking for " + today_date + ".txt in " + logs_dir)
+        print("- Looking for " + today_date + "{custom}.txt in " + logs_dir)
 
-      print(bl)
+        print(f'{bl}{hr}')
 
-    elif arg1 in ('gencsv','-g'):
-      if len(sys.argv) > 2:
-        rname = sys.argv[2]
-        fname = rname.replace('-','/')
-        filename = logs_dir + fname + '.txt'
-        if os.path.exists(filename):
+      elif arg1 in ('gencsv','-g'):
+        if len(sys.argv) > 2:
+          rname = sys.argv[2]
+          fname = rname.replace('-','/')
+          filename = logs_dir + fname + '.txt'
+          if os.path.exists(filename):
 
-          # open individual log txt file
-          with open(filename, 'r') as file:
-            entries = file.read()
-          entries = convert_to_csv(entries, rname)
-          # generate individual log csv file
-          genfile = gen_dir + rname + '.csv'
-          with open(genfile, 'w') as file:
-            file.write(entries)
-          print(f"CSV file {genfile} successfully generated.")
+            # open individual log txt file
+            with open(filename, 'r') as file:
+              entries = file.read()
+            entries = convert_to_csv(entries, rname)
+            # generate individual log csv file
+            genfile = gen_dir + rname + '.csv'
+            with open(genfile, 'w') as file:
+              file.write(entries)
+            print(f"CSV file {genfile} successfully generated.")
 
+          else:
+            print(f"Log file '{filename}' does not exist.")
         else:
-          print(f"Log file '{filename}' does not exist.")
+          print("Please specify a valid date (Y-m-d), month (Y-m), or year (Y).")
+
+      elif arg1 in ('show','-s'):
+        analyze_files(logs_dir, nl, bl)
+
+      elif arg1 in ('list','-l'):
+        analyze_files(logs_dir, nl, bl, True)
+
+
+      # help & manual
+
+      elif arg1 in ('--version','-v'):
+        print('Version', v)
+
+      elif arg1 in ('--help','-h','man','help'):
+        print(man.strip() + nl)
+
       else:
-        print("Please specify a valid date (Y-m-d), month (Y-m), or year (Y).")
+        print("Invalid command '" + arg1 +  "'. " + "Use 'man' or 'help' for proper usage.")
 
-    elif arg1 in ('show','-s'):
-      analyze_files(logs_dir, nl, bl)
+  else:
+    # run 'show' by default
+    analyze_files(logs_dir, nl, bl)
 
-    elif arg1 in ('list','-l'):
-      analyze_files(logs_dir, nl, bl, True)
-
-
-    # help & manual
-
-    elif arg1 in ('--version','-v'):
-      print('Version', v)
-
-    elif arg1 in ('--help','-h','man','help'):
-      print(man.strip() + nl)
-
-    else:
-      print("Invalid command '" + arg1 +  "'. " + "Use 'man' or 'help' for proper usage.")
-
-else:
-  # run 'show' by default
-  analyze_files(logs_dir, nl, bl)
-
+if __name__ == "__main__":
+  main()
