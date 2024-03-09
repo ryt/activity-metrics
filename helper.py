@@ -1,23 +1,33 @@
 #!/usr/bin/env python3
 
-# Originally written in bash & converted w/ ChatGPT.
+# Originally written in bash.
 
 v = "0.0.2"
 help_text = """
-Helper to create date files and month directories.
+This helper script provides simple useful tools like API-based service utilities and commands to create date files and month directories. 
+Some of the usage manual and related documentation is available in "utilities.md".
 
 Usage:
 
-  Helper         Command      Parent  Apply
-  -----------------------------------------
+  Helper         Command      Parent    Apply
+  -------------------------------------------
   ./helper.py    makefiles    dir/
   ./helper.py    makedirs     dir/
-  ./helper.py    makefiles    dir/    apply
-  ./helper.py    makedirs     dir/    apply
+  ./helper.py    makefiles    dir/      apply
+  ./helper.py    makedirs     dir/      apply
+
+  Helper         Todoist     Action      Id       Save/Filename
+  ---------------------------------------------------------------------------
+  ./helper.py    todoist     get-task    12345
+  ./helper.py    todoist     get-task    12345    save=../logs/2024/01/01.txt
+  ./helper.py    todoist     get-task    12345    autosave
 
 """
 
-import sys, os
+import sys, os, json, subprocess
+
+logs_dir = '../logs/'
+gen_dir = '../gen/'
 
 def make_files(directory, apply_flag):
   if apply_flag == "apply":
@@ -45,8 +55,57 @@ def make_dirs(directory, apply_flag):
       month = str(i).zfill(2)
       print(f"mkdir {os.path.join(directory, month)}")
 
+def curl(url, headers = ''):
+  curl_command = f'curl "{url}" -H "{headers}"'
+  process = subprocess.run(curl_command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output = process.stdout.decode('utf-8')
+  error = process.stderr.decode('utf-8')
+  if process.returncode == 0:
+    return output
+  else:
+    return f'Error: {error}'
+
+
+def todoist_options(args):
+
+  action = args[1] if len(args) >= 2 else ''
+  optid  = args[2] if len(args) >= 3 else ''
+  savef  = args[3] if len(args) >= 4 else ''
+
+  # Todoist API token should be stored in "~/.api_todoist" file.
+  todoist_file = os.path.expanduser('~') + '/.api_todoist';
+
+  with open(todoist_file) as f: api_token = f.read().strip()
+
+  if api_token:
+
+    if action == 'get-task':
+      if optid.isnumeric():
+        response = curl(f'https://api.todoist.com/rest/v2/tasks/{optid}', f'Authorization: Bearer {api_token}')
+        if response:
+          task_json = json.loads(response)
+          title = task_json['content']
+          entry = task_json['description']
+          date = task_json['created_at']
+          print(title)
+          print(entry)
+          print(date)
+          if savef == 'autosave':
+            print('Auto smart save will look for 01/01.txt in the title name & will fall back to the file creation date.')
+          elif savef[0:5] == 'save=':
+            print(f'Save as: {logs_dir}{savef[5:]}')
+          else:
+            print('Just show')
+
+    print(f"Todoist {action} {optid} {savef}")
+
+  else:
+
+    print(f"Todoist API token could not be found in {todoist_file}.")
+
+
 def print_help():
-  print(help_text)
+  print(help_text.strip()+'\n')
 
 def print_version():
   print(f"Version {v}")
@@ -65,6 +124,8 @@ def main():
     make_files(directory, apply_flag)
   elif com == "makedirs":
     make_dirs(directory, apply_flag)
+  elif com == "todoist":
+    todoist_options(args)
   elif com in ["help", "--help", "-h"]:
     print_help()
   elif com in ["version", "--version", "-v"]:
