@@ -14,7 +14,7 @@ Personal analytics manager is a tool that can analyze, organize, and render pers
 - The `logs/` directory is the parent directory for all logs & related folders.
 
 #### File Names & Location
-In the above example, let's assume the date for the entry was **Jan 1, 2024**, here are the basic rules:
+In the above example, let's assume the date for the entry was **Jan 1, 2024**. Here are the basic rules:
 
 - The location of the log file would be `2024/01/01.txt`.
 - Each log file is named accoring to the date number of the day.
