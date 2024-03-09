@@ -50,7 +50,7 @@ def get_all_files(dir):
 
 
 def analyze_files(logs_dir, nl, bl, list_files=False):
-  """Finds all log files in (logs_dir) performs analysis of validity of their names & location"""
+  """Finds all log files in logs directory (logs_dir) & performs analysis of validity of their names & location"""
   head_text = f'Analyzing logs from directory {logs_dir}:'
   head_text_len = len(head_text)
   print(hr[0:head_text_len] + f'{nl}{head_text}')
