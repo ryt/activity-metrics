@@ -1,17 +1,16 @@
-Personal Analytics Manager
-==========================
+# Activity Metrics
 
 Overview
 --------
-Personal analytics manager is a tool that can analyze, organize, and render personal and professional statistics. The app works by parsing daily log files with a simple formatting style. The data can then be converted into spreadsheets and other useful formats. The tool can also render beautiful textual and graphical data displays that can be used for both personal and professional projects.
+Activity metrics is a tool that can be used to analyze and display personal activity statistics. The app works by parsing daily log files that are written with a simple formatting style. The parsed data can then be converted into spreadsheets (e.g. timesheets), charts, and other useful formats such as custom textual and graphical data displays.
 
 ### Basics
 
-- Analytics logs are text files with rows of entries for a particular day.
+- A log is a  **.txt** file that holds the entries for a particular day.
 - An example entry could be `- 8am 10m breakfast & coffee`.
-- An entry always starts with a hyphen on a new line.
+- An entry always starts on it's own line with a hyphen.
 - There are no limits for the number of entries for a day.
-- The `logs/` directory is the parent directory for all logs & related folders.
+- All logs and their respective parent directories are stored inside the main `logs/` directory.
 
 #### File Names & Location
 In the above example, let's assume the date for the entry was **Jan 1, 2024**. Here are the basic rules:
@@ -19,9 +18,9 @@ In the above example, let's assume the date for the entry was **Jan 1, 2024**. H
 - The location of the log file would be `2024/01/01.txt`.
 - Each log file is named accoring to the date number of the day.
 - Optional custom text after the date number is allowed (e.g. `01abc.txt`). 
-- For proper usage, files must be inside of **month** and **year** directories that correspond to the correct dates, respectively.
+- For proper usage, logs must be inside of **month** and **year** directories that correspond to the correct dates, respectively.
 - In this example, both of these files would be valid: `2024/01/01.txt` or `2024/01/01abc.txt`.
-- To recap from the Basics section, the location of the folder `2024/` would be `logs/2024/`.
+- Finally, to recap from the Basics section, the directory `2024/` itself would be found at `logs/2024/`.
 
 #### Full Date Log Files
 - Additionally, for the sake of utility, log files can also be named in the `YYYY-mm-dd.txt` format<sup>[1](#n1) [2](#n2)</sup>.
