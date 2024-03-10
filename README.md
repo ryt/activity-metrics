@@ -46,9 +46,9 @@ Valid location structure example:
       - 16LSATstudy.txt 
 ```
 
-Additionally data files can also be imported from other tracking services such as Todoist, Garmin, Apple Health, Samsung Health, Financial Services, and more. Data can also be read directly from the API's of those tracking services.
+Additionally data can also be imported from other tracking services such as Todoist, Garmin, Apple Health, Samsung Health, Financial Services, and more. Data can also be read directly from the API's of those tracking services.
 
-**Common Categories for Analytics:**
+**Common Categories for Activity Metrics:**
 
 * Work
 * Finances
@@ -61,23 +61,34 @@ Additionally data files can also be imported from other tracking services such a
 <h2 id="Installation"><small>Installation</small></h2>
 
 1. Clone `activity-metrics/`into your local installation directory.
-2. Next create a directory named `app` on the same level as your `logs/` directory. (Create a new logs directory in your Documents if you don't have an existing one.)
-3. Finally, create 2 symbolic links: one for `analyze` and one for `helper` inside of `app/`. The example commands are shown below. Replace `{install}` with your local installation directory:
 
-```
-ln -s {install}/activity-metrics/analyze.py  app/analyze
-ln -s {install}/activity-metrics/helper.py   app/helper
-```
+    ```
+    git clone https://github.com/ryt/activity-metrics
+    ```
 
-The structure of the links should look like this:
+2. Next create 3 directories, `app`, `gen`, and `log`, on the same level somewhere in your Documents. Optionally, you can have them all inside a directory named `Metrics/` or something similar.
 
-```
-- logs/
-- app/
-    - analyze
-    - helper
-```
-Now you can run the commands `analyze` and `helper` from within the app directory.
+    ```
+    mkdir app gen log
+    ```
+
+3. Finally, create 2 symbolic links: one for `analyze.py` and one for `helper.py` inside of `app/`. The example commands are shown below. Replace `{install}` with your local installation directory:
+    
+    ```
+    ln -s {install}/activity-metrics/analyze.py  app/analyze
+    ln -s {install}/activity-metrics/helper.py   app/helper
+    ```
+
+    The structure of the links should look like this:
+    
+    ```
+    - app/
+        - analyze
+        - helper
+    - gen/
+    - log/
+    ```
+4. Now you can run the commands `analyze` and `helper` from within the app directory. Generated files will be stored inside `gen/` and your logs will be read and parsed from the `logs/`.
 
 
 <h2><small>Inspirations</small></h2>
