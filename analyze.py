@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+"""
+Copyright (c) 2024 Ray Mentose. 
+Latest source can be found at: https://github.com/ryt/activity-metrics
+"""
+
 v='0.0.2'
 man="""
-Copyright (c) 2024 Ray Mentose.
-
-A tool for analyzing & displaying personal activity statistics.
+Activity Metrics: A tool to analyze & display personal activity statistics.
 
 Usage:
 
