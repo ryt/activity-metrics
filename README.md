@@ -2,7 +2,7 @@
 
 Overview
 --------
-Activity metrics is a tool that can be used to analyze and display personal activity statistics. The app works by parsing daily log files that are written with a simple formatting style. The parsed data can then be converted into spreadsheets (e.g. timesheets), charts, and other useful formats such as custom textual and graphical data displays.
+Activity metrics is a tool that can be used to analyze and display personal activity statistics. The app works by parsing daily log files that are written with a simple formatting style. The parsed data can then be converted into spreadsheets (e.g. timesheets), charts, and other useful formats such as custom textual and graphical data displays. For installation, navigate to the [installation](#Installation) section at the bottom otherwise keep reading for a simple overview of the system.
 
 ### Basics
 
@@ -55,6 +55,28 @@ Additionally data files can also be imported from other tracking services such a
 * Fitness
 * Nutrition
 * Lifestyle
+
+<h2 id="Installation"><small>Installation</small></h2>
+
+1. Clone `activity-metrics/`into your local installation directory.
+2. Next create a directory named `app` on the same level as your `logs/` directory. (Create a new logs directory if you don't have an existing one.)
+3. Finally, create 2 symbolic links: one for `analyze` and one for `helper`. Replace `{install}` with your local installation directory:
+
+```
+ln -s {install}/activity-metrics/analyze.py  app/analyze
+ln -s {install}/activity-metrics/helper.py   app/helper
+
+```
+
+The structure of the links will look like this:
+
+```
+- logs/
+- app/
+    - analyze
+    - helper
+```
+Now you can run the commands `analyze` and `helper` from within the app directory.
 
 
 <h2><small>Inspirations</small></h2>

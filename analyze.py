@@ -4,27 +4,27 @@ v='0.0.2'
 man="""
 Copyright (c) 2024 Ray Mentose.
 
-Tool for managing and analyzing personal analytics logs.
+A tool for analyzing  & managing personal activity logs.
 
 Usage:
 
   Analyze        Command
   ------------------------
-  ./analyze.py   (show|-s)
-  ./analyze.py   (list|-l)
+  ./analyze      (show|-s)
+  ./analyze      (list|-l)
 
   Analyze        Date
   -------------------------
-  ./analyze.py   (today|-t)
+  ./analyze      (today|-t)
 
   Analyze        Generate CSV    Date 
   -----------------------------------------
-  ./analyze.py   (gencsv|-g)     (Y-m-d)
+  ./analyze      (gencsv|-g)     (Y-m-d)
 
   Analyze        Help & About
   ---------------------------------------
-  ./analyze.py   (man|help|--help|-h)
-  ./analyze.py   (--version|-v)
+  ./analyze      (man|help|--help|-h)
+  ./analyze      (--version|-v)
 
 """
 

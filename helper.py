@@ -11,16 +11,16 @@ Usage:
 
   Helper         Command      Parent    Apply
   -------------------------------------------
-  ./helper.py    makefiles    dir/
-  ./helper.py    makedirs     dir/
-  ./helper.py    makefiles    dir/      apply
-  ./helper.py    makedirs     dir/      apply
+  ./helper       makefiles    dir/
+  ./helper       makedirs     dir/
+  ./helper       makefiles    dir/      apply
+  ./helper       makedirs     dir/      apply
 
   Helper         Todoist     Action      Id       Save/Filename
   ---------------------------------------------------------------------------
-  ./helper.py    todoist     get-task    12345
-  ./helper.py    todoist     get-task    12345    save=../logs/2024/01/01.txt
-  ./helper.py    todoist     get-task    12345    autosave
+  ./helper       todoist     get-task    12345
+  ./helper       todoist     get-task    12345    save=../logs/2024/01/01.txt
+  ./helper       todoist     get-task    12345    autosave
 
 """
 
