@@ -2,7 +2,9 @@
 
 Overview
 --------
-Activity metrics is a tool that can be used to analyze and display personal activity statistics. The app works by parsing daily log files that are written with a simple formatting style. The parsed data can then be converted into spreadsheets (e.g. timesheets), charts, and other useful formats such as custom textual and graphical data displays. For installation, navigate to the [installation](#Installation) section at the bottom, otherwise keep reading for a simple overview of the system.
+Activity metrics is a tool that can be used to analyze and display personal activity statistics. The app works by parsing daily log files that are written with a simple formatting style. The parsed data can then be converted into spreadsheets (e.g. timesheets), charts, and other useful formats such as custom textual and graphical data displays.
+
+For installation & usage, you can navigate to the [installation](#Installation) section at the bottom, otherwise keep reading for a simple overview of the system.
 
 ### Basics
 
