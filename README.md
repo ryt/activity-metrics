@@ -65,7 +65,6 @@ Additionally data files can also be imported from other tracking services such a
 ```
 ln -s {install}/activity-metrics/analyze.py  app/analyze
 ln -s {install}/activity-metrics/helper.py   app/helper
-
 ```
 
 The structure of the links will look like this:
