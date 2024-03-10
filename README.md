@@ -2,7 +2,7 @@
 
 Overview
 --------
-Activity metrics is a tool that can be used to analyze and display personal activity statistics. The app works by parsing daily log files that are written with a simple formatting style. The parsed data can then be converted into spreadsheets (e.g. timesheets), charts, and other useful formats such as custom textual and graphical data displays. For installation, navigate to the [installation](#Installation) section at the bottom otherwise keep reading for a simple overview of the system.
+Activity metrics is a tool that can be used to analyze and display personal activity statistics. The app works by parsing daily log files that are written with a simple formatting style. The parsed data can then be converted into spreadsheets (e.g. timesheets), charts, and other useful formats such as custom textual and graphical data displays. For installation, navigate to the [installation](#Installation) section at the bottom, otherwise keep reading for a simple overview of the system.
 
 ### Basics
 
@@ -18,7 +18,7 @@ In the above example, let's assume the date for the entry was **Jan 1, 2024**. H
 - The location of the log file would be `2024/01/01.txt`.
 - Each log file is named accoring to the date number of the day.
 - Optional custom text after the date number is allowed (e.g. `01abc.txt`). 
-- For proper usage, logs must be inside of **month** and **year** directories that correspond to the correct dates, respectively.
+- For proper usage, logs must be inside of **month** and **year** directories that correspond to the correct dates.
 - In this example, both of these files would be valid: `2024/01/01.txt` or `2024/01/01abc.txt`.
 - Finally, to recap from the Basics section, the directory `2024/` itself would be found at `logs/2024/`.
 
