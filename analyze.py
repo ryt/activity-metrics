@@ -4,7 +4,7 @@ v='0.0.2'
 man="""
 Copyright (c) 2024 Ray Mentose.
 
-A tool for analyzing  & managing personal activity logs.
+A tool for analyzing & displaying personal activity statistics.
 
 Usage:
 
