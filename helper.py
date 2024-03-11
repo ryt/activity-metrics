@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
-# Note: Originally a bash script in version 0.0.1.
+# Notes:
+# - Version of this script is different from main application's version (i.e. analyze.py).
+# - Originally written as a bash script in version 0.0.1.
 
-v = "0.0.2"
+v = '0.0.2'
 help_text = """
 This helper script provides simple useful tools like API-based service utilities and commands to create date files and month directories. 
 Some of the usage manual and related documentation is available in "utilities.md".
@@ -27,33 +29,33 @@ Usage:
 import sys, os, json, subprocess
 
 logs_dir = '../logs/'
-gen_dir = '../gen/'
+gen_dir  = '../gen/'
 
 def make_files(directory, apply_flag):
-  if apply_flag == "apply":
-    print(f"Applying making files in {directory}")
+  if apply_flag == 'apply':
+    print(f'Applying making files in {directory}')
     for i in range(1, 32):
       day = str(i).zfill(2)
-      open(os.path.join(directory, f"{day}.txt"), 'a').close()
+      open(os.path.join(directory, f'{day}.txt'), 'a').close()
       print(f"touch {os.path.join(directory, f'{day}.txt')} applied")
   else:
-    print(f"Mock-making files in {directory}")
+    print(f'Mock-making files in {directory}')
     for i in range(1, 32):
       day = str(i).zfill(2)
       print(f"touch {os.path.join(directory, f'{day}.txt')}")
 
 def make_dirs(directory, apply_flag):
-  if apply_flag == "apply":
-    print(f"Applying making dirs in {directory}")
+  if apply_flag == 'apply':
+    print(f'Applying making dirs in {directory}')
     for i in range(1, 13):
       month = str(i).zfill(2)
       os.makedirs(os.path.join(directory, month), exist_ok=True)
-      print(f"mkdir {os.path.join(directory, month)} applied")
+      print(f'mkdir {os.path.join(directory, month)} applied')
   else:
-    print(f"Mock-making dirs in {directory}")
+    print(f'Mock-making dirs in {directory}')
     for i in range(1, 13):
       month = str(i).zfill(2)
-      print(f"mkdir {os.path.join(directory, month)}")
+      print(f'mkdir {os.path.join(directory, month)}')
 
 def curl(url, headers = ''):
   curl_command = f'curl "{url}" -H "{headers}"'
@@ -97,41 +99,41 @@ def todoist_options(args):
           else:
             print('Just show')
 
-    print(f"Todoist {action} {optid} {savef}")
+    print(f'Todoist {action} {optid} {savef}')
 
   else:
 
-    print(f"Todoist API token could not be found in {todoist_file}.")
+    print(f'Todoist API token could not be found in {todoist_file}.')
 
 
 def print_help():
   print(help_text.strip()+'\n')
 
 def print_version():
-  print(f"Version {v}")
+  print(f'helper version {v}')
 
 def main():
   args = sys.argv[1:]
   if len(args) == 0:
-    print("Use the help or -h command for proper usage.")
+    print('Use the help or -h command for proper usage.')
     return
   
   com = args[0]
-  directory = args[1] if len(args) >= 2 else "./"
-  apply_flag = args[2] if len(args) >= 3 else ""
+  directory = args[1] if len(args) >= 2 else './'
+  apply_flag = args[2] if len(args) >= 3 else ''
 
-  if com == "makefiles":
+  if com == 'makefiles':
     make_files(directory, apply_flag)
-  elif com == "makedirs":
+  elif com == 'makedirs':
     make_dirs(directory, apply_flag)
-  elif com == "todoist":
+  elif com == 'todoist':
     todoist_options(args)
-  elif com in ["help", "--help", "-h"]:
+  elif com in ['help', '--help', '-h']:
     print_help()
-  elif com in ["version", "--version", "-v"]:
+  elif com in ['version', '--version', '-v']:
     print_version()
   else:
-    print("Use the help or -h command for proper usage.")
+    print('Use the help or -h command for proper usage.')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()
