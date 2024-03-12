@@ -61,10 +61,10 @@ Additionally data can also be imported from other tracking services such as Todo
 1. Clone `activity-metrics/`into your local installation directory.
 
     ```
-    git clone https://github.com/ryt/activity-metrics
+    git clone https://github.com/ryt/activity-metrics.git
     ```
 
-2. Next create 3 directories, `app`, `gen`, and `log`, on the same level somewhere in your Documents. Optionally, you can have them all inside a directory named `Metrics/` or something similar.
+2. Next create 3 directories, `app`, `gen`, and `log`, on the same level somewhere in your Documents. Optionally, you can have them all inside a directory named `Metrics/` or something custom.
 
     ```
     mkdir app gen log
