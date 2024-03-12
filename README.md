@@ -11,7 +11,7 @@ For installation & usage, you can navigate to the [installation](#Installation) 
 - A log is a  **.txt** file that holds the entries for a particular day.
 - An example entry could be `- 8am 10m breakfast & coffee`.
 - An entry always starts on it's own line with a hyphen.
-- There are no limits for the number of entries for a day.
+- There are no limits for the number of entries or files for a day.
 - All logs and their respective parent directories are stored inside the main `logs/` directory.
 
 #### File Names & Location
@@ -19,9 +19,8 @@ In the above example, let's assume the date for the entry was **Jan 1, 2024**. H
 
 - The location of the log file would be `2024/01/01.txt`.
 - Each log file is named accoring to the date number of the day.
-- Optional custom text after the date number is allowed (e.g. `01abc.txt`). 
+- Optional custom text after the date number is allowed (e.g. `01custom-text.txt`). 
 - For proper usage, logs must be inside of **month** and **year** directories that correspond to the correct dates.
-- In this example, both of these files would be valid: `2024/01/01.txt` or `2024/01/01abc.txt`.
 - Finally, to recap from the Basics section, the directory `2024/` itself would be found at `logs/2024/`.
 
 #### Full Date Log Files
