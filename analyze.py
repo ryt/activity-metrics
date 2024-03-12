@@ -13,26 +13,30 @@ Activity Metrics: A tool to analyze & display personal activity statistics.
 Usage:
 
   Analyze        Command
-  ------------------------
-  ./analyze      (show|-s)
+  -------------------------------------------------
+  ./analyze      (stats|-s)
   ./analyze      (list|-l)
 
   Analyze        Date
-  -------------------------
+  -------------------------------------------------
   ./analyze      (today|-t)
 
-  Analyze        Generate CSV    Date 
-  -----------------------------------------
-  ./analyze      (gencsv|-g)     (Y-m-d)
+  Analyze        Generate CSV      Date 
+  -------------------------------------------------
+  ./analyze      (gencsv|-g)       (Y-m-d)
+
+  Analyze        Helper Shortcut   ..
+  -------------------------------------------------
+  ./analyze      helper            (args)
 
   Analyze        Help & About
-  ---------------------------------------
+  -------------------------------------------------
   ./analyze      (man|help|--help|-h)
   ./analyze      (--version|-v)
 
 """
 
-import sys, os, re, macros
+import sys, os, re, subprocess, macros
 from datetime import datetime
 
 logs_dir = '../logs/'
@@ -225,9 +229,11 @@ def main():
     if sys.argv[1]:
       arg1 = sys.argv[1]
 
+      today = datetime.today()
+      today_date = today.strftime('%Y-%m-%d')
+      today_dfil = today.strftime('%Y/%m/%d')
+
       if arg1 in ('today','-t'):
-        today = datetime.today()
-        today_date = today.strftime('%Y-%m-%d')
         head_text = f'Analyzing data for today, {today_date}:'
 
         # first_line_len = len(head_text)
@@ -235,8 +241,8 @@ def main():
         output += [f'{head_text}']
 
         # look for files
-        output += [f"- Looking for {today.strftime('%Y/%m/%d')}.txt in {logs_dir}"]
-        output += [f"- Looking for {today.strftime('%Y/%m/%d')}{{custom}}.txt in {logs_dir}"]
+        output += [f'- Looking for {today_dfil}.txt in {logs_dir}']
+        output += [f'- Looking for {today_dfil}{{custom}}.txt in {logs_dir}']
         output += [f'- Looking for {today_date}.txt in {logs_dir}']
         output += [f'- Looking for {today_date}{{custom}}.txt in {logs_dir}']
 
@@ -244,9 +250,14 @@ def main():
         output += [hr] # [0:last_line_len]]
 
       elif arg1 in ('gencsv','-g'):
+
         if len(sys.argv) > 2:
           rname = sys.argv[2]
           fname = rname.replace('-','/')
+
+          if fname == 'today':
+            fname = today_dfil
+
           filename = logs_dir + fname + '.txt'
           if os.path.exists(filename):
 
@@ -254,6 +265,7 @@ def main():
             with open(filename, 'r') as file:
               entries = file.read()
             entries = convert_to_csv(entries, rname)
+
             # generate individual log csv file
             genfile = gen_dir + rname + '.csv'
             with open(genfile, 'w') as file:
@@ -262,14 +274,30 @@ def main():
 
           else:
             output += [f'Log file {filename} does not exist.']
+
         else:
           output += [f'Please specify a valid date (Y-m-d), month (Y-m), or year (Y).']
 
-      elif arg1 in ('show','-s'):
+      elif arg1 in ('stats','-s'):
         analyze_files(logs_dir)
 
       elif arg1 in ('list','-l'):
         analyze_files(logs_dir, True)
+
+      elif arg1 == 'helper':
+        cmd = sys.argv
+        cmd.pop(0)
+        cmd[0] = './helper'
+        cmd = ' '.join(cmd)
+        process = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        cmdout = process.stdout.decode('utf-8')
+        error = process.stderr.decode('utf-8')
+        if process.returncode == 0:
+          print(cmdout, end='')
+          exit()
+        else:
+          print(f'Error: {error}')
+          exit()
 
 
       # help & manual
@@ -285,7 +313,7 @@ def main():
         output += [f"Invalid command '{arg1}'. Use 'man' or 'help' for proper usage."]
 
   else:
-    # run 'show' by default
+    # run 'stats' by default
     analyze_files(logs_dir)
 
   print(nl.join(output)) if output else None
