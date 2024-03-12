@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Notes:
-# - Version of this script is different from main application's version (i.e. analyze.py).
+# - Version #s of this script are different from version #s of main application (i.e. analyze.py).
 # - Originally written as a bash script in version 0.0.1.
 
 v = '0.0.2'
