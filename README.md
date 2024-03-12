@@ -17,14 +17,13 @@ For installation & usage, you can navigate to the [installation](#Installation) 
 #### File Names & Location
 In the above example, let's assume the date for the entry was **Jan 1, 2024**. Here are the basic rules:
 
-- The location of the log file would be `2024/01/01.txt`.
-- Each log file is named accoring to the double-digit date number of the day.
-- Optional custom text after the date number is allowed (e.g. `01custom-text.txt`). 
-- For proper usage, logs must be inside of **year/month/** directories that correspond to the correct dates.
-- And finally, the directory `2024/` itself would be found at `logs/2024/`.
+- The log file would be named with the two-digit date number and a .txt extension: i.e. `01.txt`.
+- Optional custom text after the date number is allowed (e.g. `01custom-text.txt`).
+- The log would be inside the proper `YYYY/MM/` directory, in this case: `2024/01/01.txt`.
+- And finally, the full path for the log would be: `../logs/2024/01/01.txt`.
 
 #### Additional Options: Full Date Log Files
-- For utility reasons, log files are also allowed to be named in the `YYYY-mm-dd.txt` format<sup>[1](#n1) [2](#n2)</sup>.
+- For utility reasons, log files are also allowed to be named in the `YYYY-MM-DD` format<sup>[1](#n1) [2](#n2)</sup>.
 - For example: `2024-01-01.txt` or `2024-01-01custom-text.txt` would be valid full date logs.
 - Since their name already includes the year & month, full date logs can be stored anywhere within `logs/`.
 
