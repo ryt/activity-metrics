@@ -8,7 +8,7 @@ v = '0.0.2'
 c = 'Copyright (C) 2024 Ray Mentose.'
 help_text = """
 This script provides helper tools and API-based service utilities.
-Read "utilities.md" for detailed usage manual and related documentation.
+Read "Utilities.md" for detailed usage manual and related documentation.
 
 Usage:
 
