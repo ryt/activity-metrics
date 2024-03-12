@@ -123,8 +123,8 @@ def analyze_files(logs_dir, list_files=False):
     invalid_count = sum(1 for d in files_list if d.get('valid') == False)
 
     output += [f'{nl}Analysis:']
-    output += [f'- ' + str(len(files_list)) + f' total files found.' + '']
-    output += [f'- {valid_count} valid files. ' + (str(custom_count) + f' have custom text.' if custom_count else '')]
+    output += [f'- {str(len(files_list))} total files found.']
+    output += [f"- {valid_count} valid files. {(str(custom_count) + f' have custom text.' if custom_count else '')}"]
     output += [f'- {ymd_count} files in valid Y-m-d format.' if ymd_count else '']
     output += [f'- {invalid_count} invalid files. These will be ignored.' if invalid_count else '']
 
@@ -154,8 +154,8 @@ def analyze_files(logs_dir, list_files=False):
     unique_years = set(years)
     unique_months = set(months)
 
-    output += ['-' + str(len(all_files)) + f'total files found.']
-    output += ['Data spans ' + str(len(all_files)) + ' total days across ' + str(len(unique_years)) + ' years for a total of ' + str(len(unique_months)) + ' months:']
+    output += [f'- {str(len(all_files))} total files found.']
+    output += [f'Data spans {str(len(all_files))} total days across {str(len(unique_years))} years for a total of {str(len(unique_months))} months:']
 
     year_month_dict = {}
     for date in unique_months:
@@ -234,8 +234,8 @@ def main():
         output += [f'{head_text}']
 
         # look for files
-        output += ['- Looking for ' + today.strftime('%Y/%m/%d') + f'.txt in {logs_dir}']
-        output += ['- Looking for ' + today.strftime('%Y/%m/%d') + f'{{custom}}.txt in {logs_dir}']
+        output += [f"- Looking for {today.strftime('%Y/%m/%d')}.txt in {logs_dir}"]
+        output += [f"- Looking for {today.strftime('%Y/%m/%d')}{{custom}}.txt in {logs_dir}"]
         output += [f'- Looking for {today_date}.txt in {logs_dir}']
         output += [f'- Looking for {today_date}{{custom}}.txt in {logs_dir}']
 
