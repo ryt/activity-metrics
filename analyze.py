@@ -12,25 +12,38 @@ Activity Metrics: A tool to analyze & display personal activity statistics.
 
 Usage:
 
+  Show log file statistics and list all found log files.
+  ------------------------------------------------------
   Analyze        Command
-  -------------------------------------------------
+  -------------------------
   ./analyze      (stats|-s)
   ./analyze      (list|-l)
 
+
+  Analyze entries for a specific date or today.
+  ---------------------------------------------
   Analyze        Date
-  -------------------------------------------------
+  -------------------------
   ./analyze      (today|-t)
 
-  Analyze        Generate CSV      Date 
-  -------------------------------------------------
-  ./analyze      (gencsv|-g)       (Y-m-d)
 
-  Analyze        Helper Shortcut   ..
-  -------------------------------------------------
+  Generate a timesheet CSV file for a specific date.
+  --------------------------------------------------
+  Analyze        Generate CSV      Date
+  -------------------------------------------
+  ./analyze      (gencsv|-g)       (Y-m-d)
+  ./analyze      (gencsv|-g)       (today|-t)
+
+
+  Interface for the helper script. Runs ./helper in the background.
+  -----------------------------------------------------------------
+  Analyze        Helper            Input
+  ---------------------------------------
   ./analyze      helper            (args)
 
+
   Analyze        Help & About
-  -------------------------------------------------
+  -----------------------------------
   ./analyze      (man|help|--help|-h)
   ./analyze      (--version|-v)
 
@@ -255,7 +268,7 @@ def main():
           rname = sys.argv[2]
           fname = rname.replace('-','/')
 
-          if fname == 'today':
+          if fname in ('today', '/t'):
             fname = today_dfil
 
           filename = logs_dir + fname + '.txt'
