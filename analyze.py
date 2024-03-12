@@ -44,12 +44,12 @@ hr = '-' * 50
 
 def get_all_files(dir):
   """Returns a list of all files in given directory (dir)"""
-  files_list = []
+  flist = []
   for root, dirs, files in os.walk(dir):
     for filename in files:
       if not filename.startswith('.'):
-        files_list.append(os.path.relpath(os.path.join(root, filename), dir))
-  return files_list
+        flist.append(os.path.relpath(os.path.join(root, filename), dir))
+  return flist
 
 
 def analyze_files(logs_dir, list_files=False):
@@ -66,7 +66,7 @@ def analyze_files(logs_dir, list_files=False):
 
   if all_files:
 
-    files_list = []
+    flist = []
     for file in all_files:
 
       # Acceptable date formats (ISO 8601)
@@ -106,7 +106,7 @@ def analyze_files(logs_dir, list_files=False):
           else:
             valid = False
 
-      files_list.append({
+      flist.append({
         'file': file,
         'valid': valid,
         'custom': custom,
@@ -114,26 +114,26 @@ def analyze_files(logs_dir, list_files=False):
         'ymd': ymd
       })
 
-    #for fd in files_list:
+    #for fd in flist:
     #  print(fd)
 
-    valid_count   = sum(1 for d in files_list if d.get('valid') == True)
-    custom_count  = sum(1 for d in files_list if d.get('custom') == True)
-    ymd_count     = sum(1 for d in files_list if d.get('ymd') == True)
-    invalid_count = sum(1 for d in files_list if d.get('valid') == False)
+    valid_count   = sum(1 for d in flist if d.get('valid') == True)
+    custom_count  = sum(1 for d in flist if d.get('custom') == True)
+    ymd_count     = sum(1 for d in flist if d.get('ymd') == True)
+    invalid_count = sum(1 for d in flist if d.get('valid') == False)
 
     output += [f'{nl}Analysis:']
-    output += [f'- {str(len(files_list))} total files found.']
+    output += [f'- {str(len(flist))} total files found.']
     output += [f"- {valid_count} valid log files{(', including ' + str(custom_count) +' with custom names.' if custom_count else '.')}"]
     output += [f'- {ymd_count} log files in valid Y-m-d format.' if ymd_count else '']
     output += [f'- {invalid_count} files with invalid log file names. These will be ignored.' if invalid_count else '']
 
     if list_files:
 
-      valid_files   = [d for d in files_list if d.get('valid') == True]
-      custom_files  = [d for d in files_list if d.get('custom') == True]
-      ymd_files     = [d for d in files_list if d.get('ymd') == True]
-      invalid_files = [d for d in files_list if d.get('valid') == False]
+      valid_files   = [d for d in flist if d.get('valid') == True]
+      custom_files  = [d for d in flist if d.get('custom') == True]
+      ymd_files     = [d for d in flist if d.get('ymd') == True]
+      invalid_files = [d for d in flist if d.get('valid') == False]
 
       output += [hr] # [0:first_line_len]]
       output += [f'Listing files:']
