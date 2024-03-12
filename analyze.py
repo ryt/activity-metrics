@@ -5,7 +5,7 @@ Copyright (C) 2024 Ray Mentose.
 Latest source can be found at: https://github.com/ryt/activity-metrics
 """
 
-v = '0.0.3'
+v = '0.0.4'
 c = 'Copyright (C) 2024 Ray Mentose.'
 man = """
 Activity Metrics: A tool to analyze & display personal activity statistics.
@@ -35,11 +35,12 @@ Usage:
   ./analyze      (gencsv|-g)       (today|-t)
 
 
-  Interface for the helper script. Runs ./helper in the background.
-  -----------------------------------------------------------------
-  Analyze        Helper            Input
-  ---------------------------------------
-  ./analyze      helper            (args)
+  Interface for the helper script. Similar to running "./helper" with provided inputs.
+  ------------------------------------------------------------------------------------
+  Analyze        Helper           Input
+  -----------------------------------------------------------
+  ./analyze      helper           (arg1)      (arg2)    etc..
+  ./analyze      helper           (help|-h)
 
 
   Analyze        Help & About
@@ -49,7 +50,7 @@ Usage:
 
 """
 
-import sys, os, re, subprocess, macros
+import sys, os, re, subprocess, macros, helper
 from datetime import datetime
 
 logs_dir = '../logs/'
@@ -298,19 +299,7 @@ def main():
         analyze_files(logs_dir, True)
 
       elif arg1 == 'helper':
-        cmd = sys.argv
-        cmd.pop(0)
-        cmd[0] = './helper'
-        cmd = ' '.join(cmd)
-        process = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        cmdout = process.stdout.decode('utf-8')
-        error = process.stderr.decode('utf-8')
-        if process.returncode == 0:
-          print(cmdout, end='')
-          exit()
-        else:
-          print(f'Error: {error}')
-          exit()
+        helper.helper(sys.argv[2:])
 
 
       # help & manual

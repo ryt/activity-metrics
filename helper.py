@@ -4,30 +4,30 @@
 # - Version number of this script only tracks the updates of this script and not the main application (analyze.py).
 # - Originally written as a bash script in the original 0.0.1 version.
 
-v = '0.0.2'
+v = '0.0.3'
 c = 'Copyright (C) 2024 Ray Mentose.'
 help_text = """
-This script provides helper tools and API-based service utilities.
-Read "Utilities.md" for detailed usage manual and related documentation.
+This script provides helper tools and utilities for API connections. It can be ran directly as "./helper" or through "./analyze helper".
+Read "Utilities.md" for related documentation. API tokens are required for connecting to external services.
 
 Usage:
 
   Commands to create default date files (01-31.txt) and default month directories (01-12/)
   ----------------------------------------------------------------------------------------
-  Helper         Command      Parent    Apply
-  -------------------------------------------
-  ./helper       makefiles    dir/
-  ./helper       makedirs     dir/
-  ./helper       makefiles    dir/      apply
-  ./helper       makedirs     dir/      apply
+  Helper      Command      Parent    Apply
+  ----------------------------------------
+  helper      makefiles    dir/
+  helper      makedirs     dir/
+  helper      makefiles    dir/      apply
+  helper      makedirs     dir/      apply
 
   Commands to retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
   -------------------------------------------------------------------------------------------
-  Helper         Todoist     Action      Id       Save/Filename
-  ---------------------------------------------------------------------------
-  ./helper       todoist     get-task    12345
-  ./helper       todoist     get-task    12345    save=../logs/2024/01/01.txt
-  ./helper       todoist     get-task    12345    autosave
+  Helper      Todoist     Action      Id       Save/Filename
+  ------------------------------------------------------------------------
+  helper      todoist     get-task    12345
+  helper      todoist     get-task    12345    save=../logs/2024/01/01.txt
+  helper      todoist     get-task    12345    autosave
 
 """
 
@@ -134,8 +134,7 @@ def print_help():
 def print_version():
   print(f'Activity Metrics Helper, Version {v}\n{c}')
 
-def main():
-  args = sys.argv[1:]
+def helper(args):
   if len(args) == 0:
     print('Use the help or -h command for proper usage.')
     return
@@ -150,12 +149,15 @@ def main():
     make_dirs(directory, applyf)
   elif com == 'todoist':
     todoist_options(args)
-  elif com in ['help', '--help', '-h']:
+  elif com in ['help', '--help', '-h', 'man']:
     print_help()
   elif com in ['version', '--version', '-v']:
     print_version()
   else:
     print('Use the help or -h command for proper usage.')
+
+def main():
+  helper(sys.argv[1:])
 
 if __name__ == '__main__':
   main()
