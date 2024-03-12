@@ -124,9 +124,9 @@ def analyze_files(logs_dir, list_files=False):
 
     output += [f'{nl}Analysis:']
     output += [f'- {str(len(files_list))} total files found.']
-    output += [f"- {valid_count} valid files. {(str(custom_count) + f' have custom text.' if custom_count else '')}"]
-    output += [f'- {ymd_count} files in valid Y-m-d format.' if ymd_count else '']
-    output += [f'- {invalid_count} invalid files. These will be ignored.' if invalid_count else '']
+    output += [f"- {valid_count} valid log files{(', including ' + str(custom_count) +' with custom names.' if custom_count else '.')}"]
+    output += [f'- {ymd_count} log files in valid Y-m-d format.' if ymd_count else '']
+    output += [f'- {invalid_count} files with invalid log file names. These will be ignored.' if invalid_count else '']
 
     if list_files:
 
@@ -138,13 +138,13 @@ def analyze_files(logs_dir, list_files=False):
       output += [hr] # [0:first_line_len]]
       output += [f'Listing files:']
 
-      output += [f'{nl}{valid_count} valid files:']
+      output += [f'{nl}{valid_count} valid log files:']
       output += ['- ' + f'{nl}- '.join([d['file'] for d in valid_files if 'file' in d])]
-      output += [f'{nl}{custom_count} of the valid files have custom text:' if custom_count else '']
+      output += [f'{nl}{custom_count} of the valid log files have custom names:' if custom_count else '']
       output += ['- ' + f'{nl}- '.join([d['file'] for d in custom_files if 'file' in d]) if custom_count else '']
-      output += [f'{nl}{ymd_count} files in valid Y-m-d format:' if ymd_count else '']
+      output += [f'{nl}{ymd_count} log files in valid Y-m-d format:' if ymd_count else '']
       output += ['- ' + f'{nl}- '.join([d['file'] for d in ymd_files if 'file' in d]) if ymd_count else '']
-      output += [f'{nl}{invalid_count} invalid files. These will be ignored:' if invalid_count else '']
+      output += [f'{nl}{invalid_count} files with invalid log file names. These will be ignored:' if invalid_count else '']
       output += ['- ' + f'{nl}- '.join([d['file'] for d in invalid_files if 'file' in d]) if invalid_count else '']
 
     """

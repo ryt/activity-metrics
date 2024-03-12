@@ -21,8 +21,8 @@ Usage:
   ./helper       makefiles    dir/      apply
   ./helper       makedirs     dir/      apply
 
-  Commands to retrieve and save Todoist tasks that have daily log file names (e.g. 1/1.txt)
-  -----------------------------------------------------------------------------------------
+  Commands to retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
+  -------------------------------------------------------------------------------------------
   Helper         Todoist     Action      Id       Save/Filename
   ---------------------------------------------------------------------------
   ./helper       todoist     get-task    12345
@@ -98,6 +98,8 @@ def todoist_options(args):
           print(entry)
           print(date)
           if savef == 'autosave':
+            # Tasks with invalid log file names will be ignored but the user will be notified that they're ignored.
+            # Invalid log file name examples: 1/1.txt, 2/09.txt, 01/1.txt, etc...
             print('Auto smart save will look for 01/01.txt in the title name & will fall back to the file creation date.')
           elif savef[0:5] == 'save=':
             print(f'Save as: {logs_dir}{savef[5:]}')
