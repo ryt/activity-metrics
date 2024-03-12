@@ -5,6 +5,7 @@
 # - Originally written as a bash script in the original 0.0.1 version.
 
 v = '0.0.2'
+c = 'Copyright (C) 2024 Ray Mentose.'
 help_text = """
 This script provides helper tools and API-based service utilities.
 Read "utilities.md" for detailed usage manual and related documentation.
@@ -114,7 +115,7 @@ def print_help():
   print(help_text.strip()+'\n')
 
 def print_version():
-  print(f'helper version {v}')
+  print(f'Activity Metrics Helper, Version {v}\n{c}')
 
 def main():
   args = sys.argv[1:]

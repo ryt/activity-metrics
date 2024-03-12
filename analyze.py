@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
 """
-Copyright (c) 2024 Ray Mentose. 
+Copyright (C) 2024 Ray Mentose. 
 Latest source can be found at: https://github.com/ryt/activity-metrics
 """
 
-v='0.0.3'
-man="""
+v = '0.0.3'
+c = 'Copyright (C) 2024 Ray Mentose.'
+man = """
 Activity Metrics: A tool to analyze & display personal activity statistics.
 
 Usage:
@@ -273,7 +274,8 @@ def main():
       # help & manual
 
       elif arg1 in ('--version','-v'):
-        output += [f'activity-metrics version {v}']
+        output += [f'Activity Metrics, Version {v}']
+        output += [c]
 
       elif arg1 in ('--help','-h','man','help'):
         output += [man.strip() + f'{nl}']
