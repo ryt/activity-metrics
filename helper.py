@@ -109,9 +109,9 @@ def todoist_options(args):
           print(entry)
           print(date)
           if savef == 'autosave':
-            print('Auto smart save will look for formal log file dates (e.g. 01/01.txt) in the title & will fall back to the file creation date.')
+            print('(Mock) Auto smart save will look for formal log file dates (e.g. 01/01.txt) in the title & will fall back to the file creation date.')
           elif savef[0:5] == 'save=':
-            print(f'Save as: {logs_dir}{savef[5:]}')
+            print(f'(Mock) Save as: {logs_dir}{savef[5:]}')
           else:
             print('Just show')
 

@@ -12,21 +12,21 @@ For installation & usage, you can navigate to the [installation](#Installation) 
 - An example entry could be `- 8am 10m breakfast & coffee`.
 - An entry always starts on it's own line with a hyphen.
 - There are no limits for the number of entries or files for a day.
-- All logs and their respective parent directories are stored inside the main `logs/` directory.
+- All logs (including their parent directories) are stored in the main `logs/` directory.
 
 #### File Names & Location
 In the above example, let's assume the date for the entry was **Jan 1, 2024**. Here are the basic rules:
 
 - The location of the log file would be `2024/01/01.txt`.
-- Each log file is named accoring to the date number of the day.
+- Each log file is named accoring to the double-digit date number of the day.
 - Optional custom text after the date number is allowed (e.g. `01custom-text.txt`). 
-- For proper usage, logs must be inside of **month** and **year** directories that correspond to the correct dates.
-- Finally, to recap from the Basics section, the directory `2024/` itself would be found at `logs/2024/`.
+- For proper usage, logs must be inside of **year/month/** directories that correspond to the correct dates.
+- And finally, the directory `2024/` itself would be found at `logs/2024/`.
 
-#### Full Date Log Files
-- Additionally, for the sake of utility, log files can also be named in the `YYYY-mm-dd.txt` format<sup>[1](#n1) [2](#n2)</sup>.
-- For example: `2024-01-01.txt` or `2024-01-01abc.txt` would be valid log files.
-- Full date log files can be parsed from anywhere within the `logs/` directory.
+#### Additional Options: Full Date Log Files
+- For utility reasons, log files are also allowed to be named in the `YYYY-mm-dd.txt` format<sup>[1](#n1) [2](#n2)</sup>.
+- For example: `2024-01-01.txt` or `2024-01-01custom-text.txt` would be valid full date logs.
+- Since their name already includes the year & month, full date logs can be stored anywhere within `logs/`.
 
 Valid location structure example:
 
