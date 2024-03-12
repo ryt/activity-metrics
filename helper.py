@@ -6,11 +6,13 @@
 
 v = '0.0.2'
 help_text = """
-This helper script provides simple useful tools like API-based service utilities and commands to create date files and month directories. 
-Some of the usage manual and related documentation is available in "utilities.md".
+This script provides helper tools and API-based service utilities.
+Read "utilities.md" for detailed usage manual and related documentation.
 
 Usage:
 
+  Commands to create default date files (01-31.txt) and default month directories (01-12/)
+  ----------------------------------------------------------------------------------------
   Helper         Command      Parent    Apply
   -------------------------------------------
   ./helper       makefiles    dir/
@@ -18,6 +20,8 @@ Usage:
   ./helper       makefiles    dir/      apply
   ./helper       makedirs     dir/      apply
 
+  Commands to retrieve and save Todoist tasks that have daily log file names (e.g. 1/1.txt)
+  -----------------------------------------------------------------------------------------
   Helper         Todoist     Action      Id       Save/Filename
   ---------------------------------------------------------------------------
   ./helper       todoist     get-task    12345
