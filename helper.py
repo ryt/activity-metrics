@@ -86,7 +86,18 @@ def todoist_options(args):
 
   if api_token:
 
+    # There are two types of task names that can be automatically parsed from Todoist:
+    #   - formal    :  double digit date & month (e.g. 01/01.txt, 01/11.txt, 12/12.txt)
+    #   - informal  :  single/double digit date & month (e.g. 1/1.txt, 02/3.txt, 3/25.txt)
+    # Taks with either type of name can be retrieved as valid log files. Retrieved tasks will:
+    #   - Be saved with contents of the task as the file's content
+    #   - Be named as a log file in the formal date format within the appropriate month and year directories
+
     if action == 'get-task':
+
+      # todo: get-task 3/11
+
+      # get-task 12345
       if optid.isnumeric():
         response = curl(f'https://api.todoist.com/rest/v2/tasks/{optid}', f'Authorization: Bearer {api_token}')
         if response:
@@ -98,9 +109,7 @@ def todoist_options(args):
           print(entry)
           print(date)
           if savef == 'autosave':
-            # Tasks with invalid log file names will be ignored but the user will be notified that they're ignored.
-            # Invalid log file name examples: 1/1.txt, 2/09.txt, 01/1.txt, etc...
-            print('Auto smart save will look for 01/01.txt in the title name & will fall back to the file creation date.')
+            print('Auto smart save will look for formal log file dates (e.g. 01/01.txt) in the title & will fall back to the file creation date.')
           elif savef[0:5] == 'save=':
             print(f'Save as: {logs_dir}{savef[5:]}')
           else:
