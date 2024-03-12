@@ -36,8 +36,8 @@ import sys, os, json, subprocess
 logs_dir = '../logs/'
 gen_dir  = '../gen/'
 
-def make_files(directory, apply_flag):
-  if apply_flag == 'apply':
+def make_files(directory, applyf):
+  if applyf == 'apply':
     print(f'Applying making files in {directory}')
     for i in range(1, 32):
       day = str(i).zfill(2)
@@ -49,8 +49,8 @@ def make_files(directory, apply_flag):
       day = str(i).zfill(2)
       print(f"touch {os.path.join(directory, f'{day}.txt')}")
 
-def make_dirs(directory, apply_flag):
-  if apply_flag == 'apply':
+def make_dirs(directory, applyf):
+  if applyf == 'apply':
     print(f'Applying making dirs in {directory}')
     for i in range(1, 13):
       month = str(i).zfill(2)
@@ -87,11 +87,17 @@ def todoist_options(args):
   if api_token:
 
     # There are two types of task names that can be automatically parsed from Todoist:
-    #   - formal    :  double digit date & month (e.g. 01/01.txt, 01/11.txt, 12/12.txt)
-    #   - informal  :  single/double digit date & month (e.g. 1/1.txt, 02/3.txt, 3/25.txt)
-    # Taks with either type of name can be retrieved as valid log files. Retrieved tasks will:
-    #   - Be saved with contents of the task as the file's content
-    #   - Be named as a log file in the formal date format within the appropriate month and year directories
+    # 
+    #   - formal    :  double-digit date & month (e.g. 01/01.txt, 01/11.txt, 12/12.txt)
+    #   - informal  :  single/double-digit date & month (e.g. 1/1.txt, 02/3.txt, 3/25.txt)
+    # 
+    # Taks with either type of name can be retrieved as valid log files.
+
+    # Retrieved tasks will be saved as log files as follows:
+    #
+    #   - The file's content will be the description/content of the task
+    #   - The file's name & location will reflect to the the formal date format (e.g. YYYY/MM/DD.txt)
+    #
 
     if action == 'get-task':
 
@@ -104,7 +110,7 @@ def todoist_options(args):
           task_json = json.loads(response)
           title = task_json['content']
           entry = task_json['description']
-          date = task_json['created_at']
+          date  = task_json['created_at']
           print(title)
           print(entry)
           print(date)
@@ -134,14 +140,14 @@ def main():
     print('Use the help or -h command for proper usage.')
     return
   
-  com = args[0]
-  directory = args[1] if len(args) >= 2 else './'
-  apply_flag = args[2] if len(args) >= 3 else ''
+  com        = args[0]
+  directory  = args[1] if len(args) >= 2 else './'
+  applyf     = args[2] if len(args) >= 3 else ''
 
   if com == 'makefiles':
-    make_files(directory, apply_flag)
+    make_files(directory, applyf)
   elif com == 'makedirs':
-    make_dirs(directory, apply_flag)
+    make_dirs(directory, applyf)
   elif com == 'todoist':
     todoist_options(args)
   elif com in ['help', '--help', '-h']:
