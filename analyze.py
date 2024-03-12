@@ -105,13 +105,14 @@ def analyze_files(logs_dir, list_files=False):
             custom_text = match.group(1)
           else:
             valid = False
+        # todo: ../logs/2024-01-01.txt
 
       flist.append({
-        'file': file,
-        'valid': valid,
-        'custom': custom,
-        'custom_text': custom_text,
-        'ymd': ymd
+        'file'        : file,
+        'valid'       : valid,
+        'custom'      : custom,
+        'custom_text' : custom_text,
+        'ymd'         : ymd
       })
 
     #for fd in flist:
