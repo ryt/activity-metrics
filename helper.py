@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Notes:
-# - Version number of this script only tracks the updates of this script and not the main application (i.e. analyze.py).
+# - Version number of this script only tracks the updates of this script and not the main application (analyze.py).
 # - Originally written as a bash script in the original 0.0.1 version.
 
 v = '0.0.2'
