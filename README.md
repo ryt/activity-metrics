@@ -64,29 +64,33 @@ Additionally data can also be imported from other tracking services such as Todo
     git clone https://github.com/ryt/activity-metrics.git
     ```
 
-2. Next create 3 directories, `app`, `gen`, and `log`, on the same level somewhere in your Documents. Optionally, you can have them all inside a directory named `Metrics/` or something custom.
+2. Next create a directory named `Metrics` or something similar in your Documents and create the following 2 directories in it: `gen` and `logs`. You can choose whatever name you want for the main folder but we'll use `Metrics/` for this example. `gen/` will be used for generated files and `logs/` will be used to store log files.
 
     ```
-    mkdir app gen log
+    mkdir Metrics && cd Metrics
     ```
 
-3. Finally, create 2 symbolic links: one for `analyze.py` and one for `helper.py` inside of `app/`. The example commands are shown below. Replace `{install}` with your local installation directory:
+    ```
+    mkdir gen logs
+    ```
+
+3. Finally, create a symbolic link for `analyze.py` on the same level as the directories you just created. The example command is shown below. Replace `{install}` with your local installation directory:
     
     ```
-    ln -s {install}/activity-metrics/analyze.py  app/analyze
-    ln -s {install}/activity-metrics/helper.py   app/helper
+    ln -s {install}/activity-metrics/analyze.py  Metrics/analyze
     ```
 
-    The structure of the links should look like this:
+    The structure of the link and directories should look something like this:
     
     ```
-    - app/
-        - analyze
-        - helper
-    - gen/
-    - log/
+    ./Metrics/
+      - analyze
+      - gen/
+      - logs/
     ```
-4. Now you can run the commands `analyze` and `helper` from within the app directory. Generated files will be stored inside `gen/` and your logs will be read and parsed from the `logs/`.
+4. Now you can run the command `./analyze` from inside the `Metrics/` directory. Generated files will be stored inside `gen/` and your logs will be read and parsed from the `logs/`. Use `./analyze help` for the help manual.
+
+    The utility script can be run as `./analyze utility`. Use `./analyze utility help` for the utility help manual.
 
 
 <h2><small>Inspirations</small></h2>

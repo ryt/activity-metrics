@@ -1,33 +1,34 @@
 #!/usr/bin/env python3
 
 # Notes:
+# - Earlier versions before 0.0.4 were named helper.py & helper.sh.
 # - Version number of this script only tracks the updates of this script and not the main application (analyze.py).
 # - Originally written as a bash script in the original 0.0.1 version.
 
-v = '0.0.3'
+v = '0.0.4'
 c = 'Copyright (C) 2024 Ray Mentose.'
 help_text = """
-This script provides helper tools and utilities for API connections. It can be ran directly as "./helper" or through "./analyze helper".
+This script provides helper tools and utilities for API connections. Though it can be ran directly as "./utility.py" it's reccomended to use as "./analyze utility".
 Read "Utilities.md" for related documentation. API tokens are required for connecting to external services.
 
 Usage:
 
   Commands to create default date files (01-31.txt) and default month directories (01-12/)
   ----------------------------------------------------------------------------------------
-  Helper      Command      Parent    Apply
+  Utility      Command      Parent    Apply
   ----------------------------------------
-  helper      makefiles    dir/
-  helper      makedirs     dir/
-  helper      makefiles    dir/      apply
-  helper      makedirs     dir/      apply
+  utility      makefiles    dir/
+  utility      makedirs     dir/
+  utility      makefiles    dir/      apply
+  utility      makedirs     dir/      apply
 
   Commands to retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
   -------------------------------------------------------------------------------------------
-  Helper      Todoist     Action      Id       Save/Filename
+  Utility      Todoist     Action      Id       Save/Filename
   ------------------------------------------------------------------------
-  helper      todoist     get-task    12345
-  helper      todoist     get-task    12345    save=../logs/2024/01/01.txt
-  helper      todoist     get-task    12345    saveauto
+  utility      todoist     get-task    12345
+  utility      todoist     get-task    12345    save=../logs/2024/01/01.txt
+  utility      todoist     get-task    12345    saveauto
 
 """
 
@@ -104,11 +105,27 @@ def todoist_options(args):
 
       # todo: get-task 3/11
 
+      ## new addition
+      api_get_tasks = curl(f'https://api.todoist.com/rest/v2/tasks', f'Authorization: Bearer {api_token}')
+      if api_get_tasks:
+        tasks_json = json.loads(api_get_tasks)
+
+        search = '3/11.txt'
+        matches = [d for d in tasks_json if d.get('content') == search ]
+
+        for e in matches:
+          print(e)
+
+        print(len(tasks_json))
+      ## end new addition
+
+
+
       # get-task 12345
       if optid.isnumeric():
-        response = curl(f'https://api.todoist.com/rest/v2/tasks/{optid}', f'Authorization: Bearer {api_token}')
+        api_get_task = curl(f'https://api.todoist.com/rest/v2/tasks/{optid}', f'Authorization: Bearer {api_token}')
         if response:
-          task_json = json.loads(response)
+          task_json = json.loads(api_get_task)
           title     = task_json['content']
           entries   = task_json['description']
           date      = task_json['created_at']
@@ -153,9 +170,9 @@ def print_help():
   print(help_text.strip()+'\n')
 
 def print_version():
-  print(f'Activity Metrics Helper, Version {v}\n{c}')
+  print(f'Activity Metrics Utility, Version {v}\n{c}')
 
-def helper(args):
+def utility(args):
   if len(args) == 0:
     print('Use the help or -h command for proper usage.')
     return
@@ -178,7 +195,7 @@ def helper(args):
     print('Use the help or -h command for proper usage.')
 
 def main():
-  helper(sys.argv[1:])
+  utility(sys.argv[1:])
 
 if __name__ == '__main__':
   main()
