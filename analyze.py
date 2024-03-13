@@ -35,8 +35,8 @@ Usage:
   ./analyze      (gencsv|-g)       (today|-t)
 
 
-  Interface for the utility script. Similar to running "./utility.py" with provided inputs.
-  -----------------------------------------------------------------------------------------
+  Interface for the utility script. For list of commands, use "./analyze utility help".
+  -------------------------------------------------------------------------------------
   Analyze        Utility           Input
   -----------------------------------------------------------
   ./analyze      utility           (arg1)      (arg2)    etc..

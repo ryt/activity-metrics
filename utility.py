@@ -8,27 +8,27 @@
 v = '0.0.4'
 c = 'Copyright (C) 2024 Ray Mentose.'
 help_text = """
-This script provides helper tools and utilities for API connections. Though it can be ran directly as "./utility.py" it's reccomended to use as "./analyze utility".
+This script provides helper tools and utilities for API connections. Commands can be run using "./analyze utility".
 Read "Utilities.md" for related documentation. API tokens are required for connecting to external services.
 
 Usage:
 
-  Commands to create default date files (01-31.txt) and default month directories (01-12/)
-  ----------------------------------------------------------------------------------------
-  Utility      Command      Parent    Apply
-  ----------------------------------------
-  utility      makefiles    dir/
-  utility      makedirs     dir/
-  utility      makefiles    dir/      apply
-  utility      makedirs     dir/      apply
+  Create default date files (01-31.txt) and default month directories (01-12/)
+  ----------------------------------------------------------------------------
+  Analyze      Utility      Command      Parent    Apply
+  ------------------------------------------------------
+  ./analyze    utility      makefiles    dir/
+  ./analyze    utility      makedirs     dir/
+  ./analyze    utility      makefiles    dir/      apply
+  ./analyze    utility      makedirs     dir/      apply
 
-  Commands to retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
-  -------------------------------------------------------------------------------------------
-  Utility      Todoist     Action      Id       Save/Filename
-  ------------------------------------------------------------------------
-  utility      todoist     get-task    12345
-  utility      todoist     get-task    12345    save=../logs/2024/01/01.txt
-  utility      todoist     get-task    12345    saveauto
+  Retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
+  -------------------------------------------------------------------------------
+  Analyze      Utility      Todoist     Action      Id       Save/Filename
+  --------------------------------------------------------------------------------------
+  ./analyze    utility      todoist     get-task    12345
+  ./analyze    utility      todoist     get-task    12345    save=../logs/2024/01/01.txt
+  ./analyze    utility      todoist     get-task    12345    saveauto
 
 """
 
