@@ -53,8 +53,8 @@ Usage:
 import sys, os, re, subprocess, macros, utility
 from datetime import datetime
 
-logs_dir = '../logs/'
-gen_dir  = '../gen/'
+logs_dir = './logs/'
+gen_dir  = './gen/'
 
 nl = '\n'
 hr = '-' * 50

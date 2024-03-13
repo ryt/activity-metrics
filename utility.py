@@ -35,8 +35,8 @@ Usage:
 import sys, os, json, subprocess
 from datetime import datetime
 
-logs_dir = '../logs/'
-gen_dir  = '../gen/'
+logs_dir = './logs/'
+gen_dir  = './gen/'
 
 def make_files(directory, applyf):
   if applyf == 'apply':
