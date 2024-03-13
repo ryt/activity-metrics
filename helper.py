@@ -27,11 +27,12 @@ Usage:
   ------------------------------------------------------------------------
   helper      todoist     get-task    12345
   helper      todoist     get-task    12345    save=../logs/2024/01/01.txt
-  helper      todoist     get-task    12345    autosave
+  helper      todoist     get-task    12345    saveauto
 
 """
 
 import sys, os, json, subprocess
+from datetime import datetime
 
 logs_dir = '../logs/'
 gen_dir  = '../gen/'
@@ -108,20 +109,40 @@ def todoist_options(args):
         response = curl(f'https://api.todoist.com/rest/v2/tasks/{optid}', f'Authorization: Bearer {api_token}')
         if response:
           task_json = json.loads(response)
-          title = task_json['content']
-          entry = task_json['description']
-          date  = task_json['created_at']
-          print(title)
-          print(entry)
-          print(date)
-          if savef == 'autosave':
-            print('(Mock) Auto smart save will look for formal log file dates (e.g. 01/01.txt) in the title & will fall back to the file creation date.')
-          elif savef[0:5] == 'save=':
-            print(f'(Mock) Save as: {logs_dir}{savef[5:]}')
-          else:
-            print('Just show')
+          title     = task_json['content']
+          entries   = task_json['description']
+          date      = task_json['created_at']
+          print(f"Todoist task: {title} ({optid})\n" + '-' * 50)
+          if savef == 'saveauto':
+            get_year       = date[0:4]
+            title_date     = title.strip('.txt').split('/')
+            save_log_file  = list(map(lambda i:'{:02d}'.format(int(i)), title_date))
+            save_log_file  = f"{logs_dir}{get_year}/{'/'.join(save_log_file)}.txt"
+            with open(save_log_file, 'w') as file:
+              file.write(entries)
+            print(f'Log file successfully saved at: {save_log_file}')
 
-    print(f'Todoist {action} {optid} {savef}')
+          elif savef[0:5] == 'save=':
+            save_log_file = f'{logs_dir}{savef[5:]}'
+            if save_log_file == logs_dir:
+              print('Please enter a valid file name & path.')
+            else:
+              with open(save_log_file, 'w') as file:
+                file.write(entries)
+              print(f'Log file successfully saved at: {save_log_file}')
+
+          elif savef == 'save':
+            opts = ['To save as a log, please use one of the following options:',
+                    "- saveauto:  to automatically save the log using it's name & date",
+                    "- save=YYYY/MM/DD.txt:  to manually specify the name & location."]
+            print('\n'.join(opts))
+          
+          else:
+            print(entries)
+            print(date)
+
+      # print(f'todoist {action} {optid} {savef}')
+      print('-' * 50)
 
   else:
 
