@@ -30,7 +30,7 @@ Usage:
   Generate a timesheet CSV file for a specific date.
   --------------------------------------------------
   Analyze        Generate CSV      Date
-  -------------------------------------------
+  -----------------------------------------------
   ./analyze      (gencsv|-g)       (Y-m-d)
   ./analyze      (gencsv|-g)       (today|-t)
   ./analyze      (gencsv|-g)       (yesterday|-y)
@@ -233,11 +233,11 @@ def modify_csv(csv_list, add_header=True, add_footer=True):
   # headers & footers
 
   if add_header:
-    csv_list.insert(0, ['Date','Hours','Human','Raw List','Description'])
+    csv_list.insert(0, ['Date','Hours','Human','Raw Times','Description'])
 
   if add_footer:
     total_hours = round(sum(try_float(col[1], 0) for col in csv_list), 2)
-    csv_list.append(['', str(total_hours), macros.hours_to_human_duration(total_hours), '', 'Total Logged Hours'])
+    csv_list.append(['', str(total_hours), macros.hours_to_human(total_hours), '', 'Total Logged Hours'])
 
   return csv_list
 
@@ -265,8 +265,8 @@ def convert_to_csv(entries, ymd_date):
     if match:
       rawtime = time_macro(match.group(1))
       rawdesc = str(rawtime[2]) + cap_macro(match.group(2))
-      #           Date     Hours       Human                                        Raw List                    Description
-      newline = [datefrm, rawtime[1], macros.hours_to_human_duration(rawtime[1]), escape_for_csv(rawtime[0]), escape_for_csv(rawdesc)]
+      #           Date     Hours       Human                              Raw Times                   Description
+      newline = [datefrm, rawtime[1], macros.hours_to_human(rawtime[1]), escape_for_csv(rawtime[0]), escape_for_csv(rawdesc)]
       #newline = match.group(1) + ',' + match.group(2)
     if newline:
       parsed_lines.append(newline)
