@@ -322,6 +322,8 @@ def main():
             rname = yesterday_date
             fname = yesterday_dfil
 
+          # -- look for single log files (dates)
+
           filename = logs_dir + fname + '.txt'
           if os.path.exists(filename):
 
@@ -334,7 +336,21 @@ def main():
             genfile = gen_dir + rname + '.csv'
             with open(genfile, 'w') as file:
               file.write(entries)
-            output += [f'CSV file {genfile} successfully generated.']
+            output += [f'Generated CSV file {genfile} successfully.']
+
+
+          # -- look for collections of log files (month, year)
+
+          elif re.search(r'^\d{4}(?:\/\d{2})?$', fname):
+
+            lenfn = len(fname)
+
+            if lenfn == 4:
+              output += [f'Mock-generating CSV file for ({fname}) year collections.']
+
+            elif lenfn == 7:
+              output += [f'Mock-generating CSV file for ({fname}) month collections.']
+
 
           else:
             output += [f'Log file {filename} does not exist.']
