@@ -219,11 +219,13 @@ def escape_for_csv(input):
 
 def convert_to_csv(entries, ymd_date):
   """Receives the contents of a log txt file (entries) with date (ymd_date) and returns a generated csv content string"""
-  lines = entries.splitlines()
-  conv = []
-  conv.append('Date,Hours,Raw Time,Description')
+
   dateobj = datetime.strptime(ymd_date, "%Y-%m-%d")
   datefrm = dateobj.strftime("%m/%d/%Y")
+
+  lines = entries.splitlines()
+  parsed_lines = []
+
   for line in lines:
 
     # parse individual entries
@@ -234,15 +236,28 @@ def convert_to_csv(entries, ymd_date):
 
     pattern = r'^-(\s*(?:[\d\:\.]+(?:m|h|s|am|pm|a|p)[\s\,]*[\s\;]*)+)(.*)$'
     match = re.search(pattern, line)
-    newline = ''
+    newline = []
     if match:
       rawtime = time_macro(match.group(1))
       rawdesc = str(rawtime[2]) + cap_macro(match.group(2))
-      newline = ','.join([datefrm, rawtime[1], escape_for_csv(rawtime[0]), escape_for_csv(rawdesc)])
+      newline = [datefrm, rawtime[1], macros.hours_to_human_duration(rawtime[1]), escape_for_csv(rawtime[0]), escape_for_csv(rawdesc)]
       #newline = match.group(1) + ',' + match.group(2)
     if newline:
-      conv.append(newline)
-  return nl.join(conv);
+      parsed_lines.append(newline)
+  
+  # endfor
+
+  # line calculations
+  total_hours = sum(float(col[1]) for col in parsed_lines)
+
+  # additional lines
+  # header
+  parsed_lines.insert(0, ['Date','Hours','Human','Raw List','Description'])
+  parsed_lines.append(['', str(total_hours), macros.hours_to_human_duration(total_hours), '', 'Total Logged Hours'])
+
+  final_csv = nl.join(','.join(ln) for ln in parsed_lines)
+
+  return final_csv
 
 
 def main():

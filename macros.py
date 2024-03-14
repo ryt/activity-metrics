@@ -33,6 +33,27 @@ def convert_to_hours(str):
   return round(float(num), 4)
 
 
+def hours_to_human_duration(input):
+  if input is None:
+    return None
+  else:
+    input = float(input)
+
+  input = round(input, 2)  # 2 decimal places
+
+  # split into hours and minutes
+
+  hrs, decimal = divmod(input, 1)
+  mins = round(decimal * 60)
+
+  # format hours as hours and minutes
+
+  hrs_str = f"{int(hrs)} hr{'s' if hrs != 1 else ''} " if hrs > 0 else ''
+  mins_str = f"{mins} min" if mins > 0 else ''
+
+  return hrs_str + mins_str
+
+
 def raw_time_to_excel_sum(input):
   """Receives a raw time string & returns a tuple: (excel sum function, calculation in hours, optional timestamp)"""
   sumfunc = ''
