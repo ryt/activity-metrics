@@ -33,6 +33,7 @@ Usage:
   -------------------------------------------
   ./analyze      (gencsv|-g)       (Y-m-d)
   ./analyze      (gencsv|-g)       (today|-t)
+  ./analyze      (gencsv|-g)       (yesterday|-y)
 
 
   Interface for the utility script. For list of commands, use "./analyze utility help".
@@ -54,6 +55,7 @@ Usage:
 import sys, os, re, subprocess, pydoc
 import macros, utility
 from datetime import datetime
+from datetime import timedelta
 
 logs_dir = './logs/'
 gen_dir  = './gen/'
@@ -215,12 +217,12 @@ def escape_for_csv(input):
   value = '"' + value + '"'
   return value
 
-def convert_to_csv(entries, ymd):
-  """Receives the contents of a log txt file (entries) with date (ymd) and returns a generated csv content string"""
+def convert_to_csv(entries, ymd_date):
+  """Receives the contents of a log txt file (entries) with date (ymd_date) and returns a generated csv content string"""
   lines = entries.splitlines()
   conv = []
   conv.append('Date,Hours,Raw Time,Description')
-  dateobj = datetime.strptime(ymd, "%Y-%m-%d")
+  dateobj = datetime.strptime(ymd_date, "%Y-%m-%d")
   datefrm = dateobj.strftime("%m/%d/%Y")
   for line in lines:
 
@@ -254,18 +256,29 @@ def main():
       today_date = today.strftime('%Y-%m-%d')
       today_dfil = today.strftime('%Y/%m/%d')
 
-      if arg1 in ('today','-t'):
-        head_text = f'Analyzing data for today, {today_date}:'
+      yesterday = today - timedelta(days = 1)
+      yesterday_date = yesterday.strftime('%Y-%m-%d')
+      yesterday_dfil = yesterday.strftime('%Y/%m/%d')
+
+      if arg1 in ('today','-t','yesterday','-y'):
+
+        if arg1 in ('today','-t'):
+          day_name, day_date, day_dfil = 'today', today_date, today_dfil
+
+        if arg1 in ('yesterday','-y'):
+          day_name, day_date, day_dfil = 'yesterday', yesterday_date, yesterday_dfil
+
+        head_text = f'Analyzing data for {day_name}, {day_date}:'
 
         # first_line_len = len(head_text)
         output += [hr] # [0:first_line_len]]
         output += [f'{head_text}']
 
         # look for files
-        output += [f'- Looking for {today_dfil}.txt in {logs_dir}']
-        output += [f'- Looking for {today_dfil}{{custom}}.txt in {logs_dir}']
-        output += [f'- Looking for {today_date}.txt in {logs_dir}']
-        output += [f'- Looking for {today_date}{{custom}}.txt in {logs_dir}']
+        output += [f'- Looking for {day_dfil}.txt in {logs_dir}']
+        output += [f'- Looking for {day_dfil}{{custom}}.txt in {logs_dir}']
+        output += [f'- Looking for {day_date}.txt in {logs_dir}']
+        output += [f'- Looking for {day_date}{{custom}}.txt in {logs_dir}']
 
         # last_line_len = len(output[-1])
         output += [hr] # [0:last_line_len]]
@@ -273,11 +286,17 @@ def main():
       elif arg1 in ('gencsv','-g'):
 
         if len(sys.argv) > 2:
-          rname = sys.argv[2]
-          fname = rname.replace('-','/')
+          arg2  = sys.argv[2] # date or keyword
+
+          rname = arg2.replace('/','-')  # YYYY-MM-DD
+          fname = rname.replace('-','/') # YYYY/MM/DD
 
           if fname in ('today', '/t'):
+            rname = today_date
             fname = today_dfil
+          elif fname in ('yesterday', '/y'):
+            rname = yesterday_date
+            fname = yesterday_dfil
 
           filename = logs_dir + fname + '.txt'
           if os.path.exists(filename):
@@ -322,7 +341,7 @@ def main():
 
       # pages the help manual instead of printing
 
-      elif arg1 in ('man'):
+      elif arg1 == 'man':
         output += [man.strip() + f'{nl}']
         pydoc.pager(nl.join(output))
         return

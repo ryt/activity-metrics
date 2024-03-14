@@ -24,16 +24,17 @@ Usage:
 
   Retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
   -------------------------------------------------------------------------------
-  Analyze      Utility      Todoist     Action      Id       Save/Filename
-  --------------------------------------------------------------------------------------
-  ./analyze    utility      todoist     get-task    12345
-  ./analyze    utility      todoist     get-task    12345    save=../logs/2024/01/01.txt
-  ./analyze    utility      todoist     get-task    12345    saveauto
+  Analyze      Utility      Todoist     Action      Id/Date/Keyword       Save/Filename
+  ---------------------------------------------------------------------------------------------------
+  ./analyze    utility      todoist     get-task    (12345|M/D|today)
+  ./analyze    utility      todoist     get-task    12345                 save=../logs/2024/01/01.txt
+  ./analyze    utility      todoist     get-task    12345                 saveauto
 
 """
 
-import sys, os, json, subprocess, pydoc
+import sys, os, re, json, subprocess, pydoc
 from datetime import datetime
+from datetime import timedelta
 
 logs_dir = './logs/'
 gen_dir  = './gen/'
@@ -77,12 +78,51 @@ def curl(url, headers = ''):
   else:
     return f'Error: {error}'
 
+def todoist_task_operate(task_json, saveopt):
+  """Operation for a single task from Todoist"""
+
+  taskid    = task_json['id']
+  title     = task_json['content']
+  entries   = task_json['description']
+  date      = task_json['created_at']
+
+  print(f'Todoist task: {title} ({taskid}){nl}Task created at: {date}{nl}==')
+
+  if saveopt == 'saveauto':
+    get_year       = date[0:4]
+    title_date     = title.strip('.txt').split('/')
+    save_log_file  = list(map(lambda i:'{:02d}'.format(int(i)), title_date))
+    save_log_file  = f"{logs_dir}{get_year}/{'/'.join(save_log_file)}.txt"
+    with open(save_log_file, 'w') as file:
+      file.write(entries)
+    print(f'Log file successfully saved at: {save_log_file}')
+
+  elif saveopt[0:5] == 'save=':
+    save_log_file = f'{logs_dir}{saveopt[5:]}'
+    if save_log_file == logs_dir:
+      print('Please enter a valid file name & path.')
+    else:
+      with open(save_log_file, 'w') as file:
+        file.write(entries)
+      print(f'Log file successfully saved at: {save_log_file}')
+
+  elif saveopt == 'save':
+    opts = ['To save as a log, please use one of the following options:',
+            "- saveauto:  to automatically save the log using it's name & date",
+            "- save=YYYY/MM/DD.txt:  to manually specify the name & location."]
+    print('\n'.join(opts))
+
+  else:
+    print(f'{entries}{nl}==')
+
 
 def todoist_options(args):
 
   action = args[1] if len(args) >= 2 else ''
   optid  = args[2] if len(args) >= 3 else ''
   savef  = args[3] if len(args) >= 4 else ''
+
+  date_today = datetime.today()
 
   # Todoist API token should be stored in "~/.api_todoist" file.
   todoist_file = os.path.expanduser('~') + '/.api_todoist';
@@ -94,82 +134,90 @@ def todoist_options(args):
     # There are two types of task names that can be automatically parsed from Todoist:
     # 
     #   - formal    :  double-digit date & month (e.g. 01/01.txt, 01/11.txt, 12/12.txt)
-    #   - informal  :  single/double-digit date & month (e.g. 1/1.txt, 02/3.txt, 3/25.txt)
+    #   - informal  :  single+double-digit date & month (e.g. 1/1.txt, 12/3.txt, 3/25.txt)
     # 
     # Taks with either type of name can be retrieved as valid log files.
 
     # Retrieved tasks will be saved as log files as follows:
     #
     #   - The file's content will be the description/content of the task
-    #   - The file's name & location will reflect to the the formal date format (e.g. YYYY/MM/DD.txt)
+    #   - The file's name & location will reflect the formal date format (e.g. YYYY/MM/DD.txt)
     #
 
     if action == 'get-task':
 
-      if not optid:
-        print('Please enter a valid task id, date, or keyword.')
-        return
+      # get-task (M/D, MM/DD, today)
 
-      # todo: get-task 3/11
+      if optid in ('today','yesterday') or re.match(r'^(\d\d?\/\d\d?)(\/\d{4})?$', optid) is not None:
 
-      ## new addition
-      api_get_tasks = curl(f'https://api.todoist.com/rest/v2/tasks', f'Authorization: Bearer {api_token}')
-      if api_get_tasks:
-        tasks_json = json.loads(api_get_tasks)
+        # start optid parsing
+        opm, opd, opy = '', '', ''
+        if '/' in optid:
+          opsplit = optid.split('/')
+          opm = '{:02d}'.format(int(opsplit[0]))
+          opd = '{:02d}'.format(int(opsplit[1]))
+          opy = opsplit[2] if len(opsplit) > 2 else date_today.year
+        elif optid == 'today':
+          opm = date_today.strftime('%m')
+          opd = date_today.strftime('%d')
+          opy = date_today.strftime('%Y')
+        elif optid == 'yesterday':
+          yesterday = date_today - timedelta(days = 1)
+          opm = yesterday.strftime('%m')
+          opd = yesterday.strftime('%d')
+          opy = yesterday.strftime('%Y')
+        # end optid parsing
 
-        search = '3/11.txt'
-        matches = [d for d in tasks_json if d.get('content') == search ]
+        search1 = f'{str(int(opm))}/{str(int(opd))}.txt' # M/D.txt
+        search2 = f'{opm}/{opd}.txt' # MM/DD.txt
 
-        for e in matches:
-          print(e)
+        api_get_tasks = curl(f'https://api.todoist.com/rest/v2/tasks', f'Authorization: Bearer {api_token}')
 
-        print(len(tasks_json))
-      ## end new addition
+        if api_get_tasks.startswith('Error:') or not api_get_tasks.startswith(('{','[')):
+          print(api_get_tasks)
+
+        else:
+          tasks_json = json.loads(api_get_tasks)
+          matches = [t for t in tasks_json if t.get('content') in (search1, search2) ]
+          search_msg = f'Total searched tasks: {len(tasks_json)}.'
+
+          if not matches:
+            print(search_msg)
+            print(f"Tasks matching '{search1}' or '{search2}' could not be found.")
+          else:
+            print(search_msg)
+            print(f'Found {len(matches)} task(s) matching the search:{nl}--')
+            for m in matches:
+              todoist_task_operate(m, savef)
+              #print(m)
+            print('--')
 
 
+      # end get-task (M/D, MM/DD, today)
 
       # get-task 12345
-      if optid.isnumeric():
+
+      elif optid.isnumeric() and int(optid) > 1000:
+
         api_get_task = curl(f'https://api.todoist.com/rest/v2/tasks/{optid}', f'Authorization: Bearer {api_token}')
-        if response:
+
+        if api_get_task.startswith('Error:') or not api_get_task.startswith(('{','[')):
+          print(api_get_task)
+
+        else:
           task_json = json.loads(api_get_task)
-          title     = task_json['content']
-          entries   = task_json['description']
-          date      = task_json['created_at']
-          print(f"Todoist task: {title} ({optid})\n" + '-' * 50)
-          if savef == 'saveauto':
-            get_year       = date[0:4]
-            title_date     = title.strip('.txt').split('/')
-            save_log_file  = list(map(lambda i:'{:02d}'.format(int(i)), title_date))
-            save_log_file  = f"{logs_dir}{get_year}/{'/'.join(save_log_file)}.txt"
-            with open(save_log_file, 'w') as file:
-              file.write(entries)
-            print(f'Log file successfully saved at: {save_log_file}')
+          todoist_task_operate(task_json, savef)
 
-          elif savef[0:5] == 'save=':
-            save_log_file = f'{logs_dir}{savef[5:]}'
-            if save_log_file == logs_dir:
-              print('Please enter a valid file name & path.')
-            else:
-              with open(save_log_file, 'w') as file:
-                file.write(entries)
-              print(f'Log file successfully saved at: {save_log_file}')
+      # end get-task 12345
 
-          elif savef == 'save':
-            opts = ['To save as a log, please use one of the following options:',
-                    "- saveauto:  to automatically save the log using it's name & date",
-                    "- save=YYYY/MM/DD.txt:  to manually specify the name & location."]
-            print('\n'.join(opts))
-          
-          else:
-            print(entries)
-            print(date)
+      else:
+        print('Please enter a valid task id, date, or keyword.')
 
       # print(f'todoist {action} {optid} {savef}')
-      print('-' * 50)
+      # print('-' * 50)
     
     else:
-      print('Please enter a valid command for Todoist.')
+      print("Please enter a valid command for Todoist. Use 'man' for list of commands.")
 
   else:
 
@@ -196,13 +244,13 @@ def utility(args):
   elif com == 'todoist':
     todoist_options(args)
 
-  elif com in ('help', '--help', '-h'):
+  elif com in ('--help', '-h', 'help'):
     print(f'{man.strip()}{nl}')
 
   elif com == 'man':
     pydoc.pager(f'{man.strip()}{nl}')
 
-  elif com in ('version', '--version', '-v'):
+  elif com in ('--version', '-v'):
     print(f'Activity Metrics Utility, Version {v}{nl}{c}')
 
   else:
