@@ -58,34 +58,34 @@ Additionally data can also be imported from other tracking services such as Todo
 
 <h2 id="Installation"><small>Installation</small></h2>
 
-1. Clone `activity-metrics/`into your local installation directory.
+1. Clone `activity-metrics/` into your local installation directory.
 
-    ```
+    ```bash
     git clone https://github.com/ryt/activity-metrics.git
     ```
 
 2. Next create a directory named `Metrics` or something similar in your Documents and create the following 2 directories in it: `gen` and `logs`.
 
-    You can choose whatever name you want for the main folder but we'll use `Metrics` for this example. `gen/` will be used for generated files and `logs/` will be used to store log files.
+    You can choose whatever name you want for the main folder but we'll use "Metrics" for this example. `gen/` will be used for generated files and `logs/` will be used to store log files.
 
-    ```
+    ```bash
     mkdir Metrics && cd Metrics
     ```
 
-    ```
+    ```bash
     mkdir gen logs
     ```
 
 3. Finally, create a symbolic link for `analyze.py` on the same level as the directories you just created. The example command is shown below. Replace `{install}` with your local installation directory:
     
-    ```
+    ```bash
     ln -s {install}/activity-metrics/analyze.py  Metrics/analyze
     ```
 
     The structure of the link and directories should look something like this:
     
-    ```
-    ./Metrics/
+    ```bash
+    Metrics/
       - analyze
       - gen/
       - logs/
