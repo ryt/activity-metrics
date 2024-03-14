@@ -88,7 +88,7 @@ def todoist_task_operate(task_json, saveopt):
 
   print(f'Todoist task: {title} ({taskid}){nl}Task created at: {date}{nl}==')
 
-  if saveopt == 'saveauto':
+  if saveopt in ('saveauto','autosave'):
     get_year       = date[0:4]
     title_date     = title.strip('.txt').split('/')
     save_log_file  = list(map(lambda i:'{:02d}'.format(int(i)), title_date))
