@@ -7,7 +7,7 @@
 
 v = '0.0.4'
 c = 'Copyright (C) 2024 Ray Mentose.'
-help_text = """
+man = """
 This script provides helper tools and utilities for API connections. Commands can be run using "./analyze utility".
 Read "Utilities.md" for related documentation. API tokens are required for connecting to external services.
 
@@ -32,11 +32,14 @@ Usage:
 
 """
 
-import sys, os, json, subprocess
+import sys, os, json, subprocess, pydoc
 from datetime import datetime
 
 logs_dir = './logs/'
 gen_dir  = './gen/'
+
+nl = '\n'
+hr = '-' * 50
 
 def make_files(directory, applyf):
   if applyf == 'apply':
@@ -103,6 +106,10 @@ def todoist_options(args):
 
     if action == 'get-task':
 
+      if not optid:
+        print('Please enter a valid task id, date, or keyword.')
+        return
+
       # todo: get-task 3/11
 
       ## new addition
@@ -160,21 +167,20 @@ def todoist_options(args):
 
       # print(f'todoist {action} {optid} {savef}')
       print('-' * 50)
+    
+    else:
+      print('Please enter a valid command for Todoist.')
 
   else:
 
     print(f'Todoist API token could not be found in {todoist_file}.')
 
 
-def print_help():
-  print(help_text.strip()+'\n')
-
-def print_version():
-  print(f'Activity Metrics Utility, Version {v}\n{c}')
-
 def utility(args):
+  use_help = "Use 'utility man' or 'utility help' for proper usage."
+
   if len(args) == 0:
-    print('Use the help or -h command for proper usage.')
+    print(use_help)
     return
   
   com        = args[0]
@@ -183,16 +189,24 @@ def utility(args):
 
   if com == 'makefiles':
     make_files(directory, applyf)
+
   elif com == 'makedirs':
     make_dirs(directory, applyf)
+
   elif com == 'todoist':
     todoist_options(args)
-  elif com in ['help', '--help', '-h', 'man']:
-    print_help()
-  elif com in ['version', '--version', '-v']:
-    print_version()
+
+  elif com in ('help', '--help', '-h'):
+    print(f'{man.strip()}{nl}')
+
+  elif com == 'man':
+    pydoc.pager(f'{man.strip()}{nl}')
+
+  elif com in ('version', '--version', '-v'):
+    print(f'Activity Metrics Utility, Version {v}{nl}{c}')
+
   else:
-    print('Use the help or -h command for proper usage.')
+    print(use_help)
 
 def main():
   utility(sys.argv[1:])

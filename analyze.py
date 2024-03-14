@@ -43,14 +43,16 @@ Usage:
   ./analyze      utility           (help|-h)
 
 
-  Analyze        Help & About
-  -----------------------------------
-  ./analyze      (man|help|--help|-h)
+  Analyze        Help Manual & About
+  ----------------------------------
+  ./analyze      man
+  ./analyze      (help|--help|-h)
   ./analyze      (--version|-v)
 
 """
 
-import sys, os, re, subprocess, macros, utility
+import sys, os, re, subprocess, pydoc
+import macros, utility
 from datetime import datetime
 
 logs_dir = './logs/'
@@ -308,8 +310,18 @@ def main():
         output += [f'Activity Metrics, Version {v}']
         output += [c]
 
-      elif arg1 in ('--help','-h','man','help'):
+      # prints the help manual
+
+      elif arg1 in ('--help','-h','help'):
         output += [man.strip() + f'{nl}']
+
+      # pages the help manual instead of printing
+
+      elif arg1 in ('man'):
+        output += [man.strip() + f'{nl}']
+        pydoc.pager(nl.join(output))
+        return
+
 
       else:
         output += [f"Invalid command '{arg1}'. Use 'man' or 'help' for proper usage."]
