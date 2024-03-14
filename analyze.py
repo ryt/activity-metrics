@@ -217,6 +217,12 @@ def escape_for_csv(input):
   value = '"' + value + '"'
   return value
 
+def try_float(v, defval=None):
+  try:
+    return float(v)
+  except Exception:
+    return defval
+
 def convert_to_csv(entries, ymd_date):
   """Receives the contents of a log txt file (entries) with date (ymd_date) and returns a generated csv content string"""
 
@@ -248,11 +254,13 @@ def convert_to_csv(entries, ymd_date):
   # endfor
 
   # line calculations
-  total_hours = sum(float(col[1]) for col in parsed_lines)
+  total_hours = round(sum(try_float(col[1], 0) for col in parsed_lines), 2)
 
   # additional lines
+
   # header
   parsed_lines.insert(0, ['Date','Hours','Human','Raw List','Description'])
+  # total
   parsed_lines.append(['', str(total_hours), macros.hours_to_human_duration(total_hours), '', 'Total Logged Hours'])
 
   final_csv = nl.join(','.join(ln) for ln in parsed_lines)

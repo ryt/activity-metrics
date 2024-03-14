@@ -34,10 +34,10 @@ def convert_to_hours(str):
 
 
 def hours_to_human_duration(input):
-  if input is None:
-    return None
-  else:
+  try:
     input = float(input)
+  except Exception:
+    return ''
 
   input = round(input, 2)  # 2 decimal places
 
