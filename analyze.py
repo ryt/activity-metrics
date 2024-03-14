@@ -36,12 +36,13 @@ Usage:
   ./analyze      (gencsv|-g)       (yesterday|-y)
 
 
-  Interface for the utility script. For list of commands, use "./analyze utility help".
-  -------------------------------------------------------------------------------------
-  Analyze        Utility           Input
-  -----------------------------------------------------------
-  ./analyze      utility           (arg1)      (arg2)    etc..
-  ./analyze      utility           (help|-h)
+  Interface for the utility script. For list of commands, use "./analyze u help".
+  -------------------------------------------------------------------------------
+  Analyze        Utility        Input
+  ---------------------------------------------------------
+  ./analyze      (utility|u)    (arg1)      (arg2)    etc..
+  ./analyze      (utility|u)    (help|-h)
+  ./analyze      (utility|u)    (man)
 
 
   Analyze        Help Manual & About
@@ -347,8 +348,8 @@ def main():
       elif arg1 in ('list-files','-l'):
         analyze_files(logs_dir, True)
 
-      elif arg1 == 'utility':
-        utility.utility(sys.argv[2:])
+      elif arg1 in ('utility','u'):
+        utility.utility(sys.argv[2:], arg1)
 
 
       # help & manual
