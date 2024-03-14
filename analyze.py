@@ -5,7 +5,7 @@ Copyright (C) 2024 Ray Mentose.
 Latest source can be found at: https://github.com/ryt/activity-metrics
 """
 
-v = '0.1.0'
+v = '0.1.1'
 c = 'Copyright (C) 2024 Ray Mentose.'
 man = """
 Activity Metrics: A tool to analyze & display personal activity statistics.
@@ -15,9 +15,9 @@ Usage:
   Show log file statistics and list all found log files.
   ------------------------------------------------------
   Analyze        Command
-  -------------------------
+  ------------------------------
   ./analyze      (stats|-s)
-  ./analyze      (list|-l)
+  ./analyze      (list-files|-l)
 
 
   Analyze entries for a specific date or today.
@@ -195,6 +195,11 @@ def analyze_files(logs_dir, list_files=False):
   # clean output & print if valid
   output = [l for l in output if l.strip() != '']
   output = nl.join(output)
+
+  if list_files:
+    pydoc.pager(output) if output else None
+    return
+
   print(output) if output else None
 
 def cap_macro(input):
@@ -297,7 +302,7 @@ def main():
       elif arg1 in ('stats','-s'):
         analyze_files(logs_dir)
 
-      elif arg1 in ('list','-l'):
+      elif arg1 in ('list-files','-l'):
         analyze_files(logs_dir, True)
 
       elif arg1 == 'utility':
