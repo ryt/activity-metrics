@@ -53,7 +53,7 @@ Usage:
 
 """
 
-import sys, os, re, subprocess, pydoc
+import sys, os, re, subprocess, pydoc, itertools
 import macros, utility
 from datetime import datetime
 from datetime import timedelta
@@ -224,6 +224,24 @@ def try_float(v, defval=None):
   except Exception:
     return defval
 
+def csvtext(csv_list):
+  """Converts csv list to string/plain text"""
+  return nl.join(','.join(ln) for ln in csv_list)
+
+def modify_csv(csv_list, add_header=True, add_footer=True):
+  """Modifies csv content by adding headers & footers"""
+  # headers & footers
+
+  if add_header:
+    csv_list.insert(0, ['Date','Hours','Human','Raw List','Description'])
+
+  if add_footer:
+    total_hours = round(sum(try_float(col[1], 0) for col in csv_list), 2)
+    csv_list.append(['', str(total_hours), macros.hours_to_human_duration(total_hours), '', 'Total Logged Hours'])
+
+  return csv_list
+
+
 def convert_to_csv(entries, ymd_date):
   """Receives the contents of a log txt file (entries) with date (ymd_date) and returns a generated csv content string"""
 
@@ -247,6 +265,7 @@ def convert_to_csv(entries, ymd_date):
     if match:
       rawtime = time_macro(match.group(1))
       rawdesc = str(rawtime[2]) + cap_macro(match.group(2))
+      #           Date     Hours       Human                                        Raw List                    Description
       newline = [datefrm, rawtime[1], macros.hours_to_human_duration(rawtime[1]), escape_for_csv(rawtime[0]), escape_for_csv(rawdesc)]
       #newline = match.group(1) + ',' + match.group(2)
     if newline:
@@ -254,19 +273,7 @@ def convert_to_csv(entries, ymd_date):
   
   # endfor
 
-  # line calculations
-  total_hours = round(sum(try_float(col[1], 0) for col in parsed_lines), 2)
-
-  # additional lines
-
-  # header
-  parsed_lines.insert(0, ['Date','Hours','Human','Raw List','Description'])
-  # total
-  parsed_lines.append(['', str(total_hours), macros.hours_to_human_duration(total_hours), '', 'Total Logged Hours'])
-
-  final_csv = nl.join(','.join(ln) for ln in parsed_lines)
-
-  return final_csv
+  return parsed_lines
 
 
 def main():
@@ -322,18 +329,19 @@ def main():
             rname = yesterday_date
             fname = yesterday_dfil
 
-          # -- look for single log files (dates)
+          # -- look for single log files (date)
 
-          filename = logs_dir + fname + '.txt'
+          filename = f'{logs_dir}{fname}.txt'
+
           if os.path.exists(filename):
 
-            # open individual log txt file
+            # convert individual log txt file
             with open(filename, 'r') as file:
               entries = file.read()
-            entries = convert_to_csv(entries, rname)
+            entries = csvtext(modify_csv(convert_to_csv(entries, rname), add_header=True, add_footer=True))
 
             # generate individual log csv file
-            genfile = gen_dir + rname + '.csv'
+            genfile = f'{gen_dir}{rname}.csv'
             with open(genfile, 'w') as file:
               file.write(entries)
             output += [f'Generated CSV file {genfile} successfully.']
@@ -349,7 +357,34 @@ def main():
               output += [f'Mock-generating CSV file for ({fname}) year collections.']
 
             elif lenfn == 7:
-              output += [f'Mock-generating CSV file for ({fname}) month collections.']
+              month_collection = []
+              collcount = 0
+              for d in range(1,32):
+                d = str(d).zfill(2)
+                filename = f'{logs_dir}{fname}/{d}.txt'
+                if os.path.exists(filename):
+
+                  # convert each individual log txt file
+                  with open(filename, 'r') as file:
+                    entries = file.read()
+                  entries = convert_to_csv(entries, f'{rname}-{d}')
+                  month_collection.append(entries)
+                  collcount += 1
+
+              output += [f'Found {collcount} daily log file(s) for ({fname}) month collection.']
+
+              # combine all the lists into one list
+              month_collection = list(itertools.chain(*month_collection))
+
+              # add header & footer calculations
+              month_collection = modify_csv(month_collection, add_header=True, add_footer=True)
+
+              # generate collection log csv file
+              genfile = f'{gen_dir}{rname}.csv'
+              with open(genfile, 'w') as file:
+                file.write(csvtext(month_collection))
+              output += [f'Generated month collection CSV file {genfile} successfully.']
+              # pydoc.pager(month_collection)
 
 
           else:
