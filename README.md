@@ -64,16 +64,16 @@ Additionally data can also be imported from other tracking services such as Todo
     git clone https://github.com/ryt/activity-metrics.git
     ```
 
-2. Next create a directory named `Metrics` or something similar in your Documents and create the following 2 directories in it: `gen` and `logs`.
+2. Next create a directory named `Metrics` or something similar in your Documents and create the following 3 directories in it: `app`, `gen`, and `logs`.
 
-    You can choose whatever name you want for the main folder but we'll use "Metrics" for this example. `gen/` will be used for generated files and `logs/` will be used to store log files.
+    You can choose whatever name you want for the main folder but we'll use "Metrics" for this example. `app/` will be used for application modules, API, & configuration files, `gen/` will be used for generated files, and `logs/` will be used to store log files.
 
     ```bash
     mkdir Metrics && cd Metrics
     ```
 
     ```bash
-    mkdir gen logs
+    mkdir app gen logs
     ```
 
 3. Finally, create a symbolic link for `analyze.py` on the same level as the directories you just created. The example command is shown below. Replace `{install}` with your local installation directory:
@@ -87,6 +87,7 @@ Additionally data can also be imported from other tracking services such as Todo
     ```bash
     Metrics/
       - analyze
+      - app/
       - gen/
       - logs/
     ```

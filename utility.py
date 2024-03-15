@@ -38,6 +38,7 @@ from datetime import timedelta
 
 logs_dir = './logs/'
 gen_dir  = './gen/'
+app_dir  = './app/'
 
 nl = '\n'
 hr = '-' * 50
@@ -124,8 +125,8 @@ def todoist_options(args):
 
   date_today = datetime.today()
 
-  # Todoist API token should be stored in "~/.api_todoist" file.
-  todoist_file = os.path.expanduser('~') + '/.api_todoist';
+  # Todoist API token should be stored in "{app_dir}.api_todoist" file.
+  todoist_file = f'{app_dir}.api_todoist';
 
   with open(todoist_file) as f: api_token = f.read().strip()
 

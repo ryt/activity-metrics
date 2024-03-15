@@ -60,6 +60,7 @@ from datetime import timedelta
 
 logs_dir = './logs/'
 gen_dir  = './gen/'
+app_dir  = './app/'
 
 nl = '\n'
 hr = '-' * 50

@@ -95,32 +95,6 @@ def raw_time_to_excel_sum(input):
   return (sumfunc, calchrs, timestp)
 
 
-"""
-
-Module TODOs:
-- custom word replacements : e.g. acronyms, custom acronyms, initialisms, custom abbreviations, for different categories (ref. google sheets Timesheet Library)
-- smart categorization     : e.g. automatic categorization & hashtagging of entries based on text analysis
-- nutrition metrics        : e.g. supplement intake tracking (e.g. procre,pro,cre)
-- fitness metrics          : e.g. garmin api connection
-
-Categories & Hashtags
----------------------
-Categories & hashtags can be parsed from the end of an entry starting with "//" and inside of parenthesis.
-Here are 2 examples:
- - {rest_of_entry} // (category1, category2, category3, category4, category5, category6, category7, category8, category9, category10, #hashtag1 #hash tag 2 #hashtag 3, #hashtag5 #hashtag-number-6)
- - {rest_of_entry} // (category1 #hashtag one, category2, category number three, #hashtag 2, #hashtag3 #hashtag number four)
-
-Rules
-- There are a maximum number of 10 categories allowed. Successive categories can be conceptualized as subcategories.
-- There are an umlimited number of hashtags allowed.
-- Categories must be in [a-zA-Z0-9-_\s]+ format.
-- Hashtags must start with '#' and be in [a-zA-Z0-9-_\s]+ format after the '#'.
-- Commas are not strictly necessary to separate categories and hashtags except where spaces are part of the name of the category or hashtag.
-- Categories and hashtags are parsed in the order of their type. Order mixing between types is allowed as in Example 2 above.
-
-
-"""
-
 
 
 
