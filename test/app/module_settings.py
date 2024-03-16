@@ -3,12 +3,13 @@
 """Settings Module"""
 
 """
-The Settings Module is required before using any other modules. The '.py' extension is automatically added to the definitions.
+The Settings Module is required before using any other modules.
+The '.py' extension is automatically added to the definitions on import.
 """
 
-# use glossary file
+# use glossary
 
-glossary = 'glossary'
+use_glossary = 'glossary'
 
 # use modules available by default in {install_dir}/activity-metrics/test/app/
 

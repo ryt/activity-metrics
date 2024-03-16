@@ -2,6 +2,8 @@
 
 """Tagblock Module"""
 
+# Naming refs: https://www.gnu.org/software/make/manual/make.html https://docs.docker.com/reference/dockerfile/
+
 """
 Tagblock Module: Categories, Hashtags, & Subtags
 ------------------------------------------------
@@ -29,13 +31,57 @@ Subtags
 - The parser will use the subtag glossary to find and replace the shortcuts in the tagblock with their appropriate substitutions.
 
 Examples:
-- {rest_of_entry} ($wmz)
-- {rest_of_entry} (fitness, $fc24)
+- {rest_of_entry} ($zoom)
+- {rest_of_entry} (fitness, $fit24)
 
 Glossary Example:
-- $wmz     :    work, meeting, zoom
-- $fc24    :    #fitness-challenge-2024
+- $zoom    :    work, meeting, zoom
+- $fit24   :    #fitness-challenge-2024
 
-In the above examples, the parser will find the subtags ($wmz & $fc24) and replace them with the appropriate categories and hashtags.
+In the above examples, the parser will find the subtags ($zoom & $fit24) and replace them with the appropriate categories and hashtags.
 The glossary can contain unlimited definitions for subtags.
 """
+
+name = 'Tagblock Module'
+
+import re
+
+def replace_subtags(entry, glossary):
+  """Receives an entry string and performs substitutions for subtags."""
+  
+  pattern = r'^(.*)(\(([a-zA-Z0-9-_,;\s#\$]+)\))$'
+  match = re.search(pattern, entry)
+  modentry = ''
+
+  if match:
+
+    rest_of_entry = match.group(1)
+    tagblock = match.group(2)
+    tagblock_inside = match.group(3)
+
+    subtag_glossary = glossary.subtag_glossary
+
+    for line in subtag_glossary:
+      key = line[0]
+      val = line[1]
+      if isinstance(key, tuple):
+        for k in key:
+          tagblock_inside = tagblock_inside.replace(k, val)
+      else:
+        tagblock_inside = tagblock_inside.replace(key, val)
+
+    modentry = f'{rest_of_entry}({tagblock_inside})'
+
+  else:
+    modentry = entry
+
+  return modentry
+
+
+# The apply function is required for each module.
+
+def apply(entry, glossary):
+  """This apply function is automatically called on each entry if this module is used in local settings."""
+  entry = replace_subtags(entry, glossary)
+  return entry
+

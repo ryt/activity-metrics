@@ -5,7 +5,7 @@ Copyright (C) 2024 Ray Mentose.
 Latest source can be found at: https://github.com/ryt/activity-metrics
 """
 
-v = '0.1.1'
+v = '0.1.2'
 c = 'Copyright (C) 2024 Ray Mentose.'
 man = """
 Activity Metrics: A tool to analyze & display personal activity statistics.
@@ -53,10 +53,11 @@ Usage:
 
 """
 
-import sys, os, re, subprocess, pydoc, itertools
-import macros, utility
+import sys, os, re, subprocess, pydoc, itertools, importlib
 from datetime import datetime
 from datetime import timedelta
+
+install_dir = f'{os.path.dirname(os.path.abspath(os.path.realpath(__file__)))}/'
 
 logs_dir = './logs/'
 gen_dir  = './gen/'
@@ -64,6 +65,35 @@ app_dir  = './app/'
 
 nl = '\n'
 hr = '-' * 50
+
+sys.path.append(app_dir)
+sys.path.append(f'{install_dir}test/app/')
+
+import macros, utility, module_settings
+
+# -- start: import custom modules
+
+glossary          = module_settings.use_glossary
+default_modules   = module_settings.use_default_modules
+local_modules     = module_settings.use_local_modules
+apply_modules     = {}
+apply_glossary    = {}
+
+if glossary:
+  # imports glossary from {app_dir}
+  apply_glossary[glossary] = importlib.import_module(glossary)
+
+for dm in default_modules:
+  if dm:
+    # imports modules from {install_dir}test/app/
+    apply_modules[dm] = importlib.import_module(dm)
+
+for lm in local_modules:
+  if lm:
+    # imports modules from {app_dir}
+    apply_modules[lm] = importlib.import_module(lm)
+
+# -- end: import custom modules
 
 
 def get_all_files(dir):
@@ -263,13 +293,33 @@ def convert_to_csv(entries, ymd_date):
     pattern = r'^-(\s*(?:[\d\:\.]+(?:m|h|s|am|pm|a|p)[\s\,]*[\s\;]*)+)(.*)$'
     match = re.search(pattern, line)
     newline = []
+
     if match:
-      rawtime = time_macro(match.group(1))
-      rawdesc = str(rawtime[2]) + cap_macro(match.group(2))
+
+      rawtime = match.group(1)
+      rawdesc = match.group(2)
+
+      newtime = rawtime
+      newdesc = rawdesc
+
+      # 1. apply module functions & macros to description
+
+      if apply_modules:
+        for name in apply_modules.keys():
+          newdesc = apply_modules[name].apply(newdesc, apply_glossary[glossary])
+
+      # 2. apply default macros
+
+      newtime = time_macro(newtime)
+      newdesc = str(newtime[2]) + cap_macro(newdesc)
+
+
       #           Date     Hours       Human                              Raw Times                   Description
-      newline = [datefrm, rawtime[1], macros.hours_to_human(rawtime[1]), escape_for_csv(rawtime[0]), escape_for_csv(rawdesc)]
-      #newline = match.group(1) + ',' + match.group(2)
+      newline = [datefrm, newtime[1], macros.hours_to_human(newtime[1]), escape_for_csv(newtime[0]), escape_for_csv(newdesc)]
+      # newline = match.group(1) + ',' + match.group(2)
+    
     if newline:
+
       parsed_lines.append(newline)
   
   # endfor
