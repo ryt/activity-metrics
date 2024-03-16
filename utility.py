@@ -32,7 +32,13 @@ Usage:
 
 """
 
-import sys, os, re, json, subprocess, pydoc
+import sys
+import os
+import re
+import json
+import subprocess
+import pydoc
+
 from datetime import datetime
 from datetime import timedelta
 

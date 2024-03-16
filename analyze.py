@@ -53,7 +53,14 @@ Usage:
 
 """
 
-import sys, os, re, subprocess, pydoc, itertools, importlib
+import sys
+import os
+import re
+import subprocess
+import pydoc
+import itertools
+import importlib
+
 from datetime import datetime
 from datetime import timedelta
 
@@ -76,6 +83,7 @@ import macros, utility, module_settings
 glossary          = module_settings.use_glossary
 default_modules   = module_settings.use_default_modules
 local_modules     = module_settings.use_local_modules
+
 apply_modules     = {}
 apply_glossary    = {}
 
