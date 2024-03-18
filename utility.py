@@ -49,6 +49,8 @@ app_dir  = './app/'
 nl = '\n'
 hr = '-' * 50
 
+import macros
+
 def make_files(directory, applyf):
   if applyf == 'apply':
     print(f'Applying making files in {directory}')
@@ -93,7 +95,7 @@ def todoist_task_operate(task_json, saveopt):
   entries   = task_json['description']
   date      = task_json['created_at']
 
-  print(f'Todoist task: {title} ({taskid}){nl}Task created at: {date}{nl}==')
+  print(f'Todoist task: {title} ({taskid}){nl}Created date: {date}{nl}==')
 
   if saveopt in ('saveauto','autosave'):
     get_year       = date[0:4]
@@ -153,30 +155,35 @@ def todoist_options(args):
 
     if action == 'get-task':
 
-      # get-task (M/D, MM/DD, today)
+      # -- start: get-task {date-input}
 
-      if optid in ('today','yesterday') or re.match(r'^(\d\d?\/\d\d?)(\/\d{4})?$', optid) is not None:
+      if macros.is_date_input(optid):
 
-        # start optid parsing
-        opm, opd, opy = '', '', ''
-        if '/' in optid:
-          opsplit = optid.split('/')
-          opm = '{:02d}'.format(int(opsplit[0]))
-          opd = '{:02d}'.format(int(opsplit[1]))
-          opy = opsplit[2] if len(opsplit) > 2 else date_today.year
-        elif optid == 'today':
-          opm = date_today.strftime('%m')
-          opd = date_today.strftime('%d')
-          opy = date_today.strftime('%Y')
-        elif optid == 'yesterday':
-          yesterday = date_today - timedelta(days = 1)
-          opm = yesterday.strftime('%m')
-          opd = yesterday.strftime('%d')
-          opy = yesterday.strftime('%Y')
-        # end optid parsing
+        parsed       = macros.parse_date_input(optid)
+        parsed_dash  = parsed['res_ymd_dash']
+        parsed_each  = parsed['res_each']
 
-        search1 = f'{str(int(opm))}/{str(int(opd))}.txt' # M/D.txt
-        search2 = f'{opm}/{opd}.txt' # MM/DD.txt
+        opd = parsed_each['D']
+        opm = parsed_each['M']
+        opy = parsed_each['Y']
+
+        search_list = []
+
+        if opy and not opm and not opd:
+          print(f'Please specify a month for the year {parsed_dash}. You can save up to 1 month collection at a time.')
+          exit()
+        elif opy and opm and not opd:
+          print(f'Searching tasks for month, {parsed_dash}:')
+          for i in range(1, 32):
+            search1 = f'{str(int(opm))}/{i}.txt' # M/D.txt
+            search2 = f'{opm}/{str(i).zfill(2)}.txt' # MM/DD.txt
+            search_list.append({ 'search1': search1, 'search2': search2})
+        else:
+          print(f'Searching tasks for date, {parsed_dash}:')
+          search1 = f'{str(int(opm))}/{str(int(opd))}.txt' # M/D.txt
+          search2 = f'{opm}/{opd}.txt' # MM/DD.txt
+          search_list.append({ 'search1': search1, 'search2': search2})
+
 
         api_get_tasks = curl(f'https://api.todoist.com/rest/v2/tasks', f'Authorization: Bearer {api_token}')
 
@@ -185,24 +192,27 @@ def todoist_options(args):
 
         else:
           tasks_json = json.loads(api_get_tasks)
-          matches = [t for t in tasks_json if t.get('content') in (search1, search2) ]
           search_msg = f'Total searched tasks: {len(tasks_json)}.'
+          count_matches = 0
 
-          if not matches:
-            print(search_msg)
-            print(f"Tasks matching '{search1}' or '{search2}' could not be found.")
-          else:
-            print(search_msg)
-            print(f'Found {len(matches)} task(s) matching the search:{nl}--')
-            for m in matches:
-              todoist_task_operate(m, savef)
-              #print(m)
-            print('--')
+          print(search_msg)
 
+          for date in search_list:
+            matches = [t for t in tasks_json if t.get('content') in (date['search1'], date['search2']) ]
+            if not matches:
+              print(f"Tasks matching '{date['search1']}' or '{date['search2']}' could not be found.")
+            else:
+              print(f'Found {len(matches)} task(s) matching the search:{nl}--')
+              for m in matches:
+                todoist_task_operate(m, savef)
+              count_matches += 1
+              print('--')
 
-      # end get-task (M/D, MM/DD, today)
+          print(f'--{nl}Total found tasks: {count_matches}.{nl}--')
 
-      # get-task 12345
+      # -- end: get-task (M/D, MM/DD, today)
+
+      # -- start: get-task 12345
 
       elif optid.isnumeric() and int(optid) > 1000:
 
@@ -215,7 +225,7 @@ def todoist_options(args):
           task_json = json.loads(api_get_task)
           todoist_task_operate(task_json, savef)
 
-      # end get-task 12345
+      # -- end: get-task 12345
 
       else:
         print('Please enter a valid task id, date, or keyword.')
