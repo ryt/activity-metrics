@@ -5,7 +5,7 @@ Copyright (C) 2024 Ray Mentose.
 Latest source can be found at: https://github.com/ryt/activity-metrics
 """
 
-v = '0.1.2'
+v = '0.1.3'
 c = 'Copyright (C) 2024 Ray Mentose.'
 man = """
 Activity Metrics: A tool to analyze & display personal activity statistics.
@@ -377,6 +377,9 @@ def main():
 
         if len(sys.argv) > 2:
           arg2  = sys.argv[2] # date or keyword
+
+          # d = macros.parse_date_input(arg2)
+          # exit()
 
           rname = arg2.replace('/','-')  # YYYY-MM-DD
           fname = rname.replace('-','/') # YYYY/MM/DD
