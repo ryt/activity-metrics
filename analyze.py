@@ -310,17 +310,21 @@ def convert_to_csv(entries, ymd_date):
       newtime = rawtime
       newdesc = rawdesc
 
-      # 1. apply module functions & macros to description
+      # -- 1. apply module functions & macros to description
 
       if apply_modules:
         for name in apply_modules.keys():
           newdesc = apply_modules[name].apply(newdesc, apply_glossary[glossary])
 
-      # 2. apply default macros
+      # -- 2. apply default macros
+
+      # split newdesc into {rest_of_entry}, {tagblock}
+
+      newdesc_parts = newdesc.rsplit('(', 1)
+      newdesc_parts = [newdesc_parts[0], '(' + newdesc_parts[1]] if len(newdesc_parts) > 1 else [newdesc_parts[0], '']
 
       newtime = time_macro(newtime)
-      newdesc = str(newtime[2]) + cap_macro(newdesc)
-
+      newdesc = str(newtime[2]) + cap_macro(newdesc_parts[0]) + newdesc_parts[1]
 
       #           Date     Hours       Human                              Raw Times                   Description
       newline = [datefrm, newtime[1], macros.hours_to_human(newtime[1]), escape_for_csv(newtime[0]), escape_for_csv(newdesc)]
