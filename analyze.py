@@ -382,31 +382,23 @@ def main():
         if len(sys.argv) > 2:
           arg2  = sys.argv[2] # date or keyword
 
-          d = macros.parse_date_input(arg2)
-
-          rname = arg2.replace('/','-')  # YYYY-MM-DD
-          fname = rname.replace('-','/') # YYYY/MM/DD
-
-          if fname in ('today', '/t'):
-            rname = today_date
-            fname = today_dfil
-          elif fname in ('yesterday', '/y'):
-            rname = yesterday_date
-            fname = yesterday_dfil
+          parsed = macros.parse_date_input(arg2)
+          parsed_slash = parsed['res_ymd_slash']
+          parsed_dash  = parsed['res_ymd_dash']
 
           # -- look for single log files (date)
 
-          filename = f'{logs_dir}{fname}.txt'
+          filename = f'{logs_dir}{parsed_slash}.txt'
 
           if os.path.exists(filename):
 
             # convert individual log txt file
             with open(filename, 'r') as file:
               entries = file.read()
-            entries = csvtext(modify_csv(convert_to_csv(entries, rname), add_header=True, add_footer=True))
+            entries = csvtext(modify_csv(convert_to_csv(entries, parsed_dash), add_header=True, add_footer=True))
 
             # generate individual log csv file
-            genfile = f'{gen_dir}{rname}.csv'
+            genfile = f'{gen_dir}{parsed_dash}.csv'
             with open(genfile, 'w') as file:
               file.write(entries)
             output += [f'Generated CSV file {genfile} successfully.']
@@ -414,29 +406,29 @@ def main():
 
           # -- look for collections of log files (month, year)
 
-          elif re.search(r'^\d{4}(?:\/\d{2})?$', fname):
+          elif re.search(r'^\d{4}(?:\/\d{2})?$', parsed_slash):
 
-            lenfn = len(fname)
+            lenfn = len(parsed_slash)
 
             if lenfn == 4:
-              output += [f'Mock-generating CSV file for ({fname}) year collections.']
+              output += [f'Mock-generating CSV file for ({parsed_slash}) year collections.']
 
             elif lenfn == 7:
               month_collection = []
               collcount = 0
               for d in range(1,32):
                 d = str(d).zfill(2)
-                filename = f'{logs_dir}{fname}/{d}.txt'
+                filename = f'{logs_dir}{parsed_slash}/{d}.txt'
                 if os.path.exists(filename):
 
                   # convert each individual log txt file
                   with open(filename, 'r') as file:
                     entries = file.read()
-                  entries = convert_to_csv(entries, f'{rname}-{d}')
+                  entries = convert_to_csv(entries, f'{parsed_dash}-{d}')
                   month_collection.append(entries)
                   collcount += 1
 
-              output += [f'Found {collcount} daily log file(s) for ({fname}) month collection.']
+              output += [f'Found {collcount} daily log file(s) for ({parsed_slash}) month collection.']
 
               # combine all the lists into one list
               month_collection = list(itertools.chain(*month_collection))
@@ -445,7 +437,7 @@ def main():
               month_collection = modify_csv(month_collection, add_header=True, add_footer=True)
 
               # generate collection log csv file
-              genfile = f'{gen_dir}{rname}.csv'
+              genfile = f'{gen_dir}{parsed_dash}.csv'
               with open(genfile, 'w') as file:
                 file.write(csvtext(month_collection))
               output += [f'Generated month collection CSV file {genfile} successfully.']
