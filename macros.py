@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 """
+Activity Metrics, Copyright (C) 2024 Ray Mentose.
 Custom macros & helper functions for parsing entries.
 Note: text conversion functions originally written as apps script macros for Google Sheets.
 """
@@ -98,26 +99,23 @@ def raw_time_to_excel_sum(inp):
   return (sumfunc, calchrs, timestp)
 
 
+def is_date_input(inp):
+  """Checks to see if given input is a valid date input or keyword"""
+  return re.match(r'^(\d{4}|(\d{1,4}[-\/]\d{1,4}([-\/]\d{1,4})?)|tod(ay)?|-t|yest(erday)?|-y)$', inp)
 
 def parse_date_input(inp):
   """Receives a date input string of many date types and returns a dict with details & conversions"""
   inp = inp.strip()
 
-  '''
-  rname = arg2.replace('/','-')  # YYYY-MM-DD
-  fname = rname.replace('-','/') # YYYY/MM/DD
+  today      = datetime.today()
+  yesterday  = today - timedelta(days = 1)
 
-  if fname in ('today', '/t'):
-    rname = today_date
-    fname = today_dfil
-  elif fname in ('yesterday', '/y'):
-    rname = yesterday_date
-    fname = yesterday_dfil
-  '''
-
-  input_format = ''
-  converted_ymd_dash = ''
-  converted_ymd_slash = ''
+  input_format   = ''
+  res_ymd_dash   = ''
+  res_ymd_slash  = ''
+  res_ymd_log    = ''
+  res_key_name   = ''
+  res_each       = { 'D' : '', 'M' : '', 'Y' : '' }
 
   input_date_types = {
 
@@ -127,6 +125,7 @@ def parse_date_input(inp):
     r'^\d{2}\/\d{2}$' : 'MM/DD',
 
     r'^\d{2}\/\d{4}$' : 'MM/YYYY',
+    r'^\d{1}\/\d{4}$' : 'M/YYYY',
 
     r'^\d{1}\/\d{1}\/\d{2}$' : 'M/D/YY',
     r'^\d{2}\/\d{1}\/\d{2}$' : 'MM/D/YY',
@@ -146,53 +145,79 @@ def parse_date_input(inp):
     r'^\d{4}\/\d{2}$' : 'YYYY/MM',
     r'^\d{4}\/\d{1}$' : 'YYYY/M',
 
-    r'^\d{2}\/\d{2}\/\d{2}$' : 'YY/MM/DD',
-    r'^\d{2}\/\d{2}\/\d{1}$' : 'YY/MM/D',
-    r'^\d{2}\/\d{1}\/\d{2}$' : 'YY/M/DD',
-    r'^\d{2}\/\d{1}\/\d{1}$' : 'YY/M/D',
-
     r'^\d{4}$' : 'YYYY',
 
   }
 
-  today = datetime.today()
-  yesterday = today - timedelta(days = 1)
-
+  input_type_dash = True if '-' in inp else False
 
   if inp in ('today', 'tod', '-t'):
-    input_format = 'word'
-    converted_ymd_dash = today.strftime('%Y-%m-%d')
-    converted_ymd_slash = today.strftime('%Y/%m/%d')
+    input_format  = 'keyword'
+    res_ymd_dash  = today.strftime('%Y-%m-%d')
+    res_ymd_slash = today.strftime('%Y/%m/%d')
+    res_ymd_log   = f'{res_ymd_slash}.txt'
+    res_key_name  = 'today'
+    spl_ymd_slash = res_ymd_slash.split('/')
+    res_each      = { 'D' : spl_ymd_slash[2], 'M' : spl_ymd_slash[1], 'Y' : spl_ymd_slash[0] }
 
   elif inp in ('yesterday', 'yest', '-y'):
-    input_format = 'word'
-    converted_ymd_dash = yesterday.strftime('%Y-%m-%d')
-    converted_ymd_slash = yesterday.strftime('%Y/%m/%d')
+    input_format  = 'keyword'
+    res_ymd_dash  = yesterday.strftime('%Y-%m-%d')
+    res_ymd_slash = yesterday.strftime('%Y/%m/%d')
+    res_ymd_log   = f'{res_ymd_slash}.txt'
+    res_key_name  = 'yesterday'
+    spl_ymd_slash = res_ymd_slash.split('/')
+    res_each      = { 'D' : spl_ymd_slash[2], 'M' : spl_ymd_slash[1], 'Y' : spl_ymd_slash[0] }
 
   else:
-    if '-' in inp:
-      tinp = inp.replace('-','/')
-      for reg, form in input_date_types.items():
-        if re.match(reg, tinp):
-          inp_spl = inp.split('-')
-          form_spl = form.split('/')
-          form_spl = [''.join(set(i)) for i in form_spl]
-          assign = dict(zip(form_spl, inp_spl))
-          if 'M' in assign and 'D' in assign and 'Y' not in assign:
-            assign['Y'] = today.strftime('%Y')
-          print(assign)
-          input_format = form.replace('/','-')
-    else:
-      for reg, form in input_date_types.items():
-        if re.match(reg, inp):
-          input_format = form
+
+    for regex, form in input_date_types.items():
+
+      # parse input_date_types also with '-' by substituting '/' with '-'
+
+      splchr = '-' if input_type_dash else '/'
+      newinp = inp.replace('-','/') if input_type_dash else inp
+
+      if re.match(regex, newinp):
+
+        inp_spl  = inp.split(splchr)
+
+        # form (i.e. input_date_types{regex:form}) doesn't change the '/' here
+
+        form_spl = form.split('/')
+        form_spl = [''.join(set(i)) for i in form_spl]
+
+        assign = dict(zip(form_spl, inp_spl))
+
+        assign['D'] = '' if not 'D' in assign else assign['D']
+        assign['M'] = '' if not 'M' in assign else assign['M']
+        assign['Y'] = '' if not 'Y' in assign else assign['Y']
+
+        assign['Y'] = today.strftime('%Y') if not assign['Y'] else assign['Y']
+        assign['Y'] = datetime.strptime(assign['Y'],'%y').year if len(assign['Y']) == 2 else assign['Y']
+        assign['M'] = f"0{assign['M']}" if len(assign['M']) == 1 else assign['M']
+        assign['D'] = f"0{assign['D']}" if len(assign['D']) == 1 else assign['D']
+
+        res_each = assign
+
+        res_ymd_dash  = f"{assign['Y']}-{assign['M']}-{assign['D']}".strip('-')
+        res_ymd_slash = f"{assign['Y']}/{assign['M']}/{assign['D']}".strip('/')
+        res_ymd_log   = f'{res_ymd_slash}.txt'
+
+        # change the '/' for form (i.e. input_date_types{regex:form}) here
+
+        input_format = form.replace('/','-') if input_type_dash else form
+        
 
 
   result = {
     'input' : inp,
-    'input_format' : input_format,
-    'converted_ymd_dash' : converted_ymd_dash,
-    'converted_ymd_slash' : converted_ymd_slash,
+    'input_format'    : input_format,
+    'res_ymd_dash'    : res_ymd_dash,
+    'res_ymd_slash'   : res_ymd_slash,
+    'res_ymd_log'     : res_ymd_log,
+    'res_key_name'    : res_key_name,
+    'res_each'        : res_each,
   }
 
   return result

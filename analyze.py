@@ -336,50 +336,53 @@ def convert_to_csv(entries, ymd_date):
 
 
 def main():
+
   # Start parsing arguments
+
   output = []
+
   if len(sys.argv) > 1:
+
     if sys.argv[1]:
       arg1 = sys.argv[1]
 
-      today = datetime.today()
-      today_date = today.strftime('%Y-%m-%d')
-      today_dfil = today.strftime('%Y/%m/%d')
+      # -- start: ./analyze {date-inputs}
 
-      yesterday = today - timedelta(days = 1)
-      yesterday_date = yesterday.strftime('%Y-%m-%d')
-      yesterday_dfil = yesterday.strftime('%Y/%m/%d')
+      if macros.is_date_input(arg1):
 
-      if arg1 in ('today','-t','yesterday','-y'):
+        parsed       = macros.parse_date_input(arg1)
+        parsed_slash = parsed['res_ymd_slash']
+        parsed_dash  = parsed['res_ymd_dash']
+        parsed_log   = parsed['res_ymd_log']
+        parsed_name  = parsed['res_key_name']
+        parsed_each  = parsed['res_each']
 
-        if arg1 in ('today','-t'):
-          day_name, day_date, day_dfil = 'today', today_date, today_dfil
-
-        if arg1 in ('yesterday','-y'):
-          day_name, day_date, day_dfil = 'yesterday', yesterday_date, yesterday_dfil
-
-        head_text = f'Analyzing data for {day_name}, {day_date}:'
+        head_text = f"Analyzing data for {parsed_name + ', ' if parsed_name else ''}{parsed_dash}:"
 
         # first_line_len = len(head_text)
+
         output += [hr] # [0:first_line_len]]
         output += [f'{head_text}']
 
         # look for files
-        output += [f'- Looking for {day_dfil}.txt in {logs_dir}']
-        output += [f'- Looking for {day_dfil}{{custom}}.txt in {logs_dir}']
-        output += [f'- Looking for {day_date}.txt in {logs_dir}']
-        output += [f'- Looking for {day_date}{{custom}}.txt in {logs_dir}']
+        output += [f'- Looking for {parsed_slash}.txt in {logs_dir}']
+        output += [f'- Looking for {parsed_slash}{{custom}}.txt in {logs_dir}']
+        output += [f'- Looking for {parsed_dash}.txt in {logs_dir}']
+        output += [f'- Looking for {parsed_dash}{{custom}}.txt in {logs_dir}']
 
         # last_line_len = len(output[-1])
         output += [hr] # [0:last_line_len]]
+
+      # -- end: ./analyze {date-inputs}
+
+      # -- start: ./analyze gencsv {date-inputs}
 
       elif arg1 in ('gencsv','-g'):
 
         if len(sys.argv) > 2:
           arg2  = sys.argv[2] # date or keyword
 
-          # d = macros.parse_date_input(arg2)
-          # exit()
+          d = macros.parse_date_input(arg2)
 
           rname = arg2.replace('/','-')  # YYYY-MM-DD
           fname = rname.replace('-','/') # YYYY/MM/DD
@@ -454,6 +457,8 @@ def main():
 
         else:
           output += [f'Please specify a valid date (Y-m-d), month (Y-m), or year (Y).']
+
+      # -- end: ./analyze gencsv {date-inputs}
 
       elif arg1 in ('stats','-s'):
         analyze_files(logs_dir)
