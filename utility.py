@@ -5,30 +5,30 @@
 # - Version number of this script only tracks the updates of this script and not the main application (analyze.py).
 # - Originally written as a bash script in the original 0.0.1 version.
 
-v = '0.0.4'
+v = '0.0.5'
 c = 'Copyright (C) 2024 Ray Mentose.'
 man = """
-This script provides helper tools and utilities for API connections. Commands can also be run using "./analyze u".
+This script provides helper tools and utilities for API connections. Commands can also be run using "./analyze util".
 Read "Utilities.md" for related documentation. API tokens are required for connecting to external services.
 
 Usage:
 
   Create default date files (01-31.txt) and default month directories (01-12/)
   ----------------------------------------------------------------------------
-  Analyze      Utility         Command      Parent    Apply
-  ---------------------------------------------------------
-  ./analyze    (utility|u)     makefiles    dir/
-                               makedirs     dir/
-                               makefiles    dir/      apply
-                               makedirs     dir/      apply
+  Analyze      Utility            Command      Parent    Apply
+  ------------------------------------------------------------
+  ./analyze    (utility|util)     makefiles    dir/
+                                  makedirs     dir/
+                                  makefiles    dir/      apply
+                                  makedirs     dir/      apply
 
   Retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
   -------------------------------------------------------------------------------
-  Analyze      Utility        Todoist     Action      Id/Date/Keyword       Save/Filename
-  ---------------------------------------------------------------------------------------------
-  ./analyze    (utility|u)    todoist     get-task    (12345|M/D|today)
-                              todoist     get-task    12345                 save=2024/01/01.txt
-                              todoist     get-task    12345                 (saveauto|autosave)
+  Analyze      Utility           Todoist     Action      Id/Date/Keyword       Save/Filename
+  ------------------------------------------------------------------------------------------------
+  ./analyze    (utility|util)    todoist     get-task    (12345|M/D|today)
+                                 todoist     get-task    12345                 save=2024/01/01.txt
+                                 todoist     get-task    12345                 (saveauto|autosave)
 
 """
 
@@ -233,7 +233,7 @@ def todoist_options(args):
 
 def utility(args, called):
 
-  uname = 'u' if called  == 'u' else 'utility'
+  uname = 'util' if called  == 'util' else 'utility'
   use_help = f"Use '{uname} man' or '{uname} help' for proper usage."
 
   if len(args) == 0:

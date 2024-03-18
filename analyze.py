@@ -5,7 +5,7 @@ Copyright (C) 2024 Ray Mentose.
 Latest source can be found at: https://github.com/ryt/activity-metrics
 """
 
-v = '0.1.3'
+v = '0.1.4'
 c = 'Copyright (C) 2024 Ray Mentose.'
 man = """
 Activity Metrics: A tool to analyze & display personal activity statistics.
@@ -36,13 +36,13 @@ Usage:
   ./analyze      (gencsv|-g)       (yesterday|-y)
 
 
-  Interface for the utility script. For list of commands, use "./analyze u help".
-  -------------------------------------------------------------------------------
-  Analyze        Utility        Input
-  ---------------------------------------------------------
-  ./analyze      (utility|u)    (arg1)      (arg2)    etc..
-  ./analyze      (utility|u)    (help|-h)
-  ./analyze      (utility|u)    (man)
+  Interface for the utility script. For list of commands, use "./analyze util help".
+  ----------------------------------------------------------------------------------
+  Analyze        Utility           Input
+  ------------------------------------------------------------
+  ./analyze      (utility|util)    (arg1)      (arg2)    etc..
+  ./analyze      (utility|util)    (help|-h)
+  ./analyze      (utility|util)    (man)
 
 
   Analyze        Help Manual & About
@@ -458,7 +458,7 @@ def main():
       elif arg1 in ('list-files','-l'):
         analyze_files(logs_dir, True)
 
-      elif arg1 in ('utility','u'):
+      elif arg1 in ('utility','util'):
         utility.utility(sys.argv[2:], arg1)
 
 
