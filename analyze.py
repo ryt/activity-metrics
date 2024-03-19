@@ -1,60 +1,8 @@
 #!/usr/bin/env python3
 
-"""
-Copyright (C) 2024 Ray Mentose. 
-Latest source can be found at: https://github.com/ryt/activity-metrics
-"""
-
-v = '0.1.6'
-c = 'Copyright (C) 2024 Ray Mentose.'
-man = """
-Activity Metrics: A tool to analyze & display personal activity statistics.
-
-Usage:
-
-  Show log file statistics and list all found log files.
-  ------------------------------------------------------
-  Analyze        Command
-  ------------------------------
-  ./analyze      (stats|-s)
-  ./analyze      (list-files|-l)
-
-
-  Analyze entries for a specific date or today.
-  ---------------------------------------------
-  Analyze        Date
-  -----------------------------------------------
-  ./analyze      {date_input}
-  ./analyze      (M/D|M-D)
-  ./analyze      (Y-M-D|Y/M/D)
-  ./analyze      (M-D-Y|M/D/Y)
-  ./analyze      (today|tod|-t|yesterday|yest|-y)
-
-
-  Generate a timesheet CSV file for a specific date. Create columns with categorize.
-  ----------------------------------------------------------------------------------
-  Analyze        Generate CSV      Date               Module Options
-  --------------------------------------------------------------------
-  ./analyze      (gencsv|-g)       {date_input}
-  ./analyze      (gencsv|-g)       {date_input}       {module_options}
-
-
-  Interface for the utility script. For list of commands, use "./analyze util help".
-  ----------------------------------------------------------------------------------
-  Analyze        Utility           Input
-  ------------------------------------------------------------
-  ./analyze      (utility|util)    (arg1)      (arg2)    etc..
-  ./analyze      (utility|util)    (help|-h)
-  ./analyze      (utility|util)    (man)
-
-
-  Analyze        Help Manual & About
-  ----------------------------------
-  ./analyze      man
-  ./analyze      (help|--help|-h)
-  ./analyze      (--version|-v)
-
-"""
+# Activity Metrics (acme)
+# Copyright (C) 2024 Ray Mentose. 
+# Latest source can be found at: https://github.com/ryt/activity-metrics.git
 
 import sys
 import os
@@ -66,46 +14,6 @@ import importlib
 
 from datetime import datetime
 from datetime import timedelta
-
-install_dir = f'{os.path.dirname(os.path.abspath(os.path.realpath(__file__)))}/'
-
-logs_dir = './logs/'
-gen_dir  = './gen/'
-app_dir  = './app/'
-
-nl = '\n'
-hr = '-' * 50
-
-sys.path.append(app_dir)
-sys.path.append(f'{install_dir}test/app/')
-
-import macros, utility, module_settings
-
-# -- start: import custom modules
-
-glossary          = module_settings.use_glossary
-default_modules   = module_settings.use_default_modules
-local_modules     = module_settings.use_local_modules
-
-apply_modules     = {}
-apply_glossary    = {}
-
-if glossary:
-  # imports glossary from {app_dir}
-  apply_glossary[glossary] = importlib.import_module(glossary)
-
-for dm in default_modules:
-  if dm:
-    # imports modules from {install_dir}test/app/
-    apply_modules[dm] = importlib.import_module(dm)
-
-for lm in local_modules:
-  if lm:
-    # imports modules from {app_dir}
-    apply_modules[lm] = importlib.import_module(lm)
-
-# -- end: import custom modules
-
 
 def get_all_files(dir):
   """Returns a list of all files in given directory (dir)"""
@@ -353,16 +261,98 @@ def convert_to_csv(entries, ymd_date):
   return parsed_lines
 
 
-def main():
+"""
+List of parameters handled by analyze->params:
 
-  # Start parsing arguments
+  params[0]         params[1]         params[2]         etc... 
+  ------------------------------------------------------------
+  (stats|-s)
+  (list-files|-l)
+
+
+  {date_input}
+  (M/D|M-D)
+  (Y-M-D|Y/M/D)
+  (M-D-Y|M/D/Y)
+  (today|tod|-t|yesterday|yest|-y)
+
+
+  (gencsv|-g)       {date_input}
+  (gencsv|-g)       {date_input}      {module_options}
+
+
+  (utility|util)    (arg1)   (arg2)   (arg3)   etc..
+  (utility|util)    (help|-h)
+  (utility|util)    (man)
+
+  man
+  (help|--help|-h)
+  (--version|-v)
+
+"""
+
+def analyze(params, called, meta):
+
+  ## -- start: global headers & settings
+
+  global install_dir, logs_dir, gen_dir, app_dir, nl, hr, glossary, default_modules, local_modules, apply_modules, apply_glossary
+
+  install_dir = f'{os.path.dirname(os.path.abspath(os.path.realpath(__file__)))}/'
+
+  logs_dir = './logs/'
+  gen_dir  = './gen/'
+  app_dir  = './app/'
+
+  nl = '\n'
+  hr = '-' * 50
+
+  sys.path.append(app_dir)
+  sys.path.append(f'{install_dir}test/app/')
+
+  import macros, utility, module_settings
+
+  # -- start: import custom modules
+
+  glossary          = module_settings.use_glossary
+  default_modules   = module_settings.use_default_modules
+  local_modules     = module_settings.use_local_modules
+
+  apply_modules     = {}
+  apply_glossary    = {}
+
+  if glossary:
+    # imports glossary from {app_dir}
+    apply_glossary[glossary] = importlib.import_module(glossary)
+
+  for dm in default_modules:
+    if dm:
+      # imports modules from {install_dir}test/app/
+      apply_modules[dm] = importlib.import_module(dm)
+
+  for lm in local_modules:
+    if lm:
+      # imports modules from {app_dir}
+      apply_modules[lm] = importlib.import_module(lm)
+
+  # -- end: import custom modules
+
+  ## -- end: global headers & settings
 
   output = []
 
-  if len(sys.argv) > 1:
+  if len(params) == 0:
 
-    if sys.argv[1]:
-      arg1 = sys.argv[1]
+    # run 'stats' by default
+
+    analyze_files(logs_dir)
+
+
+  # -- start: parsing arguments
+
+  else:
+
+    if params[0]:
+      arg1 = params[0]
 
       # -- start: ./analyze {date-inputs}
 
@@ -397,10 +387,10 @@ def main():
 
       elif arg1 in ('gencsv','-g'):
 
-        if len(sys.argv) > 2:
-          arg2 = sys.argv[2] # date or keyword
+        if len(params) > 1:
+          arg2 = params[1] # date or keyword
 
-          module_options = sys.argv[3] if len(sys.argv) > 3 else False
+          module_options = params[2] if len(params) > 2 else False
 
           parsed = macros.parse_date_input(arg2)
           parsed_slash = parsed['res_ymd_slash']
@@ -491,24 +481,24 @@ def main():
         analyze_files(logs_dir, True)
 
       elif arg1 in ('utility','util'):
-        utility.utility(sys.argv[2:], arg1)
+        utility.utility(params[1:], arg1, meta)
 
 
       # help & manual
 
       elif arg1 in ('--version','-v'):
-        output += [f'Activity Metrics, Version {v}']
-        output += [c]
+        output += [f"Activity Metrics, Version {meta['version']}"]
+        output += [meta['copyright']]
 
       # prints the help manual
 
       elif arg1 in ('--help','-h','help'):
-        output += [man.strip() + f'{nl}']
+        output += [meta['manual'].strip() + f'{nl}']
 
       # pages the help manual instead of printing
 
       elif arg1 == 'man':
-        output += [man.strip() + f'{nl}']
+        output += [meta['manual'].strip() + f'{nl}']
         pydoc.pager(nl.join(output))
         return
 
@@ -516,11 +506,14 @@ def main():
       else:
         output += [f"Invalid command '{arg1}'. Use 'man' or 'help' for proper usage."]
 
-  else:
-    # run 'stats' by default
-    analyze_files(logs_dir)
+  
+  # -- end: parsing arguments
 
   print(nl.join(output)) if output else None
+
+
+def main():
+  print("Please use the 'acme' command to run analyze.")
 
 if __name__ == '__main__':
   main()

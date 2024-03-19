@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+# Activity Metrics (acme)
+# Copyright (C) 2024 Ray Mentose. 
+# Latest source can be found at: https://github.com/ryt/activity-metrics.git
+
+
+v = '0.2.0'
+c = 'Copyright (C) 2024 Ray Mentose.'
+man = """
+Activity Metrics: A tool to analyze & display personal activity statistics.
+Copyright (C) 2024 Ray Mentose. Latest source: https://github.com/ryt/activity-metrics
+
+Usage:
+
+  Show log file statistics and list all found log files.
+  ------------------------------------------------------
+  Run       Command
+  -------------------------
+  ame       
+  acme      (stats|-s)
+  acme      (list-files|-l)
+
+
+  Analyze entries for a specific date or today.
+  ---------------------------------------------
+  Run       Date
+  ------------------------------------------
+  acme      {date_input}
+  acme      (M/D|M-D)
+  acme      (Y-M-D|Y/M/D)
+  acme      (M-D-Y|M/D/Y)
+  acme      (today|tod|-t|yesterday|yest|-y)
+
+
+  Generate a timesheet CSV file for a specific date. Create columns with categorize.
+  ----------------------------------------------------------------------------------
+  Run       Generate CSV      Date               Module Options
+  ---------------------------------------------------------------
+  acme      (gencsv|-g)       {date_input}
+  acme      (gencsv|-g)       {date_input}       {module_options}
+
+
+  Interface for the utility script. For list of commands, use 'acme util help'!
+  -----------------------------------------------------------------------------
+  Run       Utility           Input
+  --------------------------------------------------------
+  acme      (utility|util)    (arg1)      (arg2)    etc..
+  acme      (utility|util)    (help|-h)
+  acme      (utility|util)    (man)
+
+
+  Run       Help Manual & About
+  -----------------------------
+  acme      man
+  acme      (help|--help|-h)
+  acme      (--version|-v)
+
+
+"""
+
+# Usage
+#
+# 1. Navigate to the parent of your './logs/' directory. For example:
+#
+#      cd ~/Documents/Metrics/
+#
+# 2. Use the acme command. Examples:
+#
+#      acme
+#      acme stats
+#      acme list-files
+#      acme today
+#      acme 1/1
+#      acme 1/1/2024
+#      acme gencsv today
+#      acme util makefiles
+#
+# Note: 
+# By default, acme will look for './logs/' in the current working directory and if it can't find it it will check if any of the parent directories are './logs/'.
+# If you have many different './logs/' directories, make sure you always navigate to the parent of the specific one before running acme.
+
+import sys
+import analyze
+
+def main():
+  analyze.analyze(sys.argv[1:], sys.argv[0], { 'version': v, 'copyright' : c, 'manual' : man })
+
+
+if __name__ == '__main__':
+  main()
+
+

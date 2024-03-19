@@ -1,34 +1,34 @@
 #!/usr/bin/env python3
 
-# Notes:
-# - Earlier versions before 0.0.4 were named helper.py & helper.sh.
-# - Version number of this script only tracks the updates of this script and not the main application (analyze.py).
-# - Originally written as a bash script in the original 0.0.1 version.
+# Activity Metrics Utility, (acme util)
+# Copyright (C) 2024 Ray Mentose.
+# Latest source can be found at: https://github.com/ryt/activity-metrics.git
 
-v = '0.0.5'
-c = 'Copyright (C) 2024 Ray Mentose.'
+# Notes:
+# - As of acme version 0.2.0, the version number tracks the main project.
+
 man = """
-This script provides helper tools and utilities for API connections. Commands can also be run using "./analyze util".
+This script provides helper tools and utilities for API connections. Commands can also be run using 'acme util'!
 Read "Utilities.md" for related documentation. API tokens are required for connecting to external services.
 
 Usage:
 
   Create default date files (01-31.txt) and default month directories (01-12/)
   ----------------------------------------------------------------------------
-  Analyze     Utility           Command      Parent    Apply
-  ----------------------------------------------------------
-  ./analyze   (utility|util)    makefiles    dir/
-                                makefiles    dir/      apply
-                                makedirs     dir/
-                                makedirs     dir/      apply
+  acme   Utility          Command      Parent    Apply
+  ----------------------------------------------------
+  acme   (utility|util)   makefiles    dir/
+                          makefiles    dir/      apply
+                          makedirs     dir/
+                          makedirs     dir/      apply
 
   Retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
   -------------------------------------------------------------------------------
-  Analyze     Utility           Todoist     Action      Id/Date/Keyword        Save/Filename
-  ------------------------------------------------------------------------------------------------
-  ./analyze   (utility|util)    todoist     get-task    (12345|{date_input})
-                                todoist     get-task    (12345|{date_input})   save=2024/01/01.txt
-                                todoist     get-task    (12345|{date_input})   (saveauto|autosave)
+  acme   Utility          Todoist     Action      Id/Date/Keyword        Save/Filename
+  ------------------------------------------------------------------------------------------
+  acme   (utility|util)   todoist     get-task    (12345|{date_input})
+                          todoist     get-task    (12345|{date_input})   save=2024/01/01.txt
+                          todoist     get-task    (12345|{date_input})   (saveauto|autosave)
 
 """
 
@@ -41,13 +41,6 @@ import pydoc
 
 from datetime import datetime
 from datetime import timedelta
-
-logs_dir = './logs/'
-gen_dir  = './gen/'
-app_dir  = './app/'
-
-nl = '\n'
-hr = '-' * 50
 
 import macros
 
@@ -241,18 +234,31 @@ def todoist_options(args):
     print(f'Todoist API token could not be found in {todoist_file}.')
 
 
-def utility(args, called):
+def utility(params, called, meta):
 
   uname = 'util' if called  == 'util' else 'utility'
-  use_help = f"Use '{uname} man' or '{uname} help' for proper usage."
+  use_help = f"Use 'acme {uname} man' or 'acme {uname} help' for proper usage."
 
-  if len(args) == 0:
+  ## -- start: global headers & settings
+
+  global logs_dir, gen_dir, app_dir, nl, hr
+
+  logs_dir = './logs/'
+  gen_dir  = './gen/'
+  app_dir  = './app/'
+
+  nl = '\n'
+  hr = '-' * 50
+  
+  ## -- end: global headers & settings
+
+  if len(params) == 0:
     print(use_help)
     return
   
-  com        = args[0]
-  directory  = args[1] if len(args) >= 2 else './'
-  applyf     = args[2] if len(args) >= 3 else ''
+  com        = params[0]
+  directory  = params[1] if len(params) >= 2 else './'
+  applyf     = params[2] if len(params) >= 3 else ''
 
   if com == 'makefiles':
     make_files(directory, applyf)
@@ -261,7 +267,7 @@ def utility(args, called):
     make_dirs(directory, applyf)
 
   elif com == 'todoist':
-    todoist_options(args)
+    todoist_options(params)
 
   elif com in ('--help', '-h', 'help'):
     print(f'{man.strip()}{nl}')
@@ -270,13 +276,13 @@ def utility(args, called):
     pydoc.pager(f'{man.strip()}{nl}')
 
   elif com in ('--version', '-v'):
-    print(f'Activity Metrics Utility, Version {v}{nl}{c}')
+    print(f"Activity Metrics Utility, ACME Version {meta['version']}{nl}{meta['copyright']}")
 
   else:
     print(use_help)
 
 def main():
-  utility(sys.argv[1:], sys.argv[0])
+  print("Please use 'acme util' command to run the the utility.")
 
 if __name__ == '__main__':
   main()

@@ -3,7 +3,7 @@
 """
 Activity Metrics, Copyright (C) 2024 Ray Mentose.
 Custom macros & helper functions for parsing entries.
-Note: text conversion functions originally written as apps script macros for Google Sheets.
+Note: Text conversion functions originally written as apps script macros for Google Sheets.
 """
 
 import re
