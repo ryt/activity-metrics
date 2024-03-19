@@ -136,7 +136,7 @@ def options(csv_list, meta={}):
 
     # -- end: modify each line
 
-    print('Categories successfully parsed and applied to entries.')
+    print('Categories successfully applied to entries.')
 
     return result_list
 

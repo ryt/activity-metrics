@@ -15,6 +15,8 @@ from datetime import timedelta
 def cap_description(inp):
   """Converts input to title case & applies custom modifications"""
 
+  # todo: words with dots (e.g. domains), words with slashes (e.g. /dir/), etc...
+
   # only convert to title case if it's lowercased
 
   words  = inp.split()
