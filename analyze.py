@@ -295,13 +295,15 @@ def analyze(params, called, meta):
 
   ## -- start: global headers & settings
 
-  global install_dir, logs_dir, gen_dir, app_dir, nl, hr, glossary, default_modules, local_modules, apply_modules, apply_glossary
+  global install_dir, logs_dir, gen_dir, app_dir, nl, hr
+  global glossary, default_modules, local_modules, apply_modules, apply_glossary
+  global macros, utility, module_settings
 
   install_dir = f'{os.path.dirname(os.path.abspath(os.path.realpath(__file__)))}/'
 
-  logs_dir = './logs/'
-  gen_dir  = './gen/'
-  app_dir  = './app/'
+  logs_dir = meta['logs_dir']
+  gen_dir  = meta['gen_dir']
+  app_dir  = meta['app_dir']
 
   nl = '\n'
   hr = '-' * 50

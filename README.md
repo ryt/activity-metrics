@@ -2,7 +2,7 @@
 
 Overview
 --------
-Activity metrics is a tool that can be used to analyze and display personal activity statistics. The app works by parsing daily log files that are written with a simple formatting style. The parsed data can then be converted into spreadsheets (e.g. timesheets), charts, and other useful formats such as custom textual and graphical data displays.
+Activity Metrics is a tool that can be used to analyze and display personal activity statistics. The app works by parsing daily log files that are written with a simple formatting style. The parsed data can then be converted into spreadsheets (e.g. timesheets), charts, and other useful formats such as custom textual and graphical data displays.
 
 For installation & usage, you can navigate to the [installation](#Installation) section at the bottom, otherwise keep reading for a simple overview of the system.
 
@@ -58,15 +58,33 @@ Additionally data can also be imported from other tracking services such as Todo
 
 <h2 id="Installation"><small>Installation</small></h2>
 
+### Application Installation
+
 1. Clone `activity-metrics/` into your local installation directory.
 
     ```bash
     git clone https://github.com/ryt/activity-metrics.git
     ```
+3. Create an alias or symbolic link to **acme** to access it directly in your terminal. There are multiple ways of doing this. Replace `{install}` with your local installation directory.
 
-2. Next create a directory named `Metrics` or something similar in your Documents and create the following 3 directories in it: `app`, `gen`, and `logs`.
+    **Option 1:** Symbolic Link
+    
+    ```bash
+    ln -s {install}/activity-metrics/acme  /bin/acme
+    ```
+    Depending on your system you may need to use `/usr/bin/` or `/opt/local/` instead of `/bin/`. You can also use your documents folder or a custom location as long as you use a symbolic link to the **acme** executable.
+    
+    **Option 2:** Creating an alias in ~/.bashrc or ~/.bash_profile (Mac):
+    
+    ```bash
+    alias acme='{install}/activity-metrics/acme'
+    ```
 
-    You can choose whatever name you want for the main folder but we'll use "Metrics" for this example. `app/` will be used for application modules, API, & configuration files, `gen/` will be used for generated files, and `logs/` will be used to store log files.
+### Setting up Log Files & Customization
+
+1. To store your logs, create a directory named `Metrics` or something similar in your Documents and create the following 3 directories in it: `app`, `gen`, and `logs`.
+
+    You can choose whatever name you want for the main folder but we'll use "Metrics" for this example. `app` will be used for application modules, API, & configuration files, `gen` will be used for generated files, and `logs` will be used to store log files.
 
     ```bash
     mkdir Metrics && cd Metrics
@@ -75,25 +93,18 @@ Additionally data can also be imported from other tracking services such as Todo
     ```bash
     mkdir app gen logs
     ```
-
-3. Finally, create a symbolic link for `analyze.py` on the same level as the directories you just created. The example command is shown below. Replace `{install}` with your local installation directory:
     
-    ```bash
-    ln -s {install}/activity-metrics/analyze.py  Metrics/analyze
-    ```
-
     The structure of the link and directories should look something like this:
     
     ```bash
     Metrics/
-      - analyze
       - app/
       - gen/
       - logs/
     ```
-4. Now you can run the command `./analyze` from inside the `Metrics/` directory. Generated files will be stored inside `gen/` and your logs will be read and parsed from the `logs/`. Use `./analyze help` for the help manual.
+2. Now you can run the command `acme` from inside the `Metrics/` directory. Generated files will be stored inside `gen/` and your logs will be read and parsed from the `logs/`. Use `acme help` for the help manual.
 
-    The utility script can be run as `./analyze utility`. Use `./analyze utility help` for the utility help manual.
+    The utility script can be run as `acme util`. Use `acme util help` for the utility help manual.
 
 
 <h2><small>Inspirations</small></h2>

@@ -5,7 +5,7 @@
 # Latest source can be found at: https://github.com/ryt/activity-metrics.git
 
 
-v = '0.2.0'
+v = '0.2.1'
 c = 'Copyright (C) 2024 Ray Mentose.'
 man = """
 Activity Metrics: A tool to analyze & display personal activity statistics.
@@ -61,30 +61,73 @@ Usage:
 
 # Usage
 #
-# 1. Navigate to the parent of your './logs/' directory. For example:
+# 1. Navigate to the parent of your `logs` directory. For example:
 #
-#      cd ~/Documents/Metrics/
+#      cd  ~/Documents/Metrics/
 #
 # 2. Use the acme command. Examples:
 #
 #      acme
-#      acme stats
-#      acme list-files
-#      acme today
-#      acme 1/1
-#      acme 1/1/2024
-#      acme gencsv today
-#      acme util makefiles
+#      acme  stats
+#      acme  list-files
+#      acme  today
+#      acme  1/1
+#      acme  1/1/2024
+#      acme  gencsv today
+#      acme  util makefiles
 #
-# Note: 
-# By default, acme will look for './logs/' in the current working directory and if it can't find it it will check if any of the parent directories are './logs/'.
-# If you have many different './logs/' directories, make sure you always navigate to the parent of the specific one before running acme.
+# Note: By default, acme will look for `./logs/` in the current working directory and parent directories.
 
+import os
 import sys
 import analyze
 
+logs_name = 'logs'
+gen_name  = 'gen'
+app_name  = 'app'
+
+
+def find_path(name):
+  """Checks if directory (name) exists in current or parents"""
+
+  curr = os.path.abspath(os.curdir)
+  
+  while True:
+    search_path = os.path.join(curr, name)
+    if os.path.isdir(search_path):
+      return search_path
+    
+    par = os.path.dirname(curr)
+    
+    if curr == par:
+      return None
+    
+    curr = par
+
+
 def main():
-  analyze.analyze(sys.argv[1:], sys.argv[0], { 'version': v, 'copyright' : c, 'manual' : man })
+
+  find_logs = find_path(logs_name)
+
+  if find_logs:
+
+    parent    = os.path.dirname(find_logs)
+    logs_dir  = f'{parent}/{logs_name}/'
+    gen_dir   = f'{parent}/{gen_name}/'
+    app_dir   = f'{parent}/{app_name}/'
+
+    analyze.analyze(sys.argv[1:], sys.argv[0], { 
+      'version'   : v, 
+      'copyright' : c, 
+      'manual'    : man,
+      'logs_dir'  : logs_dir,
+      'gen_dir'   : gen_dir,
+      'app_dir'   : app_dir,
+    })
+
+  else:
+
+    print(f'Logs directory `{logs_name}` not found.')
 
 
 if __name__ == '__main__':

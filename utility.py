@@ -243,9 +243,9 @@ def utility(params, called, meta):
 
   global logs_dir, gen_dir, app_dir, nl, hr
 
-  logs_dir = './logs/'
-  gen_dir  = './gen/'
-  app_dir  = './app/'
+  logs_dir = meta['logs_dir']
+  gen_dir  = meta['gen_dir']
+  app_dir  = meta['app_dir']
 
   nl = '\n'
   hr = '-' * 50
