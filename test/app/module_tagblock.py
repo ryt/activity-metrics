@@ -73,10 +73,77 @@ def apply(entry, glossary):
 def options(csv_list, meta={}):
   """Additional final options for the CSV"""
   """The categorize option adds additional columns for the final CSV using the tagblock categories."""
+
+  # -- start: module_tagblock.categorize
+
   if meta['option'] == 'module_tagblock.categorize':
-    print('Mock-applying categorization to generated CSV.')
-    print(meta)
+
+    csv_header_row_index     = 0
+    csv_desc_column_index    = 4
+    cat_add_at_column_index  = 4
+
+    prepared_lines = []
+    category_lines = []
+
+    # -- start: prepare lines
+
+    for line in csv_list:
+      column_desc = line[csv_desc_column_index].strip('"') # strip double quotes
+      entry_split = split_entry_at_tagblock(column_desc)
+      
+      if entry_split:
+        category_lines.append([s.strip() for s in entry_split['tagblock_inside'].split(',')])
+        desc_sans_tagblock = entry_split['rest_of_entry']
+      else:
+        category_lines.append([])
+        desc_sans_tagblock = column_desc
+
+      new_line = line
+      new_line[csv_desc_column_index] = f'"{desc_sans_tagblock}"' # wrap with double quotes
+
+      prepared_lines.append(new_line)
+
+    # -- end: prepare lines
+
+    max_cat = max(len(l) for l in category_lines)
+
+    category_names    = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10']
+    header_additions  = [category_names[i] for i in range(0, max_cat)]
+
+
+    result_list = []
+
+    # -- start: modify each line
+
+    for i, pl in enumerate(prepared_lines):
+
+      for j in range(0, max_cat):
+        # add empty spaces for categories
+
+        pl.insert(cat_add_at_column_index + j, '')
+
+        # add headers from category names list
+
+        if header_additions and i == csv_header_row_index:
+          pl[cat_add_at_column_index + j] = header_additions[j]
+
+        # add categories if categories are found and have value
+
+        if category_lines[i]:
+          pl[cat_add_at_column_index + j] = category_lines[i][j] if len(category_lines[i]) > j else ''
+
+      result_list.append(pl)
+
+    # -- end: modify each line
+
+    print('Categories successfully parsed and applied to entries.')
+
+    return result_list
+
+  # -- end: module_tagblock.categorize
+
   return csv_list
+
 
 def split_entry_at_tagblock(entry):
   """Receives an entry string and separates tagblock & rest of entry."""

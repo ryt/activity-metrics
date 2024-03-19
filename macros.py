@@ -14,7 +14,19 @@ from datetime import timedelta
 
 def cap_description(inp):
   """Converts input to title case & applies custom modifications"""
-  return inp.title()
+
+  # only convert to title case if it's lowercased
+
+  words  = inp.split()
+  cwords = [word.title() if word.islower() and not is_quoted_or_braced(word) else word for word in words]
+  inp    = ' '.join(cwords)
+
+  return inp
+
+
+def is_quoted_or_braced(word):
+  """Only checks if a word starts with a single or double quote or a curly brace"""
+  return word.startswith('"') or word.startswith("'") or word.startswith('{')
 
 
 def convert_to_hours(str):
