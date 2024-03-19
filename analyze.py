@@ -5,7 +5,7 @@ Copyright (C) 2024 Ray Mentose.
 Latest source can be found at: https://github.com/ryt/activity-metrics
 """
 
-v = '0.1.5'
+v = '0.1.6'
 c = 'Copyright (C) 2024 Ray Mentose.'
 man = """
 Activity Metrics: A tool to analyze & display personal activity statistics.
@@ -23,17 +23,20 @@ Usage:
   Analyze entries for a specific date or today.
   ---------------------------------------------
   Analyze        Date
-  -------------------------
-  ./analyze      (today|-t)
-
-
-  Generate a timesheet CSV file for a specific date.
-  --------------------------------------------------
-  Analyze        Generate CSV      Date
   -----------------------------------------------
-  ./analyze      (gencsv|-g)       (Y-m-d)
-  ./analyze      (gencsv|-g)       (today|-t)
-  ./analyze      (gencsv|-g)       (yesterday|-y)
+  ./analyze      {date_input}
+  ./analyze      (M/D|M-D)
+  ./analyze      (Y-M-D|Y/M/D)
+  ./analyze      (M-D-Y|M/D/Y)
+  ./analyze      (today|tod|-t|yesterday|yest|-y)
+
+
+  Generate a timesheet CSV file for a specific date. Create columns with categorize.
+  ----------------------------------------------------------------------------------
+  Analyze        Generate CSV      Date               Module Options
+  --------------------------------------------------------------------
+  ./analyze      (gencsv|-g)       {date_input}
+  ./analyze      (gencsv|-g)       {date_input}       {module_options}
 
 
   Interface for the utility script. For list of commands, use "./analyze util help".
@@ -267,8 +270,9 @@ def csvtext(csv_list):
   """Converts csv list to string/plain text"""
   return nl.join(','.join(ln) for ln in csv_list)
 
-def modify_csv(csv_list, add_header=True, add_footer=True):
-  """Modifies csv content by adding headers & footers"""
+def modify_csv(csv_list, add_header=True, add_footer=True, module_options=False):
+  """Modifies csv content by adding headers, footers, & columns"""
+
   # headers & footers
 
   if add_header:
@@ -277,6 +281,21 @@ def modify_csv(csv_list, add_header=True, add_footer=True):
   if add_footer:
     total_hours = round(sum(try_float(col[1], 0) for col in csv_list), 2)
     csv_list.append(['', str(total_hours), macros.hours_to_human(total_hours), '', 'Total Logged Hours'])
+
+  # module options: if used, it requires the module to have a function named 'options'
+
+  if apply_modules and module_options:
+    mo_list = module_options.split(',')
+    for opt in mo_list:
+      opt_spl = opt.split('.') # e.g. module_math.multiply -> [0] module_math, [1] multiply
+      for name in apply_modules.keys():
+        if opt_spl[0] == name:
+          csv_list = apply_modules[name].options(csv_list, meta={
+              'module_options'  : module_options,
+              'option'          : opt,
+              'add_header'      : add_header,
+              'add_footer'      : add_footer,
+            })
 
   return csv_list
 
@@ -318,13 +337,8 @@ def convert_to_csv(entries, ymd_date):
 
       # -- 2. apply default macros
 
-      # split newdesc into {rest_of_entry}, {tagblock}
-
-      newdesc_parts = newdesc.rsplit('(', 1)
-      newdesc_parts = [newdesc_parts[0], '(' + newdesc_parts[1]] if len(newdesc_parts) > 1 else [newdesc_parts[0], '']
-
       newtime = time_macro(newtime)
-      newdesc = str(newtime[2]) + cap_macro(newdesc_parts[0]) + newdesc_parts[1]
+      newdesc = str(newtime[2]) + cap_macro(newdesc)
 
       #           Date     Hours       Human                              Raw Times                   Description
       newline = [datefrm, newtime[1], macros.hours_to_human(newtime[1]), escape_for_csv(newtime[0]), escape_for_csv(newdesc)]
@@ -384,7 +398,9 @@ def main():
       elif arg1 in ('gencsv','-g'):
 
         if len(sys.argv) > 2:
-          arg2  = sys.argv[2] # date or keyword
+          arg2 = sys.argv[2] # date or keyword
+
+          module_options = sys.argv[3] if len(sys.argv) > 3 else False
 
           parsed = macros.parse_date_input(arg2)
           parsed_slash = parsed['res_ymd_slash']
@@ -399,7 +415,14 @@ def main():
             # convert individual log txt file
             with open(filename, 'r') as file:
               entries = file.read()
-            entries = csvtext(modify_csv(convert_to_csv(entries, parsed_dash), add_header=True, add_footer=True))
+            entries = csvtext(
+              modify_csv(
+                convert_to_csv(entries, parsed_dash), 
+                add_header=True, 
+                add_footer=True,
+                module_options=module_options,
+              )
+            )
 
             # generate individual log csv file
             genfile = f'{gen_dir}{parsed_dash}.csv'
@@ -437,8 +460,13 @@ def main():
               # combine all the lists into one list
               month_collection = list(itertools.chain(*month_collection))
 
-              # add header & footer calculations
-              month_collection = modify_csv(month_collection, add_header=True, add_footer=True)
+              # add modifications: header & footer calculations, categorize
+              month_collection = modify_csv(
+                month_collection, 
+                add_header=True, 
+                add_footer=True,
+                module_options=module_options,
+              )
 
               # generate collection log csv file
               genfile = f'{gen_dir}{parsed_dash}.csv'

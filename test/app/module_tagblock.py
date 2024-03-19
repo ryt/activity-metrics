@@ -44,20 +44,68 @@ The glossary can contain unlimited definitions for subtags.
 
 name = 'Tagblock Module'
 
+"""
+Module Options:
+---------------
+- module_tagblock.categorize : Creates columns for a CSV using the categories inside of a tagblock.
+
+Module Options Usage:
+---------------------
+  Analyze      Generate CSV    Date Input       Module Options
+  ------------------------------------------------------------------------
+  ./analyze    gencsv          {date_input}     module_tagblock.categorize
+
+"""
+
 import re
+
+# The apply function is required for each module.
+
+def apply(entry, glossary):
+  """This function is automatically called on each entry if this module is used in 'module_settings.py'!"""
+  entry = replace_subtags(entry, glossary)
+  return entry
+
+
+# The options function can be used to modify the final CSV list if the module is using options.
+# The 'meta' argument dict has the following keys: module_options, option, add_header, add_footer.
+
+def options(csv_list, meta={}):
+  """Additional final options for the CSV"""
+  """The categorize option adds additional columns for the final CSV using the tagblock categories."""
+  if meta['option'] == 'module_tagblock.categorize':
+    print('Mock-applying categorization to generated CSV.')
+    print(meta)
+  return csv_list
+
+def split_entry_at_tagblock(entry):
+  """Receives an entry string and separates tagblock & rest of entry."""
+  pattern = r'^(.*)(\(([a-zA-Z0-9-_,;\s#\$]+)\))$'
+  match   = re.search(pattern, entry)
+  result  = {}
+
+  if match:
+    result = {
+      'rest_of_entry'   : match.group(1),
+      'tagblock'        : match.group(2),
+      'tagblock_inside' : match.group(3),
+    }
+  else:
+    result = False
+
+  return result
 
 def replace_subtags(entry, glossary):
   """Receives an entry string and performs substitutions for subtags."""
   
-  pattern = r'^(.*)(\(([a-zA-Z0-9-_,;\s#\$]+)\))$'
-  match = re.search(pattern, entry)
-  modentry = ''
+  entry_split = split_entry_at_tagblock(entry)
+  modif_entry = ''
 
-  if match:
+  if entry_split:
 
-    rest_of_entry = match.group(1)
-    tagblock = match.group(2)
-    tagblock_inside = match.group(3)
+    rest_of_entry   = entry_split['rest_of_entry']
+    tagblock        = entry_split['tagblock']
+    tagblock_inside = entry_split['tagblock_inside']
 
     subtag_glossary = glossary.subtag_glossary
 
@@ -70,18 +118,11 @@ def replace_subtags(entry, glossary):
       else:
         tagblock_inside = tagblock_inside.replace(key, val)
 
-    modentry = f'{rest_of_entry}({tagblock_inside})'
+    modif_entry = f'{rest_of_entry}({tagblock_inside})'
 
   else:
-    modentry = entry
+    modif_entry = entry
 
-  return modentry
+  return modif_entry
 
-
-# The apply function is required for each module.
-
-def apply(entry, glossary):
-  """This apply function is automatically called on each entry if this module is used in local settings."""
-  entry = replace_subtags(entry, glossary)
-  return entry
 

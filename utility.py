@@ -15,20 +15,20 @@ Usage:
 
   Create default date files (01-31.txt) and default month directories (01-12/)
   ----------------------------------------------------------------------------
-  Analyze      Utility            Command      Parent    Apply
-  ------------------------------------------------------------
-  ./analyze    (utility|util)     makefiles    dir/
-                                  makedirs     dir/
-                                  makefiles    dir/      apply
-                                  makedirs     dir/      apply
+  Analyze     Utility           Command      Parent    Apply
+  ----------------------------------------------------------
+  ./analyze   (utility|util)    makefiles    dir/
+                                makefiles    dir/      apply
+                                makedirs     dir/
+                                makedirs     dir/      apply
 
   Retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
   -------------------------------------------------------------------------------
-  Analyze      Utility           Todoist     Action      Id/Date/Keyword       Save/Filename
+  Analyze     Utility           Todoist     Action      Id/Date/Keyword        Save/Filename
   ------------------------------------------------------------------------------------------------
-  ./analyze    (utility|util)    todoist     get-task    (12345|M/D|today)
-                                 todoist     get-task    12345                 save=2024/01/01.txt
-                                 todoist     get-task    12345                 (saveauto|autosave)
+  ./analyze   (utility|util)    todoist     get-task    (12345|{date_input})
+                                todoist     get-task    (12345|{date_input})   save=2024/01/01.txt
+                                todoist     get-task    (12345|{date_input})   (saveauto|autosave)
 
 """
 
