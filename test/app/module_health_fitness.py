@@ -22,7 +22,7 @@ def apply(entry, glossary):
 # The 'meta' argument dict has the following keys: module_options, option, add_header, add_footer.
 # Options Usage:
 #
-#   ./analyze {rest_of_command} module_health_fitness.action_name
+#   acme {rest_of_command} module_health_fitness.action_name
 #
 
 """

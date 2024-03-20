@@ -155,6 +155,18 @@ def analyze_files(logs_dir, list_files=False):
 
   print(output) if output else None
 
+
+def printx(text, meta = {}):
+
+  if 'error_code' not in meta:
+    print("Please specify the following for arument 2 for printx: { 'error_code' : 'error_code_name' } ")
+
+  else:
+    print(text)
+
+  exit()
+
+
 def cap_macro(input):
   return macros.cap_description(input)
 
@@ -356,7 +368,7 @@ def analyze(params, called, meta):
     if params[0]:
       arg1 = params[0]
 
-      # -- start: ./analyze {date-inputs}
+      # -- start: acme {date_input}
 
       if macros.is_date_input(arg1):
 
@@ -383,9 +395,9 @@ def analyze(params, called, meta):
         # last_line_len = len(output[-1])
         output += [hr] # [0:last_line_len]]
 
-      # -- end: ./analyze {date-inputs}
+      # -- end: acme {date_input}
 
-      # -- start: ./analyze gencsv {date-inputs}
+      # -- start: acme gencsv {date_input}
 
       elif arg1 in ('gencsv','-g'):
 
@@ -393,6 +405,54 @@ def analyze(params, called, meta):
           arg2 = params[1] # date or keyword
 
           module_options = params[2] if len(params) > 2 else False
+
+          # Commas can be used in the {date_input} to specify interval 'from' and 'to' dates, along with an additional 'separator' text for the filename.
+          # Intervals can be used as follows:
+          #
+          #   gencsv   {interval_from},{interval_to}
+          #   gencsv   {interval_from},{interval_to},{interval_seperator}
+          #
+          # If commas are detected, the interval parameters will be parsed before everything else.
+
+          valid_interval_input = False
+
+          # -- start: parse intervals (if they're present)
+
+          if ',' in arg2:
+
+            interval_parts  = arg2.split(',')
+            interval_length = len(interval_parts)
+
+            interval_from       = ''
+            interval_to         = ''
+            interval_seperator  = '_'
+
+            invalid_interval_code = { 'error_code' : 'analyze.gencsv.invalid_interval' }
+            invalid_interval_text = nl.join([
+              'Please enter valid intervals in the following formats: {from},{to} or {from},{to},{separator}.',
+              'Valid examples:  1/1,1/7   1/1,1/7,-to-   1-15,1-30   2024-01-15,01-30,_   01/01,01/07,_through_'
+            ])
+
+            if interval_length > 1:
+              interval_from = interval_parts[0]
+              interval_to   = interval_parts[1]
+
+            if interval_length == 3:
+              interval_seperator = ''.join(i for i in interval_parts[2] if i not in '\/:*?<>|#')
+
+            if interval_length == 0 or interval_length > 3:
+              printx(invalid_interval_text, invalid_interval_code)
+
+            parsed_interval_from = macros.parse_date_input(interval_from)
+            parsed_interval_to   = macros.parse_date_input(interval_to)
+
+            if not parsed_interval_from['res_ymd_dash'] or not parsed_interval_to['res_ymd_dash']:
+              printx(invalid_interval_text, invalid_interval_code)
+
+            valid_interval_input = True
+
+          # -- end: parse intervals
+
 
           parsed = macros.parse_date_input(arg2)
           parsed_slash = parsed['res_ymd_slash']
@@ -402,7 +462,7 @@ def analyze(params, called, meta):
 
           filename = f'{logs_dir}{parsed_slash}.txt'
 
-          if os.path.exists(filename):
+          if not valid_interval_input and os.path.exists(filename):
 
             # convert individual log txt file
             with open(filename, 'r') as file:
@@ -423,9 +483,9 @@ def analyze(params, called, meta):
             output += [f'Generated CSV file {genfile} successfully.']
 
 
-          # -- look for collections of log files (month, year)
+          # -- start: look for collections of log files (month, year)
 
-          elif re.search(r'^\d{4}(?:\/\d{2})?$', parsed_slash):
+          elif not valid_interval_input and re.search(r'^\d{4}(?:\/\d{2})?$', parsed_slash):
 
             lenfn = len(parsed_slash)
 
@@ -467,6 +527,35 @@ def analyze(params, called, meta):
               output += [f'Generated month collection CSV file {genfile} successfully.']
               # pydoc.pager(month_collection)
 
+          # -- end: look for collections
+
+          # -- start: process intervals
+
+          elif valid_interval_input:
+
+            pif = parsed_interval_from
+            pit = parsed_interval_to
+
+            pif_ymd_dash = pif['res_ymd_dash']
+            pit_ymd_dash = pit['res_ymd_dash']
+
+            pif_Y = pif['res_each']['Y']
+            pit_Y = pit['res_each']['Y']
+            pit_M = pit['res_each']['M']
+            pit_D = pit['res_each']['D']
+
+            to_format = f'{pit_M}-{pit_D}' if pif_Y == pit_Y else pit_ymd_dash # option for: _01-01 instead of _2024-01-01
+            genfile   = f'{pif_ymd_dash}{interval_seperator}{to_format}.csv'
+
+            output += [f'Creating a collection for intervals from {pif_ymd_dash} to {pit_ymd_dash}:']
+            output += ['...']
+            
+            # todo: parse interval logs
+            # todo: generate interval collection csv {genfile}
+
+            output += [f'Mock-generated CSV file {genfile} successfully.']
+
+          # -- end: process intervals
 
           else:
             output += [f'Log file {filename} does not exist.']
@@ -474,7 +563,7 @@ def analyze(params, called, meta):
         else:
           output += [f'Please specify a valid date (Y-m-d), month (Y-m), or year (Y).']
 
-      # -- end: ./analyze gencsv {date-inputs}
+      # -- end: acme gencsv {date_input}
 
       elif arg1 in ('stats','-s'):
         analyze_files(logs_dir)

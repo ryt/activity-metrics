@@ -51,9 +51,9 @@ Module Options:
 
 Module Options Usage:
 ---------------------
-  Analyze      Generate CSV    Date Input       Module Options
-  ------------------------------------------------------------------------
-  ./analyze    gencsv          {date_input}     module_tagblock.categorize
+  Run      Generate CSV    Date Input       Module Options
+  --------------------------------------------------------------------
+  acme     gencsv          {date_input}     module_tagblock.categorize
 
 """
 
