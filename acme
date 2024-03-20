@@ -5,7 +5,7 @@
 # Latest source can be found at: https://github.com/ryt/activity-metrics.git
 
 
-v = '0.2.1'
+v = '0.2.2'
 c = 'Copyright (C) 2024 Ray Mentose.'
 man = """
 Activity Metrics: A tool to analyze & display personal activity statistics.
@@ -57,6 +57,24 @@ Usage:
   acme      (--version|-v)
 
 
+Usage Help:
+
+  If your log files aren't being read, remember by default acme looks for the ./logs/ directory in the current working directory. 
+  To have your log files be read, you'll have to navigate (cd) into the parent of the logs directory and run the commands:
+
+  ----------------------------------
+  cd        /path/to/logs-or-parent/
+  acme      {command}
+  ----------------------------------
+
+  However, if you want to explicitly set a ./logs/ directory or it's parent while running the command, you can use the second argument 
+  to set a directory path (ending with a slash) add all other arguments after it.
+
+  -------------------------------------------------
+  acme      /path/to/logs-or-parent/      {command}
+  -------------------------------------------------
+
+
 """
 
 # Usage
@@ -76,6 +94,11 @@ Usage:
 #      acme  gencsv today
 #      acme  util makefiles
 #
+# 2a. The second argument can also be used to explicitly set the logs directory or it's parent.
+#
+#      acme ~/Documents/Metrics/ stats
+#      acme ~/Documents/Metrics/ today
+#
 # Note: By default, acme will look for `./logs/` in the current working directory and parent directories.
 
 import os
@@ -87,11 +110,9 @@ gen_name  = 'gen'
 app_name  = 'app'
 
 
-def find_path(name):
-  """Checks if directory (name) exists in current or parents"""
+def find_path(name, curr=os.path.abspath(os.curdir)):
+  """Checks if directory (name) exists in specified (curr) or parents"""
 
-  curr = os.path.abspath(os.curdir)
-  
   while True:
     search_path = os.path.join(curr, name)
     if os.path.isdir(search_path):
@@ -107,7 +128,19 @@ def find_path(name):
 
 def main():
 
-  find_logs = find_path(logs_name)
+  analyze_params = sys.argv[1:]
+  analyze_caller = sys.argv[0]
+
+  # Allows path/to/dir/ to be specified explicitly in the first argument of 'acme'.
+  # If path/to/dir/ is set, acme will look for the logs directory inside of it or in one of it's parents.
+
+  if len(sys.argv) > 1 and sys.argv[1].endswith('/'):
+    analyze_params = sys.argv[2:]
+    specified_path = sys.argv[1]
+    find_logs = find_path(specified_path)
+  else:
+    find_logs = find_path(logs_name)
+
 
   if find_logs:
 
@@ -116,7 +149,7 @@ def main():
     gen_dir   = f'{parent}/{gen_name}/'
     app_dir   = f'{parent}/{app_name}/'
 
-    analyze.analyze(sys.argv[1:], sys.argv[0], { 
+    analyze.analyze(analyze_params, analyze_caller, { 
       'version'   : v, 
       'copyright' : c, 
       'manual'    : man,

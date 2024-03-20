@@ -126,10 +126,16 @@ def todoist_options(args):
 
   date_today = datetime.today()
 
+
   # Todoist API token should be stored in "{app_dir}.api_todoist" file.
   todoist_file = f'{app_dir}.api_todoist';
 
-  with open(todoist_file) as f: api_token = f.read().strip()
+  try:
+    with open(todoist_file) as f: api_token = f.read().strip()
+
+  except FileNotFoundError as e:
+    print(f"Todoist api file '{todoist_file}' not found.")
+    exit()
 
   if api_token:
 
