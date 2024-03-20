@@ -137,7 +137,7 @@ def main():
   if len(sys.argv) > 1 and sys.argv[1].endswith('/'):
     analyze_params = sys.argv[2:]
     specified_path = sys.argv[1]
-    find_logs = find_path(specified_path)
+    find_logs = find_path(logs_name, specified_path)
   else:
     find_logs = find_path(logs_name)
 
