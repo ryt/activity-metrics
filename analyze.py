@@ -406,13 +406,14 @@ def analyze(params, called, meta):
 
           module_options = params[2] if len(params) > 2 else False
 
-          # Commas can be used in the {date_input} to specify interval 'from' and 'to' dates, along with an additional 'separator' text for the filename.
-          # Intervals can be used as follows:
+          # Section: Intervals
+          #   Commas can be used in the {date_input} to specify interval 'from' and 'to' dates, along with an additional 'separator' text for the filename.
+          #   Intervals can be used as follows:
           #
-          #   gencsv   {interval_from},{interval_to}
-          #   gencsv   {interval_from},{interval_to},{interval_seperator}
+          #       gencsv   {interval_from},{interval_to}
+          #       gencsv   {interval_from},{interval_to},{interval_seperator}
           #
-          # If commas are detected, the interval parameters will be parsed before everything else.
+          #   If commas are detected, the interval parameters will be parsed before everything else.
 
           valid_interval_input = False
 

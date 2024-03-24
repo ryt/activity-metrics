@@ -183,6 +183,15 @@ def parse_date_input(inp):
     spl_ymd_slash = res_ymd_slash.split('/')
     res_each      = { 'D' : spl_ymd_slash[2], 'M' : spl_ymd_slash[1], 'Y' : spl_ymd_slash[0] }
 
+  elif inp in ('month', 'mon', '-m'):
+    input_format  = 'keyword'
+    res_ymd_dash  = today.strftime('%Y-%m')
+    res_ymd_slash = today.strftime('%Y/%m')
+    res_ymd_log   = f'{res_ymd_slash}.txt'
+    res_key_name  = 'month'
+    spl_ymd_slash = res_ymd_slash.split('/')
+    res_each      = { 'D' : '', 'M' : spl_ymd_slash[1], 'Y' : spl_ymd_slash[0] }
+
   else:
 
     for regex, form in input_date_types.items():
