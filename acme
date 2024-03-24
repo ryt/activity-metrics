@@ -141,7 +141,7 @@ def main():
   else:
     find_logs = find_path(logs_name)
 
-  # -- start: option to allow help, manual, and version to be seen without requiring a log directory
+  # -- start: option to allow help, manual, and version to be seen without requiring a 'logs' directory
   if not find_logs and sys.argv[1] in ('--help','-h','help','man','--version','-v'):
     find_logs = 'test/logs/'
   # -- end: option allow-help
