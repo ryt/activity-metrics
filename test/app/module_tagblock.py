@@ -79,8 +79,8 @@ def options(csv_list, meta={}):
   if meta['option'] == 'module_tagblock.categorize':
 
     csv_header_row_index     = 0
-    csv_desc_column_index    = 4
-    cat_add_at_column_index  = 4
+    csv_desc_column_index    = 2
+    cat_add_at_column_index  = 2
 
     prepared_lines = []
     category_lines = []

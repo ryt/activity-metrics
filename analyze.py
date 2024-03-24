@@ -196,11 +196,13 @@ def modify_csv(csv_list, add_header=True, add_footer=True, module_options=False)
   # headers & footers
 
   if add_header:
-    csv_list.insert(0, ['Date','Hours','Human','Raw Times','Description'])
+    #                     0        1         2             3        4
+    csv_list.insert(0, ['Date','Duration','Description', 'Hours', 'Sum Formula'])
 
   if add_footer:
-    total_hours = round(sum(try_float(col[1], 0) for col in csv_list), 2)
-    csv_list.append(['', str(total_hours), macros.hours_to_human(total_hours), '', 'Total Logged Hours'])
+    total_hours = round(sum(try_float(col[3], 0) for col in csv_list), 2)
+    #                 0   1                                   2                     3                 4
+    csv_list.append(['', macros.hours_to_human(total_hours), 'Total Logged Hours', str(total_hours), ''])
 
   # module options: if used, it requires the module to have a function named 'options'
 
@@ -260,9 +262,8 @@ def convert_to_csv(entries, ymd_date):
       newtime = time_macro(newtime)
       newdesc = str(newtime[2]) + cap_macro(newdesc)
 
-      #           Date     Hours       Human                              Raw Times                   Description
-      newline = [datefrm, newtime[1], macros.hours_to_human(newtime[1]), escape_for_csv(newtime[0]), escape_for_csv(newdesc)]
-      # newline = match.group(1) + ',' + match.group(2)
+      #           0: Date    1: Duration                           2: Description            3: Hours       4: Sum Formula
+      newline = [datefrm,   macros.hours_to_human(newtime[1]),   escape_for_csv(newdesc),   newtime[1],   escape_for_csv(newtime[0]) ]
     
     if newline:
 
