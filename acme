@@ -128,6 +128,9 @@ def find_path(name, curr=os.path.abspath(os.curdir)):
 
 def main():
 
+  if len(sys.argv) == 1:
+    sys.exit("Please enter a command or use 'man' or 'help'.")
+
   analyze_params = sys.argv[1:]
   analyze_caller = sys.argv[0]
 
