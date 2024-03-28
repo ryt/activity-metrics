@@ -29,7 +29,7 @@ In the above example, let's assume the date for the entry was **Jan 1, 2024**. H
 
 Valid location structure example:
 
-```console
+```
 ../logs/
   - 2024/
     - 01/
@@ -96,7 +96,7 @@ Additionally data can also be imported from other tracking services such as Todo
     
     The structure of the link and directories should look something like this:
     
-    ```console
+    ```
     Metrics/
       - app/
       - gen/
