@@ -29,7 +29,7 @@ In the above example, let's assume the date for the entry was **Jan 1, 2024**. H
 
 Valid location structure example:
 
-```
+```console
 ../logs/
   - 2024/
     - 01/
@@ -62,14 +62,14 @@ Additionally data can also be imported from other tracking services such as Todo
 
 1. Clone `activity-metrics/` into your local installation directory.
 
-    ```bash
+    ```console
     git clone https://github.com/ryt/activity-metrics.git
     ```
 3. Create an alias or symbolic link to **acme** to access it directly in your terminal. There are multiple ways of doing this. Replace `{install}` with your local installation directory.
 
     **Option 1:** Symbolic Link
     
-    ```bash
+    ```console
     ln -s {install}/activity-metrics/acme  /bin/acme
     ```
     Depending on your system you may need to use `/usr/bin/` or `/opt/local/` instead of `/bin/`. You can also use your documents folder or a custom location as long as you use a symbolic link to the **acme** executable.
@@ -86,17 +86,17 @@ Additionally data can also be imported from other tracking services such as Todo
 
     You can choose whatever name you want for the main folder but we'll use "Metrics" for this example. `app` will be used for application modules, API, & configuration files, `gen` will be used for generated files, and `logs` will be used to store log files.
 
-    ```bash
+    ```console
     mkdir Metrics && cd Metrics
     ```
 
-    ```bash
+    ```console
     mkdir app gen logs
     ```
     
     The structure of the link and directories should look something like this:
     
-    ```bash
+    ```console
     Metrics/
       - app/
       - gen/
