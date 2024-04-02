@@ -129,4 +129,4 @@ List of inspirations for this project:
 
 
 <h2><small>License</small></h2>
-<small>Copyright &copy; 2024 Ray Mentose.</small>
+<sub>Copyright &copy; 2024 Ray Mentose.</sub>
