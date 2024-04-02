@@ -65,19 +65,24 @@ Additionally data can also be imported from other tracking services such as Todo
     ```console
     git clone https://github.com/ryt/activity-metrics.git
     ```
-3. Create an alias or symbolic link to **acme** to access it directly in your terminal. There are multiple ways of doing this. Replace `{install}` with your local installation directory.
+3. Create an alias or symbolic link to `acme.py` to access it directly in your terminal. There are multiple ways of doing this. Replace *{install}* with your local installation directory.
 
     **Option 1:** Symbolic Link
     
     ```console
-    ln -s {install}/activity-metrics/acme  /bin/acme
+    ln -s {install}/activity-metrics/acme.py  /usr/bin/acme
     ```
-    Depending on your system you may need to use `/usr/bin/` or `/opt/local/` instead of `/bin/`. You can also use your documents folder or a custom location as long as you use a symbolic link to the **acme** executable.
+    Depending on your system you may need to use `/usr/bin/`, `/opt/local/bin`, `/usr/share/bin/`, etc. You can also use your documents folder or a custom location as long as you use a symbolic link to the `acme.py` executable.
     
-    **Option 2:** Creating an alias in ~/.bashrc or ~/.bash_profile (Mac):
+    **Option 2:** Creating an alias in `~/.bashrc`, `~/.bash_aliases` or `~/.bash_profile`:
     
     ```bash
     alias acme='{install}/activity-metrics/acme'
+    ```
+    After editing the file make sure you restart your terminal or use the `source` command to reload the configuration.
+    
+    ```console
+    source ~/.bashrc
     ```
 
 ### Setting up Log Files & Customization
