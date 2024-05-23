@@ -132,32 +132,32 @@ def sanitize_path(path):
 sp = sanitize_path
 
 
-@app.route('/run',  defaults={'command': ''})
-@app.route('/run/', defaults={'command': ''})
-@app.route('/run/<path:command>')
-def run(command):
+@app.route('/run',  methods=['GET'])
+def run(subpath=None):
 
   view = { 
     'page'    : 'run', 
-    'command' : command, 
+    'command' : '', 
     'error'   : False, 
     'message' : '' 
   }
 
-  a = get_query('a')
+  m   = get_query('m')
+  cmd = get_query('cmd')
 
-  if a and command:
-    a = a.rstrip('/')
-    if os.path.isfile(f'{a}/module_run_commands.py'):
-      sys.path.append(a)
-      view['message'] = command
+  if m and cmd:
+    m = m.rstrip('/')
+    if os.path.isfile(f'{m}/module_run_commands.py'):
+      sys.path.append(m)
+      view['message'] = cmd
+      view['command'] = cmd
       # TODO // todo
       # import module_run_commands.py and run the specified command
     else:
       view['error']   = True
-      view['message'] = 'Sorry the run commands module could not be found in the specified app/ directory.'
+      view['message'] = 'Sorry the run commands module could not be found in the metrics app directory.'
   else:
-    view['message'] = 'Please specify a command and app directory path. /run/command?a=/Path/to/app/'
+    view['message'] = 'Please specify a command and app directory path. /run?m=/Path/to/Metrics/&cmd=command'
 
   return render_template('acmedash.html', view=view)
 
@@ -175,12 +175,18 @@ def index(subpath=None):
   # limitpath = '/usr/local/share/' # for testing
 
   getf        = get_query('f')
+  getm        = get_query('m')
   getview     = get_query('view')
   getf_html   = remove_limitpath(getf)  # limitpath mods for client/browser side view
   getf        = add_limitpath(getf)     # limitpath mods for internal processing
 
-  view   = { 'page' : 'index', 'app_path' : app_path }
+  view   = { 
+    'page'      : 'index',
+    'getm'      : getm,
+    'app_path'  : app_path 
+  }
   listfs = []
+
 
   if os.path.isdir(getf):
     files = sorted(os.listdir(getf))

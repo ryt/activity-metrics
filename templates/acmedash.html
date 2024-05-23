@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>acme dashboard: {{ view.getf_html if view.getf_html else 'Simple CSV Web Viewer' }}</title>
+  <title>acme dashboard: {{ view.getf_html if view.getf_html else 'Activity Metrics Web Dashboard' }}</title>
   <style>
     body { margin: 0; font: 14px sans-serif; }
     h2 { margin: 0; padding: 8px 16px; background: #ddd; border-bottom: 1px solid #bbb; }
@@ -78,7 +78,14 @@
         {% if view.noncsv_plain %}
         <pre class="noncsv-plain">{{ view.noncsv_plain }}</pre>
         {% else %}
-        <div class="error">Not a CSV file. <small>[<a href="?f={{ view.getf_html_sp }}&amp;view=plain">view</a>]</small></div>
+        <div class="error">
+          {% if view.getm %}
+            Using <i>{{ view.getm }}</i> as the metrics directory.
+          {% else %}
+            Please specify a metrics directory with the <i>m</i> parameter. /?m=/Path/to/Metrics
+          {% endif %}
+          Not a CSV file. <small>[<a href="?f={{ view.getf_html_sp }}&amp;view=plain">view</a>]</small>
+        </div>
         {% endif %}
       </div>
     {% endif %}
