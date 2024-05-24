@@ -2,13 +2,14 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>acme dashboard: {{ view.getf_html if view.getf_html else 'Activity Metrics Web Dashboard' }}</title>
+  <title>acme: Activity Metrics Web Dashboard</title>
   <style>
     body { margin: 0; font: 14px sans-serif; }
     h2 { margin: 0; padding: 8px 16px; background: #ddd; border-bottom: 1px solid #bbb; }
     h2 a { color:#000; text-decoration: none; }
-    h2 a.hide { font-size: 12px; font-weight: bold; position: relative; top: -2px; }
-    h2 a.hide:hover { text-decoration: none; }
+    h2 a.hide { font-size: 12px; font-weight: bold; margin-left:10px; }
+    h2 a.hide:hover { text-decoration: underline; }
+    h2 a.cur { font-size: 14px; }
     a { color: #000; text-decoration: none; }
     a:hover { text-decoration: underline; }
     a.dotfiles { color:#777; }
@@ -18,8 +19,8 @@
     .address a:last-child { font-weight: bold; }
     .error { color: #555; font-family: monospace; padding: 4px 0; }
     .noncsv-plain { margin: 0; padding: 4px 0; }
-    .dir-list, p { padding: 8px 16px; font-family: monospace; font-size: 14px; }
-    .dir-list .error { padding: 4px 0; }
+    .dir-list, p { padding: 12px 16px; font-family: monospace; font-size: 14px; }
+    .dir-list .error { padding: 8px 0; }
     .dir-item { padding: 4px 0; }
     .file-show { padding:16px; }
     .file-show .error { margin-top: -4px; }
@@ -31,64 +32,47 @@
 </head>
 <body>
 
-  {% if view.page == 'run' %}
-
     <h2>
-      <a href="/run">acme run command</a>
-      <a class="hide" href="/">[dash]</a>
+      <a href="/?m={{ view.getm }}">acme</a>
+      <a class="hide {{ 'cur' if view.page == 'index' }}" href="/?m={{ view.getm }}">dashboard</a>
+      <a class="hide {{ 'cur' if view.page == 'run' }}" href="/run?m={{ view.getm }}">run</a>
+      <a class="hide {{ 'cur' if view.page == 'garmin' }}" href="/garmin?m={{ view.getm }}">garmin</a>
     </h2>
 
+  {% if view.page == 'run' %}
+
     <div class="address">
-      Path: <span>/</span> <a href="/run">run</a> <span>/</span> <a href="/run/{{ view.command }}">{{ view.command }}</a>
+      {{ view.getm or 'Empty' }} &rarr; <a href="/?m={{ view.getm }}">Dashboard</a> <span>/</span> <a href="/run">run</a> <span>/</span> <a href="/run/{{ view.command }}">{{ view.command }}</a>
     </div>
 
-    <p>
+    <div class="dir-list">
       {{ view.message }}
-    </p>
+    </div>
+
+  {% elif view.page == 'garmin' %}
+
+    <div class="address">
+      {{ view.getm or 'Empty' }} &rarr; <a href="/?m={{ view.getm }}">Dashboard</a> <span>/</span> <a href="/garmin">garmin</a> <span>/</span> <a href="/garmin/{{ view.command }}">{{ view.command }}</a>
+    </div>
+
+    <div class="dir-list">
+      {{ view.message }}
+    </div>
 
   {% else %}
 
-    {% if view.show_header %}
-    <h2>
-      <a href="/">acme dashboard</a>
-      <a class="hide" href="/run">[run]</a>
-    </h2>
-
     <div class="address">
-      Path: {% for a in view.address %} <span>{{ a.separator }}</span> <a href="?f={{ a.path }}">{{ a.name }}</a>{% endfor %}
+      {{ view.getm or 'Empty' }} &rarr; <a href="/?m={{ view.getm }}">Dashboard</a> <span>/</span> 
     </div>
-    {% endif %}
 
-    {% if view.listfs %}
+
     <div class="dir-list">
-      {% for f in view.listfs %}
-        <div class="dir-item"><a href="?f={{ f.path }}" class="{% if f.name.startswith('.') %}dotfiles{% endif %}">{{ f.name }}</a></div>
-      {% endfor %}
+      {% if view.getm %}
+        Using current metrics directory.
+      {% else %}
+        Please specify a metrics directory with the <i>m</i> parameter. /?m=/Path/to/Metrics
+      {% endif %}
     </div>
-    {% endif %}
-
-    {% if view.csvshow %}
-      <div class="file-show">
-        {{ view.csvshow | safe }}
-      </div>
-    {% endif %}
-
-    {% if view.noncsv %}
-      <div class="dir-list">
-        {% if view.noncsv_plain %}
-        <pre class="noncsv-plain">{{ view.noncsv_plain }}</pre>
-        {% else %}
-        <div class="error">
-          {% if view.getm %}
-            Using <i>{{ view.getm }}</i> as the metrics directory.
-          {% else %}
-            Please specify a metrics directory with the <i>m</i> parameter. /?m=/Path/to/Metrics
-          {% endif %}
-          Not a CSV file. <small>[<a href="?f={{ view.getf_html_sp }}&amp;view=plain">view</a>]</small>
-        </div>
-        {% endif %}
-      </div>
-    {% endif %}
 
   {% endif %}
 
