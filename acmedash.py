@@ -48,14 +48,14 @@ def get_query(param):
     return ''
 
 
-@app.route('/run',  methods=['GET'])
-def run(subpath=None):
+@app.route('/commands',  methods=['GET'])
+def commands(subpath=None):
 
   getm        = get_query('m')
   getcmd      = get_query('cmd')
 
   view = { 
-    'page'    : 'run',
+    'page'    : 'commands',
     'getm'    : getm,
     'query_m' : f'm={getm}',
     'command' : '', 
@@ -65,20 +65,20 @@ def run(subpath=None):
 
   if getm and getcmd:
     getm = getm.rstrip('/')
-    if os.path.isfile(f'{getm}/app/dashboard_run_commands.py'):
+    if os.path.isfile(f'{getm}/app/dashboard_commands.py'):
       sys.path.append(getm)
       view['message'] = getcmd
       view['command'] = getcmd
       # TODO // todo
-      # import dashboard_run_commands.py and run the specified command
+      # import dashboard_commands.py and run the specified command
     else:
       view['error']   = True
-      view['message'] = 'Sorry the run commands module could not be found in the metrics app directory.'
+      view['message'] = 'Sorry the commands module could not be found in the metrics app directory.'
   else:
     if getm:
-      view['message'] = f'Please specify a command. /run?m={getm}&cmd=command'
+      view['message'] = f'Please specify a command. /commands?m={getm}&cmd=command'
     else:
-      view['message'] = 'Please specify a command and app directory path. /run?m=/Path/to/Metrics/&cmd=command'
+      view['message'] = 'Please specify a command and app directory path. /commands?m=/Path/to/Metrics/&cmd=command'
 
   return render_template('acmedash.html', view=view)
 
@@ -114,7 +114,7 @@ def garmin(subpath=None):
       view['error']   = True
       view['message'] = 'Sorry the dashboard garmin connect module could not be found in the metrics app directory.'
   else:
-    view['message'] = 'Please specify an app directory path for the garmin connect module. /run?m=/Path/to/Metrics/'
+    view['message'] = 'Please specify an app directory path for the garmin connect module. ?m=/Path/to/Metrics/'
 
   return render_template('acmedash.html', view=view)
 
