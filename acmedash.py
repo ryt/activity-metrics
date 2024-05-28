@@ -10,6 +10,7 @@ import sys
 import csv
 import html
 import itertools
+import importlib
 
 from flask import Flask
 from flask import request
@@ -90,6 +91,7 @@ def garmin(subpath=None):
   view = { 
     'page'        : 'garmin',
     'getm'        : getm,
+    'query_m'     : f'm={getm}',
     'command'     : '', 
     'error'       : False, 
     'message'     : '',
@@ -101,6 +103,7 @@ def garmin(subpath=None):
     if os.path.isfile(f'{getm}/app/dashboard_garmin_connect.py'):
       sys.path.append(f'{getm}/app/')
       import dashboard_garmin_connect
+      importlib.reload(dashboard_garmin_connect)
 
       view['message']       = getcmd
       view['command']       = getcmd

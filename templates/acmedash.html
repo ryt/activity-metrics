@@ -10,6 +10,7 @@
     h2 a.hide { font-size: 12px; font-weight: bold; margin-left:10px; }
     h2 a.hide:hover { text-decoration: underline; }
     h2 a.cur { font-size: 14px; }
+    h4 { margin-bottom:10px; }
     a { color: #000; text-decoration: none; }
     a:hover { text-decoration: underline; }
     a.dotfiles { color:#777; }
@@ -29,21 +30,22 @@
     .csv-table th { background: linear-gradient(#f9f9f9 0% 50%, #f2f2f2 50% 100%); }
     .csv-table td { }
     .table-outer { max-width:1200px;max-height:600px;overflow:scroll; }
+    .filters { margin:0 0 10px; }
   </style>
 </head>
 <body>
 
     <h2>
-      <a href="/?m={{ view.getm }}">acme</a>
-      <a class="hide {{ 'cur' if view.page == 'index' }}" href="/?m={{ view.getm }}">dashboard</a>
-      <a class="hide {{ 'cur' if view.page == 'run' }}" href="/run?m={{ view.getm }}">run</a>
-      <a class="hide {{ 'cur' if view.page == 'garmin' }}" href="/garmin?m={{ view.getm }}">garmin</a>
+      <a href="/?{{ view.query_m }}">acme</a>
+      <a class="hide {{ 'cur' if view.page == 'index' }}" href="/?{{ view.query_m }}">dashboard</a>
+      <a class="hide {{ 'cur' if view.page == 'run' }}" href="/run?{{ view.query_m }}">run</a>
+      <a class="hide {{ 'cur' if view.page == 'garmin' }}" href="/garmin?{{ view.query_m }}">garmin</a>
     </h2>
 
   {% if view.page == 'run' %}
 
     <div class="address">
-      {{ view.getm or 'Empty' }} &rarr; <a href="/?m={{ view.getm }}">Dashboard</a> <span>/</span> <a href="/run">run</a> <span>/</span> <a href="/run/{{ view.command }}">{{ view.command }}</a>
+      {{ view.getm or 'Empty' }} &rarr; <a href="/?{{ view.query_m }}">Dashboard</a> <span>/</span> <a href="/run?{{ view.query_m }}">run</a> <span>/</span> <a href="/run/{{ view.command }}?{{ view.query_m }}">{{ view.command }}</a>
     </div>
 
     <div class="dir-list">
@@ -53,7 +55,7 @@
   {% elif view.page == 'garmin' %}
 
     <div class="address">
-      {{ view.getm or 'Empty' }} &rarr; <a href="/?m={{ view.getm }}">Dashboard</a> <span>/</span> <a href="/garmin">garmin</a> <span>/</span> <a href="/garmin/{{ view.command }}">{{ view.command }}</a>
+      {{ view.getm or 'Empty' }} &rarr; <a href="/?{{ view.query_m }}">Dashboard</a> <span>/</span> <a href="/garmin?{{ view.query_m }}">garmin</a> <span>/</span> <a href="/garmin/{{ view.command }}?{{ view.query_m }}">{{ view.command }}</a>
     </div>
 
     <div class="dir-list">
@@ -64,7 +66,7 @@
   {% else %}
 
     <div class="address">
-      {{ view.getm or 'Empty' }} &rarr; <a href="/?m={{ view.getm }}">Dashboard</a> <span>/</span> 
+      {{ view.getm or 'Empty' }} &rarr; <a href="/?{{ view.query_m }}">Dashboard</a> <span>/</span> 
     </div>
 
 
