@@ -57,6 +57,7 @@ def run(subpath=None):
   view = { 
     'page'    : 'run',
     'getm'    : getm,
+    'query_m' : f'm={getm}',
     'command' : '', 
     'error'   : False, 
     'message' : '' 
@@ -130,6 +131,7 @@ def index(subpath=None):
   view   = { 
     'page'      : 'index',
     'getm'      : getm,
+    'query_m'   : f'm={getm}',
     'app_path'  : app_path 
   }
 
