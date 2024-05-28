@@ -28,6 +28,7 @@
     .csv-table th, .csv-table td { border: 1px solid #ccc; padding: 8px; font-weight: normal; }
     .csv-table th { background: linear-gradient(#f9f9f9 0% 50%, #f2f2f2 50% 100%); }
     .csv-table td { }
+    .table-outer { max-width:1200px;max-height:600px;overflow:scroll; }
   </style>
 </head>
 <body>
@@ -57,6 +58,7 @@
 
     <div class="dir-list">
       {{ view.message }}
+      {{ view.output_html | safe }}
     </div>
 
   {% else %}

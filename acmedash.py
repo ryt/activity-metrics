@@ -88,21 +88,24 @@ def garmin(subpath=None):
   getcmd      = get_query('cmd')
 
   view = { 
-    'page'    : 'garmin',
-    'getm'    : getm,
-    'command' : '', 
-    'error'   : False, 
-    'message' : '' 
+    'page'        : 'garmin',
+    'getm'        : getm,
+    'command'     : '', 
+    'error'       : False, 
+    'message'     : '',
+    'output_html' : '',
   }
 
   if getm:
     getm = getm.rstrip('/')
     if os.path.isfile(f'{getm}/app/dashboard_garmin_connect.py'):
-      sys.path.append(getm)
-      view['message'] = getcmd
-      view['command'] = getcmd
-      # TODO // todo
-      # import dashboard_run_commands.py and run the specified command
+      sys.path.append(f'{getm}/app/')
+      import dashboard_garmin_connect
+
+      view['message']       = getcmd
+      view['command']       = getcmd
+      view['output_html']   = dashboard_garmin_connect.output_html
+
     else:
       view['error']   = True
       view['message'] = 'Sorry the dashboard garmin connect module could not be found in the metrics app directory.'
