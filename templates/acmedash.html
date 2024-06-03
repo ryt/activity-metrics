@@ -41,18 +41,18 @@
 <body>
 
     <h2>
-      <a href="/?{{ view.query_m }}">acme</a>
-      <a class="nav {{ 'cur' if view.page == 'index' }}" href="/?{{ view.query_m }}">dashboard</a>
-      <a class="nav {{ 'cur' if view.page == 'commands' }}" href="/commands?{{ view.query_m }}">commands</a>
-      <a class="nav {{ 'cur' if view.page == 'garmin' }}" href="/garmin?{{ view.query_m }}">garmin</a>
+      <a href="{{ view.app_path }}?{{ view.query_m }}">acme</a>
+      <a class="nav {{ 'cur' if view.page == 'index' }}" href="{{ view.app_path }}?{{ view.query_m }}">dashboard</a>
+      <a class="nav {{ 'cur' if view.page == 'commands' }}" href="{{ view.app_path }}commands?{{ view.query_m }}">commands</a>
+      <a class="nav {{ 'cur' if view.page == 'garmin' }}" href="{{ view.app_path }}garmin?{{ view.query_m }}">garmin</a>
     </h2>
 
   {% if view.page == 'commands' %}
 
     <div class="address">
-      {{ view.getm or 'Empty' }} &rarr; <a href="/?{{ view.query_m }}">Dashboard</a> <span>/</span> 
-      <a href="/commands?{{ view.query_m }}">commands</a> <span>/</span> 
-      <a href="/commands/{{ view.command }}?{{ view.query_m }}">{{ view.command }}</a>
+      {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
+      <a href="{{ view.app_path }}commands?{{ view.query_m }}">commands</a> <span>/</span> 
+      <a href="{{ view.app_path }}commands/{{ view.command }}?{{ view.query_m }}">{{ view.command }}</a>
     </div>
 
     <div class="dir-list">
@@ -62,8 +62,8 @@
   {% elif view.page == 'garmin' %}
 
     <div class="address">
-      {{ view.getm or 'Empty' }} &rarr; <a href="/?{{ view.query_m }}">Dashboard</a> <span>/</span> 
-      <a href="/garmin?{{ view.query_m }}">garmin</a> <span>/</span> 
+      {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
+      <a href="{{ view.app_path }}garmin?{{ view.query_m }}">garmin</a> <span>/</span> 
     </div>
 
     <div class="dir-list">
@@ -74,7 +74,7 @@
   {% else %}
 
     <div class="address">
-      {{ view.getm or 'Empty' }} &rarr; <a href="/?{{ view.query_m }}">Dashboard</a> <span>/</span> 
+      {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
     </div>
 
 
@@ -82,7 +82,7 @@
       {% if view.getm %}
         {{ view.output_html | safe }}
       {% else %}
-        Please specify a metrics directory with the <i>m</i> parameter. /?m=/Path/to/Metrics
+        Please specify a metrics directory with the <i>m</i> parameter. {{ view.app_path }}?m=/Path/to/Metrics
       {% endif %}
     </div>
 

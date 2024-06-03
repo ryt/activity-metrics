@@ -21,7 +21,7 @@ from configparser import ConfigParser
 app = Flask(__name__)
 
 limitpath = ''
-app_path  = '/acmedash'
+app_path  = '/'
 
 # -- start: parse runapp.conf (if it exists) and make modifications
 conf = 'runapp.conf'
@@ -48,19 +48,20 @@ def get_query(param):
     return ''
 
 
-@app.route('/commands',  methods=['GET'])
+@app.route(f'{app_path}commands',  methods=['GET'])
 def commands(subpath=None):
 
   getm        = get_query('m')
   getcmd      = get_query('cmd')
 
-  view = { 
-    'page'    : 'commands',
-    'getm'    : getm,
-    'query_m' : f'm={getm}',
-    'command' : '', 
-    'error'   : False, 
-    'message' : '' 
+  view = {
+    'app_path' : app_path,
+    'page'     : 'commands',
+    'getm'     : getm,
+    'query_m'  : f'm={getm}',
+    'command'  : '', 
+    'error'    : False, 
+    'message'  : '' 
   }
 
   if getm and getcmd:
@@ -83,12 +84,13 @@ def commands(subpath=None):
   return render_template('acmedash.html', view=view)
 
 
-@app.route('/garmin',  methods=['GET'])
+@app.route(f'{app_path}garmin',  methods=['GET'])
 def garmin(subpath=None):
 
   getm        = get_query('m')
 
-  view = { 
+  view = {
+    'app_path'    : app_path,
     'page'        : 'garmin',
     'getm'        : getm,
     'query_m'     : f'm={getm}',
@@ -116,7 +118,7 @@ def garmin(subpath=None):
   return render_template('acmedash.html', view=view)
 
 
-@app.route('/', methods=['GET'])
+@app.route(f'{app_path}', methods=['GET'])
 
 def index(subpath=None):
 
@@ -124,11 +126,12 @@ def index(subpath=None):
 
   getm        = get_query('m')
 
-  view   = { 
-    'page'      : 'index',
-    'getm'      : getm,
-    'query_m'   : f'm={getm}',
-    'app_path'  : app_path,
+  view   = {
+    'app_path'    : app_path,
+    'page'        : 'index',
+    'getm'        : getm,
+    'query_m'     : f'm={getm}',
+    'app_path'    : app_path,
     'error'       : False, 
     'message'     : '',
     'output_html' : '',
