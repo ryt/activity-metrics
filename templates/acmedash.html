@@ -64,7 +64,6 @@
     <div class="address">
       {{ view.getm or 'Empty' }} &rarr; <a href="/?{{ view.query_m }}">Dashboard</a> <span>/</span> 
       <a href="/garmin?{{ view.query_m }}">garmin</a> <span>/</span> 
-      <a href="/garmin/{{ view.command }}?{{ view.query_m }}">{{ view.command }}</a>
     </div>
 
     <div class="dir-list">
@@ -81,7 +80,7 @@
 
     <div class="dir-list">
       {% if view.getm %}
-        Using current metrics directory.
+        {{ view.output_html | safe }}
       {% else %}
         Please specify a metrics directory with the <i>m</i> parameter. /?m=/Path/to/Metrics
       {% endif %}

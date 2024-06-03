@@ -87,13 +87,11 @@ def commands(subpath=None):
 def garmin(subpath=None):
 
   getm        = get_query('m')
-  getcmd      = get_query('cmd')
 
   view = { 
     'page'        : 'garmin',
     'getm'        : getm,
     'query_m'     : f'm={getm}',
-    'command'     : '', 
     'error'       : False, 
     'message'     : '',
     'output_html' : '',
@@ -106,8 +104,7 @@ def garmin(subpath=None):
       import dashboard_garmin_connect
       importlib.reload(dashboard_garmin_connect)
 
-      view['message']       = getcmd
-      view['command']       = getcmd
+      view['message']       = ''
       view['output_html']   = dashboard_garmin_connect.output_html
 
     else:
@@ -126,15 +123,33 @@ def index(subpath=None):
   global app_path
 
   getm        = get_query('m')
-  getview     = get_query('view')
 
   view   = { 
     'page'      : 'index',
     'getm'      : getm,
     'query_m'   : f'm={getm}',
-    'app_path'  : app_path 
+    'app_path'  : app_path,
+    'error'       : False, 
+    'message'     : '',
+    'output_html' : '',
   }
 
+  if getm:
+    getm = getm.rstrip('/')
+    if os.path.isfile(f'test/app/dashboard_metrics.py'):
+      sys.path.append(f'test/app/')
+      import dashboard_metrics
+      importlib.reload(dashboard_metrics)
+
+      view['message']       = ''
+      view['command']       = ''
+      view['output_html']   = dashboard_metrics.output_html
+
+    else:
+      view['error']   = True
+      view['message'] = 'Sorry the dashboard metrics module could not be found in the activity metrics app directory.'
+  else:
+    view['message'] = 'Please specify an app directory path for the metrics module. ?m=/Path/to/Metrics/'
 
   return render_template('acmedash.html', view=view)
 
