@@ -11,7 +11,7 @@ The '.py' extension is automatically added to the definitions on import.
 
 use_glossary = 'glossary'
 
-# use modules available by default in {install_dir}/activity-metrics/test/app/
+# use modules available by default in {install_dir}/activity-metrics/usr/app/
 
 use_default_modules = (
   'module_tagblock',

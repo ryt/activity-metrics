@@ -146,7 +146,7 @@ def main():
 
   # -- start: option to allow help, manual, and version to be seen without requiring a 'logs' directory
   if not find_logs and sys.argv[1] in ('--help','-h','help','man','--version','-v'):
-    find_logs = 'test/logs/'
+    find_logs = 'usr/logs/'
   # -- end: option allow-help
 
   if find_logs:

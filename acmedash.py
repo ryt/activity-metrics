@@ -139,8 +139,8 @@ def index(subpath=None):
 
   if getm:
     getm = getm.rstrip('/')
-    if os.path.isfile(f'test/app/dashboard_metrics.py'):
-      sys.path.append(f'test/app/')
+    if os.path.isfile(f'usr/app/dashboard_metrics.py'):
+      sys.path.append(f'usr/app/')
       import dashboard_metrics
       importlib.reload(dashboard_metrics)
 

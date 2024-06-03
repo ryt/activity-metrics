@@ -322,7 +322,7 @@ def analyze(params, called, meta):
   hr = '-' * 50
 
   sys.path.append(app_dir)
-  sys.path.append(f'{install_dir}test/app/')
+  sys.path.append(f'{install_dir}usr/app/')
 
   import macros, utility, module_settings
 
@@ -341,7 +341,7 @@ def analyze(params, called, meta):
 
   for dm in default_modules:
     if dm:
-      # imports modules from {install_dir}test/app/
+      # imports modules from {install_dir}usr/app/
       apply_modules[dm] = importlib.import_module(dm)
 
   for lm in local_modules:
