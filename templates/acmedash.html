@@ -36,6 +36,7 @@
     .periods { margin: 0 0 10px; font-size: 12px; }
     .details { margin:10px 0; }
     .dim { color: #777; }
+    .cmd-result { margin: 5px 0 0; }
   </style>
 </head>
 <body>
@@ -52,11 +53,11 @@
     <div class="address">
       {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
       <a href="{{ view.app_path }}commands?{{ view.query_m }}">commands</a> <span>/</span> 
-      <a href="{{ view.app_path }}commands/{{ view.command }}?{{ view.query_m }}">{{ view.command }}</a>
+      <a href="{{ view.app_path }}commands?{{ view.query_m }}&cmd={{ view.command }}">{{ view.command }}</a>
     </div>
 
     <div class="dir-list">
-      {{ view.message }}
+      {{ view.output_html | safe }}
     </div>
 
   {% elif view.page == 'garmin' %}
