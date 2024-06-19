@@ -70,12 +70,14 @@ def webcsv_link(file):
   port = urlparse(request.url_root).port
   scheme = 'http'
   preurl = f'{scheme}://{host}'
+  csvurl = gen_csv_file
   if port == 8100:
     preurl += ':8002'
   else:
     preurl += '/:8002'
+    csvurl = csvurl.replace('/var/www/Metrics/Metrics/', '')
 
-  return f'{preurl}/webcsv?f={gen_csv_file}'
+  return f'{preurl}/webcsv?f={csvurl}'
 
 
 def html_return_error(text):
