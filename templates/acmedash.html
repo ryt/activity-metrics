@@ -2,6 +2,9 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="apple-mobile-web-app-title" content="acme: Activity Metrics">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>acme: Activity Metrics Web Dashboard</title>
   <style>
     body { margin: 0; font: 14px sans-serif; }
@@ -31,8 +34,9 @@
     .csv-table th, .csv-table td { border: 1px solid #ccc; padding: 8px; font-weight: normal; }
     .csv-table th { background: linear-gradient(#f9f9f9 0% 50%, #f2f2f2 50% 100%); }
     .csv-table td { }
+    .plain, .plain td { margin: 0; padding: 0; border-collapse: collapse; }
     .table-outer { max-width:1200px;max-height:600px;overflow:scroll; }
-    .filters { max-width:1200px; display:flex; justify-content: space-between; }
+    .filters { max-width:1200px; margin: 0 0 10px; }
     .periods { margin: 0 0 10px; font-size: 12px; }
     .details { margin:10px 0; }
     .mb-10 { margin-bottom: 10px; }
@@ -40,10 +44,17 @@
     .dim { color: #777; }
     .cmd-result { margin: 5px 0 0; }
     .clear { clear: both; }
-    .filter-search {  }
+    .filter-search { margin:5px 0 0 20px;  }
     #filter-query { border: 1px solid #999; padding: 4px 5px; margin: 0; border-radius: 4px 0 0 4px; border-right: none; }
     #filter-go { padding: 5px 8px; background: #555; border: none; color: #fff; border-radius: 0px 4px 4px 0; cursor: pointer; }
     #filter-go:hover { background: #222; }
+
+    @media (max-width: 568px) { 
+      .address { font-size: 12px; line-height: 1.25; }
+      .filters { }
+      .filter-search { }
+    }
+
   </style>
 </head>
 <body>

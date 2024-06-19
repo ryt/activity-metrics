@@ -6,6 +6,8 @@
 The Metrics dashboard module provides a web interface for analyzing and displaying metrics logs & data.
 """
 
+# TODO: Idea inspirations from gyroscope -> https://gyrosco.pe/aprilzero/
+
 import os
 import re
 import csv
@@ -14,6 +16,7 @@ import traceback
 import pandas as pd
 
 from datetime import datetime, timedelta
+from urllib.parse import urlparse
 from flask import request
 from io import StringIO
 
@@ -59,6 +62,20 @@ def query_link(params = {}):
   m = get_query('m')
 
   return f'?m={m}&{add}'.rstrip('&')
+
+
+def webcsv_link(file):
+  """Create a link to the file through webcsv (if installed & running)"""
+  host = urlparse(request.url_root).hostname
+  port = urlparse(request.url_root).port
+  scheme = 'http'
+  preurl = f'{scheme}://{host}'
+  if port == 8100:
+    preurl += ':8002'
+  else:
+    preurl += '/:8002'
+
+  return f'{preurl}/webcsv?f={gen_csv_file}'
 
 
 def html_return_error(text):
@@ -341,7 +358,16 @@ if gen_csv_file:
     f'<h3>Metrics {year}</h3>',
     create_periods(periods),
 
-    '<h4 id="activities">Metrics CSV</h4>',
+    '<table class="plain">',
+     # note: the CSV link below requires/assumes webcsv being installed/used & running on the machine
+     f'<td><h4 id="activities">Metrics CSV (<a href="{webcsv_link(gen_csv_file)}" target="_blank">{os.path.basename(gen_csv_file)}</a>)</h4></td>',
+     f'<td><div class="filter-search">',
+        '<table class="plain">',
+         f'<td><input type="text" placeholder="c1:music,c2:practice" id="filter-query" value="{qf}"></td>',
+          '<td><button id="filter-go">Go</button></td>',
+        '</table>',
+      '</div></td>',
+    '</table>',
 
     '<div class="filters">',
        '<div class="filter-lists">',
@@ -352,7 +378,6 @@ if gen_csv_file:
         f'<a href="{query_link({ "filter" : "activity:study", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"activity:study","bold")}">Study</a>, ',
         f'<a href="{query_link({ "filter" : "activity:practice", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"activity:practice","bold")}">Practice</a>',
        '</div>',
-      f'<div class="filter-search"><input type="text" placeholder="c1:music,c2:practice" id="filter-query" value="{qf}"><button id="filter-go">Go</button></div>',
     '</div>',
 
     '<div class="periods"> <span class="dim">Periods:</span> ',
