@@ -68,13 +68,11 @@ def webcsv_link(file):
   """Create a link to the file through webcsv (if installed & running)"""
   host = urlparse(request.url_root).hostname
   port = urlparse(request.url_root).port
-  scheme = 'http'
-  preurl = f'{scheme}://{host}'
   csvurl = gen_csv_file
   if port == 8100:
-    preurl += ':8002'
+    preurl = f'http://{host}:8002'
   else:
-    preurl += '/:8002'
+    preurl = f'https://{host}/:8002'
     csvurl = csvurl.replace('/var/www/Metrics/Metrics/', '')
 
   return f'{preurl}/webcsv?f={csvurl}'
