@@ -31,9 +31,10 @@ def is_quoted_or_braced(word):
   return word.startswith('"') or word.startswith("'") or word.startswith('{')
 
 
-def convert_to_hours(str):
+def convert_to_hours(inp):
   """Converts short time format (e.g. 1:30h) into equavalent hours (e.g. 1.5)"""
-  sep = re.match(r'([\d\,\.\:]+)(m|h|s)', str)
+
+  sep = re.match(r'([\d\,\.\:]+)(m|h|s)', inp)
   num = sep.group(1)
   typ = sep.group(2)
 
