@@ -10,6 +10,7 @@ The Metrics dashboard module provides a web interface for analyzing and displayi
 
 import os
 import re
+import sys
 import csv
 import html
 import traceback
@@ -19,6 +20,9 @@ from datetime import datetime, timedelta
 from urllib.parse import urlparse
 from flask import request
 from io import StringIO
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import macros
 
 # date & time definitions
 
@@ -93,18 +97,44 @@ def create_periods(periods):
     else:
       html += f"<b>{p['label']}:</b> {p['from'][1]} - {p['to'][1]} {arrow} <ul>"
     html += ''.join((
-                    f"<li>Total work hours: {p['metrics']['total_miles_running']}</li>",
-                    f"<li>Total project hours: {p['metrics']['total_miles_soccer']}</li>",
-                    #f"<li>Combined soccer + running miles: {p['metrics']['total_miles_running_soccer']}</li>",
-                    #f"<li>Total cycling miles: {p['metrics']['total_miles_cycling']}</li>",
-                    #f"<li>Total strength training sets: {p['metrics']['total_sets']}</li>"
+                    f"<li>Total work hours: {p['metrics']['total_work_hours']}</li>",
+                    f"<li>Total project hours: {p['metrics']['total_project_hours']}</li>",
                   ))
     html += '</ul></div>'
 
   return html
 
 
-def get_total_miles(df, start_date, end_date, qf=''):
+def parse_filter(qfilter):
+  """Parse a filter (query) string and convert it into dictionary with keys, values, & attributes"""
+  if qfilter:
+    filter_dicts = []
+    filter_instances = qfilter.split(',')
+    for f in filter_instances:
+      filter_parts = f.split(':')
+      filter_key = filter_parts[0]
+      filter_val = filter_parts[1]
+      filter_col_num = int(''.join(filter(str.isdigit, filter_key))) if any(char.isdigit() for char in filter_key) else 0
+      filter_dicts.append({
+        'key'       : filter_key,
+        'col_num'   : filter_col_num,
+        'val'       : filter_val,
+        'is_quoted' : True if (filter_val.startswith('"') and filter_val.endswith('"')) or (filter_val.startswith("'") and filter_val.endswith("'")) else False,
+        'val_nq'    : filter_val.strip('\'"')
+      })
+  else:
+    return {
+      'key'       : '', 
+      'col_num'   : '', 
+      'val'       : '',
+      'is_quoted' : False,
+      'val_nq'    : '',
+    }
+
+  return filter_dicts
+
+
+def get_total_hours(df, start_date, end_date, qf=''):
   """Get the sum of distanceMI for qf (activity) (if not empty) from start_date through end_date"""
 
   # filter dataframe if qf is specified
@@ -139,8 +169,18 @@ def df_activity_filter(odf, qf):
   #  df = df[df['activityTypeName'].str.contains('strength', na=False)]
   #elif qf == 'activity:cycling':
   #  df = df[df['activityTypeName'].str.contains('cycling', na=False)]
-  if qf == 'c1:music':
-    df = df[df['C1'].str.contains('Music', na=False)]
+  fi = parse_filter(qf)
+
+  if len(fi) > 1: # multiple filters
+    x = True
+  else: # single filter
+
+    fi_key = fi[0]['key']
+    fi_val = fi[0]['val']
+    if fi[0]['is_quoted'] == True: # exact match e.g. "Music" .. check if val_nq (no quote) == column value
+      df = df[df[fi_key] == fi[0]['val_nq']] if fi_key in df else pd.DataFrame({})
+    else:
+      df = df[df[fi_key].str.contains(fi_val, na=False)] if fi_key in df else pd.DataFrame({})
 
   return df
 
@@ -155,16 +195,8 @@ def html_table_from_dataframe(df, apply_filters=False):
 
     # ?filter=:filter:
     qf = get_query('filter')
-    if qf == 'activity:soccer':
-      df = df_activity_filter(df, 'activity:soccer')
-    elif qf == 'activity:running':
-      df = df_activity_filter(df, 'activity:running')
-    elif qf == 'activity:strength':
-      df = df_activity_filter(df, 'activity:strength')
-    elif qf == 'activity:cycling':
-      df = df_activity_filter(df, 'activity:cycling')
-    elif qf == 'c1:music':
-      df = df_activity_filter(df, 'c1:music')
+    if qf:
+      df = df_activity_filter(df, qf)
 
     # ?periods=:period:
     qp = get_query('periods')
@@ -233,7 +265,7 @@ def html_table_from_dataframe(df, apply_filters=False):
   return {
     'html'       : html_table,
     'total'      : len(df),
-    'total_hrs'  : df[df['Description'] != 'Total Logged Hours']['Hours'].sum(),
+    'total_hrs'  : df[df['Description'] != 'Total Logged Hours']['Hours'].sum() if 'Description' in df else 0,
   }
 
 def ifxyz(x, y, z, default = ''):
@@ -245,6 +277,8 @@ gen_dir       = f"{get_query('m').rstrip('/')}/gen/"
 gen_csv_file  = ''
 
 q = '"'
+nl = "\n"
+lnl = "\\n"
 
 qf = get_query('filter')
 qp = get_query('periods')
@@ -273,20 +307,20 @@ if gen_csv_file:
   # define periods
 
   # custom calculations
-  tod_total_miles_running = get_total_miles(df, today_f[0], today_f[0], 'activity:running')
-  tod_total_miles_soccer = get_total_miles(df, today_f[0], today_f[0], 'activity:soccer')
+  tod_total_work_hours = get_total_hours(df, today_f[0], today_f[0], 'C1:"Work"')
+  tod_total_project_hours = get_total_hours(df, today_f[0], today_f[0], 'C1:"Projects"')
 
-  yest_total_miles_running = get_total_miles(df, yest_f[0], yest_f[0], 'activity:running')
-  yest_total_miles_soccer = get_total_miles(df, yest_f[0], yest_f[0], 'activity:soccer')
+  yest_total_work_hours = get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Work"')
+  yest_total_project_hours = get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Projects"')
 
-  week_total_miles_running = get_total_miles(df, weekstart_f[0], today_f[0], 'activity:running')
-  week_total_miles_soccer = get_total_miles(df, weekstart_f[0], today_f[0], 'activity:soccer')
+  week_total_work_hours = get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Work"')
+  week_total_project_hours = get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Projects"')
 
-  month_total_miles_running = get_total_miles(df, monthstart_f[0], today_f[0], 'activity:running')
-  month_total_miles_soccer = get_total_miles(df, monthstart_f[0], today_f[0], 'activity:soccer')
+  month_total_work_hours = get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Work"')
+  month_total_project_hours = get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Projects"')
 
-  year_total_miles_running = get_total_miles(df, yearstart_f[0], today_f[0], 'activity:running')
-  year_total_miles_soccer = get_total_miles(df, yearstart_f[0], today_f[0], 'activity:soccer')
+  year_total_work_hours = get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Work"')
+  year_total_project_hours = get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Projects"')
 
   periods = [
     {
@@ -294,11 +328,8 @@ if gen_csv_file:
       'from'  : (today_f[0], today_f[1], today_f[2]),
       'to'    : (today_f[0], today_f[1], today_f[2]),
       'metrics' : {
-        'total_miles_running' : tod_total_miles_running,
-        'total_miles_soccer' : tod_total_miles_soccer,
-        #'total_miles_running_soccer' : tod_total_miles_running + tod_total_miles_soccer,
-        #'total_miles_cycling' : get_total_miles(df, today_f[0], today_f[0], 'activity:cycling'),
-        #'total_sets'  : '--'
+        'total_work_hours'    : tod_total_work_hours,
+        'total_project_hours' : tod_total_project_hours,
       }
     },
     {
@@ -306,11 +337,8 @@ if gen_csv_file:
       'from'  : (yest_f[0], yest_f[1], yest_f[2]),
       'to'    : (yest_f[0], yest_f[1], yest_f[2]),
       'metrics' : {
-        'total_miles_running' : yest_total_miles_running,
-        'total_miles_soccer' : yest_total_miles_soccer,
-        #'total_miles_running_soccer' : yest_total_miles_running + yest_total_miles_soccer,
-        #'total_miles_cycling' : get_total_miles(df, yest_f[0], yest_f[0], 'activity:cycling'),
-        #'total_sets'  : '--'
+        'total_work_hours'    : yest_total_work_hours,
+        'total_project_hours' : yest_total_project_hours,
       }
     },
     {
@@ -318,11 +346,8 @@ if gen_csv_file:
       'from'  : (weekstart_f[0], weekstart_f[1], weekstart_f[2]),
       'to'    : (today_f[0], today_f[1], today_f[2]),
       'metrics' : {
-        'total_miles_running' : week_total_miles_running,
-        'total_miles_soccer' : week_total_miles_soccer,
-        #'total_miles_running_soccer' : week_total_miles_running + week_total_miles_soccer,
-        #'total_miles_cycling' : get_total_miles(df, weekstart_f[0], today_f[0], 'activity:cycling'),
-        #'total_sets'  : '--'
+        'total_work_hours'    : week_total_work_hours,
+        'total_project_hours' : week_total_project_hours,
       }
     },
     {
@@ -330,11 +355,8 @@ if gen_csv_file:
       'from'  : (monthstart_f[0], monthstart_f[1], monthstart_f[2]),
       'to'    : (today_f[0], today_f[1], today_f[2]),
       'metrics' : {
-        'total_miles_running' : month_total_miles_running,
-        'total_miles_soccer' : month_total_miles_soccer,
-        #'total_miles_running_soccer' : month_total_miles_running + month_total_miles_soccer,
-        #'total_miles_cycling' : get_total_miles(df, monthstart_f[0], today_f[0], 'activity:cycling'),
-        #'total_sets'  : '--'
+        'total_work_hours'    : month_total_work_hours,
+        'total_project_hours' : month_total_project_hours,
       }
     },
     {
@@ -342,11 +364,8 @@ if gen_csv_file:
       'from'  : (yearstart_f[0], yearstart_f[1], yearstart_f[2]),
       'to'    : (today_f[0], today_f[1], today_f[2]),
       'metrics' : {
-        'total_miles_running' : year_total_miles_running,
-        'total_miles_soccer' : year_total_miles_soccer,
-        #'total_miles_running_soccer' : round(year_total_miles_running + year_total_miles_soccer, 2),
-        #'total_miles_cycling' : get_total_miles(df, yearstart_f[0], today_f[0], 'activity:cycling'),
-        #'total_sets'  : '--'
+        'total_work_hours'    : year_total_work_hours,
+        'total_project_hours' : year_total_project_hours,
       }
     }
   ]
@@ -363,7 +382,7 @@ if gen_csv_file:
      f'<td><h4 id="activities">Metrics CSV (<a href="{webcsv_link(gen_csv_file)}" target="_blank">{os.path.basename(gen_csv_file)}</a>)</h4></td>',
      f'<td><div class="filter-search">',
         '<table class="plain">',
-         f'<td><input type="text" placeholder="c1:music,c2:practice" id="filter-query" value="{qf}"></td>',
+         f'<td><input type="text" placeholder="C1:Music,C2:Practice" id="filter-query" value="{html.escape(qf)}"></td>',
           '<td><button id="filter-go">Go</button></td>',
         '</table>',
       '</div></td>',
@@ -390,7 +409,7 @@ if gen_csv_file:
     '</div>',
 
     f'<div class="table-outer">{frame_table["html"]}</div>',
-    f'<div class="details">Total: <b>{frame_table["total"]}</b>, <i>{round(frame_table["total_hrs"], 2)}hrs</i></div>'
+    f'<div class="details">Total: <b>{frame_table["total"]}</b>, <i>{round(frame_table["total_hrs"], 2)}hrs</i> <a href="javascript:;" onclick="downloadCSV();" class="right">Download</a></div>'
 
 
     f'''
@@ -407,6 +426,37 @@ if gen_csv_file:
 
       fquery.addEventListener('keyup', function(e){{ if ( e.key === "Enter" ) {{ e.preventDefault(); filterGo(); }} }});
       fgo.addEventListener('click', filterGo);
+
+      function downloadCSV() {{
+
+        var table = document.querySelector(".csv-table");
+        var rows = Array.from(table.querySelectorAll("tr"));
+        var csvContent = "";
+
+        rows.forEach(function(row, rowIndex) {{
+            var columns = Array.from(row.querySelectorAll("td, th"));
+
+            columns.forEach(function(column, columnIndex) {{
+              csvContent += '"' + column.innerText.replace(/"/g, '""') + '"';
+              if ( columnIndex < columns.length - 1 ) {{
+                csvContent += ',';
+              }}
+            }});
+            csvContent += "\\n";
+        }});
+
+        csvContent += "{',' + macros.hours_to_human(round(frame_table["total_hrs"], 2)) + ',,,,,Total Hours,' + str(round(frame_table["total_hrs"], 2))  + ','+lnl if qf else ''}";
+
+        var downloadLink = document.createElement("a");
+        var blob = new Blob(["\\ufeff", csvContent]);
+        var url = URL.createObjectURL(blob);
+        downloadLink.href = url;
+        downloadLink.download = '{os.path.basename(gen_csv_file)}';
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      }}
 
     </script>
 
