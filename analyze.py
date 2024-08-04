@@ -491,8 +491,50 @@ def analyze(params, called, meta):
 
             lenfn = len(parsed_slash)
 
+            # -- generate year collections -- #
+
             if lenfn == 4:
               output += [f'Mock-generating CSV file for ({parsed_slash}) year collections.']
+              year_collection = []
+              collcount = 0
+
+              for m in range(1, 13):
+                m = str(m).zfill(2)
+                for d in range(1,32):
+                  d = str(d).zfill(2)
+                  filename = f'{logs_dir}{parsed_slash}/{m}/{d}.txt'
+                  if os.path.exists(filename):
+
+                    # convert each individual log txt file
+                    with open(filename, 'r') as file:
+                      entries = file.read()
+                      print(f'{parsed_dash}-{m}-{d}')
+                    entries = convert_to_csv(entries, f'{parsed_dash}-{m}-{d}')
+                    year_collection.append(entries)
+                    collcount += 1
+
+              output += [f'Found {collcount} daily log file(s) for ({parsed_slash}) year collection.']
+
+              # combine all the lists into one list
+              year_collection = list(itertools.chain(*year_collection))
+
+              # add modifications: header & footer calculations, categorize
+              year_collection = modify_csv(
+                year_collection, 
+                add_header=True, 
+                add_footer=True,
+                module_options=module_options,
+              )
+
+              # generate collection log csv file
+              genfile = f'{gen_dir}{parsed_dash}.csv'
+              with open(genfile, 'w') as file:
+                file.write(csvtext(year_collection))
+              output += [f'Generated year collection CSV file {genfile} successfully.']
+              # pydoc.pager(year_collection)
+
+
+            # -- generate month collections -- #
 
             elif lenfn == 7:
               month_collection = []
