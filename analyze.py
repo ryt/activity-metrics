@@ -494,7 +494,6 @@ def analyze(params, called, meta):
             # -- generate year collections -- #
 
             if lenfn == 4:
-              output += [f'Mock-generating CSV file for ({parsed_slash}) year collections.']
               year_collection = []
               collcount = 0
 
