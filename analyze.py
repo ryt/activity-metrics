@@ -507,7 +507,7 @@ def analyze(params, called, meta):
                     # convert each individual log txt file
                     with open(filename, 'r') as file:
                       entries = file.read()
-                      print(f'{parsed_dash}-{m}-{d}')
+                      # print(f'{parsed_dash}-{m}-{d}')
                     entries = convert_to_csv(entries, f'{parsed_dash}-{m}-{d}')
                     year_collection.append(entries)
                     collcount += 1

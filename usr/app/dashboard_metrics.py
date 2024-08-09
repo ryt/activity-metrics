@@ -287,6 +287,12 @@ if qp == 'year' and os.path.isfile(f'{gen_dir}{year}.csv'):
   gen_csv_file  = f'{gen_dir}{year}.csv'
 elif qp == 'month' and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m")}.csv'):
   gen_csv_file  = f'{gen_dir}{today.strftime("%Y-%m")}.csv'
+elif qp == 'week' and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m")}.csv'):
+  gen_csv_file  = f'{gen_dir}{today.strftime("%Y-%m")}.csv'
+elif qp == 'yesterday' and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m")}.csv'):
+  gen_csv_file  = f'{gen_dir}{yest_f[0]}.csv'
+elif qp == 'today' and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m")}.csv'):
+  gen_csv_file  = f'{gen_dir}{today_f[0]}.csv'
 else:
   if os.path.isfile(f'{gen_dir}{today_f[0]}.csv'):
     gen_csv_file  = f'{gen_dir}{today_f[0]}.csv'
