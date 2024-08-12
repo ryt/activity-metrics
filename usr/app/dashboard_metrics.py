@@ -422,11 +422,17 @@ if gen_csv_file:
 
     <script type="text/javascript">
 
+      function urlPrep(str) {{
+        str = encodeURIComponent(str);
+        str = str.replace(/%3A/g,":"); // ignore :
+        return str;
+      }}
+
       var fquery = document.getElementById('filter-query');
       var fgo = document.getElementById('filter-go');
 
       function filterGo(){{
-        var link = "{query_link({ "filter": f"{q} + fquery.value + {q}", "periods" : ":default:" })}#activities";
+        var link = "{query_link({ "filter": f"{q} + urlPrep(fquery.value) + {q}", "periods" : ":default:" })}#activities";
         window.location.href = link;
       }}
 
