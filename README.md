@@ -123,7 +123,7 @@ Some of the inspirations for this project:
 * <https://web.archive.org/web/20140608105232/http://www.wired.com/2012/03/opinion-wolfram-life-analytics/all/>
 * <https://jeffhuang.com/productivity_text_file/>
 * <https://todoist.com/inspiration/deep-work>
-* <https://en.wikipedia.org/wiki/Blue%E2%80%93green_deployment>
+* <https://en.wikipedia.org/wiki/Blue-green_deployment>
 
 <h2><small>Refrences</small></h2>
 
