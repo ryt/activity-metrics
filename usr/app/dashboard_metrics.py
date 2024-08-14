@@ -107,29 +107,35 @@ def create_periods(periods):
 
 def parse_filter(qfilter):
   """Parse a filter (query) string and convert it into dictionary with keys, values, & attributes"""
+
+  empty_filter = {
+    'key'       : '', 
+    'col_num'   : '', 
+    'val'       : '',
+    'is_quoted' : False,
+    'val_nq'    : '',
+  }
+
   if qfilter:
     filter_dicts = []
     filter_instances = qfilter.split(',')
     for f in filter_instances:
       filter_parts = f.split(':')
-      filter_key = filter_parts[0]
-      filter_val = filter_parts[1]
-      filter_col_num = int(''.join(filter(str.isdigit, filter_key))) if any(char.isdigit() for char in filter_key) else 0
-      filter_dicts.append({
-        'key'       : filter_key,
-        'col_num'   : filter_col_num,
-        'val'       : filter_val,
-        'is_quoted' : True if (filter_val.startswith('"') and filter_val.endswith('"')) or (filter_val.startswith("'") and filter_val.endswith("'")) else False,
-        'val_nq'    : filter_val.strip('\'"')
-      })
+      if len(filter_parts) == 2:
+        filter_key = filter_parts[0]
+        filter_val = filter_parts[1]
+        filter_col_num = int(''.join(filter(str.isdigit, filter_key))) if any(char.isdigit() for char in filter_key) else 0
+        filter_dicts.append({
+          'key'       : filter_key,
+          'col_num'   : filter_col_num,
+          'val'       : filter_val,
+          'is_quoted' : True if (filter_val.startswith('"') and filter_val.endswith('"')) or (filter_val.startswith("'") and filter_val.endswith("'")) else False,
+          'val_nq'    : filter_val.strip('\'"')
+        })
+      else:
+        filter_dicts = empty_filter
   else:
-    return {
-      'key'       : '', 
-      'col_num'   : '', 
-      'val'       : '',
-      'is_quoted' : False,
-      'val_nq'    : '',
-    }
+    return empty_filter
 
   return filter_dicts
 
@@ -173,6 +179,10 @@ def df_activity_filter(odf, qf):
 
   if len(fi) > 1: # multiple filters
     x = True
+    #### TODO: allow multiple filters
+    #### NOTE: multiple filters have not been implemented yet, multiple filters returns empty list
+    df = df.head(0)
+
   else: # single filter
 
     fi_key = fi[0]['key']

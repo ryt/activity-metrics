@@ -121,6 +121,7 @@ Some of the inspirations for this project:
 * <https://en.wikipedia.org/wiki/Version_control>
 * <https://calnewport.com/deep-habits-should-you-track-hours-or-milestones/>
 * <https://web.archive.org/web/20140608105232/http://www.wired.com/2012/03/opinion-wolfram-life-analytics/all/>
+* <https://gyrosco.pe/about/mission/>
 * <https://jeffhuang.com/productivity_text_file/>
 * <https://todoist.com/inspiration/deep-work>
 * <https://en.wikipedia.org/wiki/Blue-green_deployment>
