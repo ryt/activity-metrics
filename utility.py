@@ -80,7 +80,7 @@ def curl(url, headers = ''):
   else:
     return f'Error: {error}'
 
-def todoist_task_operate(task_json, saveopt):
+def todoist_task_operate(task_json, saveopt, append=False):
   """Operation for a single task from Todoist"""
 
   taskid    = task_json['id']
@@ -92,30 +92,40 @@ def todoist_task_operate(task_json, saveopt):
 
   if saveopt in ('saveauto','autosave'):
     get_year       = date[0:4]
-    title_date     = title.strip('.txt').split('/')
+    title_date     = re.search(r'\d{1,2}/\d{1,2}\.txt', title).group().strip('.txt').split('/')
     save_log_file  = list(map(lambda i:'{:02d}'.format(int(i)), title_date))
     save_log_file  = f"{logs_dir}{get_year}/{'/'.join(save_log_file)}.txt"
-    with open(save_log_file, 'w') as file:
+    with open(save_log_file, 'a' if append else 'w') as file:
+      entries = nl + entries if append else entries
       file.write(entries)
-    print(f'Log file successfully saved at: {save_log_file}')
+    if append:
+      print(f'Additional entries successfully appended to: {save_log_file}')
+    else:
+      print(f'Log file successfully saved at: {save_log_file}')
 
   elif saveopt[0:5] == 'save=':
     save_log_file = f'{logs_dir}{saveopt[5:]}'
     if save_log_file == logs_dir:
       print('Please enter a valid file name & path.')
     else:
-      with open(save_log_file, 'w') as file:
+      with open(save_log_file, 'a' if append else 'w') as file:
+        entries = nl + entries if append else entries
         file.write(entries)
-      print(f'Log file successfully saved at: {save_log_file}')
+      if append:
+        print(f'Additional entries successfully appended to: {save_log_file}')
+      else:
+        print(f'Log file successfully saved at: {save_log_file}')
 
   elif saveopt == 'save':
     opts = ['To save as a log, please use one of the following options:',
             "- saveauto:  to automatically save the log using it's name & date",
             "- save=YYYY/MM/DD.txt:  to manually specify the name & location."]
-    print('\n'.join(opts))
+    print(nl.join(opts))
 
   else:
-    print(f'{entries}{nl}==')
+    print(entries)
+
+  print('==')
 
 
 def todoist_options(args):
@@ -197,17 +207,20 @@ def todoist_options(args):
           print(search_msg)
 
           for date in search_list:
-            matches = [t for t in tasks_json if t.get('content') in (date['search1'], date['search2']) ]
+            # (below) changed from exact match tuple search: t.get('content') in (date['search1'], date['search2'])
+            matches = [t for t in tasks_json if date['search1'] in t.get('content') or date['search2'] in t.get('content') ]
             if not matches:
               print(f"Tasks matching '{date['search1']}' or '{date['search2']}' could not be found.")
             else:
               print(f'Found {len(matches)} task(s) matching the search:{nl}--')
+              i = 0
               for m in matches:
-                todoist_task_operate(m, savef)
+                todoist_task_operate(m, savef, append=True if len(matches) > 1 and i > 0 else False)
+                i += 1
               count_matches += 1
               print('--')
 
-          print(f'--{nl}Total found tasks: {count_matches}.{nl}--')
+          print(f'--{nl}Total operated log files: {count_matches}.{nl}--')
 
       # -- end: get-task (M/D, MM/DD, today)
 
