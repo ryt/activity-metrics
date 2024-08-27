@@ -424,7 +424,7 @@ if gen_csv_file:
     f'<a href="{query_link({ "filter" : ":default:", "periods" : "year" })}#activities" class="{ifxyz(qp,"year","bold")}">This Year</a> ',
     '</div>',
 
-    f'<div class="table-outer">{frame_table["html"]}</div>',
+    f'<div class="table-outer" id="data-scroller">{frame_table["html"]}</div>',
     f'<div class="details">Total: <b>{frame_table["total"]}</b>, <i>{round(frame_table["total_hrs"], 2)}hrs</i> <a href="javascript:;" onclick="downloadCSV();" class="right">Download</a></div>'
 
 
@@ -448,6 +448,13 @@ if gen_csv_file:
 
       fquery.addEventListener('keyup', function(e){{ if ( e.key === "Enter" ) {{ e.preventDefault(); filterGo(); }} }});
       fgo.addEventListener('click', filterGo);
+
+      // scroll to bottom of data table on #activities
+      
+      if ( window.location.hash.includes('activities') ) {{
+        var dataScroller = document.getElementById('data-scroller');
+        dataScroller.scrollTop = dataScroller.scrollHeight;
+      }}
 
       function downloadCSV() {{
 
