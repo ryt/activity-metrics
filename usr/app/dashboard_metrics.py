@@ -318,7 +318,7 @@ else:
 if gen_csv_file:
 
   # Load the csv file as a DataFrame
-  df = pd.read_csv(gen_csv_file)
+  df = pd.read_csv(gen_csv_file) if os.path.isfile(gen_csv_file) else pd.DataFrame({})
 
   # define periods
 
