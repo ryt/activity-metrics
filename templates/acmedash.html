@@ -68,6 +68,7 @@
       <a class="nav {{ 'cur' if view.page == 'index' }}" href="{{ view.app_path }}?{{ view.query_m }}">dashboard</a>
       <a class="nav {{ 'cur' if view.page == 'commands' }}" href="{{ view.app_path }}commands?{{ view.query_m }}">commands</a>
       <a class="nav {{ 'cur' if view.page == 'garmin' }}" href="{{ view.app_path }}garmin?{{ view.query_m }}">garmin</a>
+      <a class="nav {{ 'cur' if view.page == 'custom' }}" href="{{ view.app_path }}custom?{{ view.query_m }}">custom</a>
     </h2>
 
   {% if view.page == 'commands' %}
@@ -87,6 +88,18 @@
     <div class="address">
       {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
       <a href="{{ view.app_path }}garmin?{{ view.query_m }}">garmin</a> <span>/</span> 
+    </div>
+
+    <div class="dir-list">
+      {{ view.message }}
+      {{ view.output_html | safe }}
+    </div>
+
+  {% elif view.page == 'custom' %}
+
+    <div class="address">
+      {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
+      <a href="{{ view.app_path }}custom?{{ view.query_m }}">custom</a> <span>/</span> 
     </div>
 
     <div class="dir-list">

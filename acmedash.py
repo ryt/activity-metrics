@@ -119,6 +119,40 @@ def garmin(subpath=None):
   return render_template('acmedash.html', view=view)
 
 
+@app.route(f'{app_path}custom',  methods=['GET'])
+def custom(subpath=None):
+
+  getm        = get_query('m')
+
+  view = {
+    'app_path'    : app_path,
+    'page'        : 'custom',
+    'getm'        : getm,
+    'query_m'     : f'm={getm}',
+    'error'       : False, 
+    'message'     : '',
+    'output_html' : '',
+  }
+
+  if getm:
+    getm = getm.rstrip('/')
+    if os.path.isfile(f'{getm}/app/dashboard_custom.py'):
+      sys.path.append(f'{getm}/app/')
+      import dashboard_custom
+      importlib.reload(dashboard_custom)
+
+      view['message']       = ''
+      view['output_html']   = dashboard_custom.output_html
+
+    else:
+      view['error']   = True
+      view['message'] = 'Sorry the dashboard custom module could not be found in the metrics app directory.'
+  else:
+    view['message'] = 'Please specify an app directory path for the custom module. ?m=/Path/to/Metrics/'
+
+  return render_template('acmedash.html', view=view)
+
+
 @app.route(f'{app_path}', methods=['GET'])
 
 def index(subpath=None):
