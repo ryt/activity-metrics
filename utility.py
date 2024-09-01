@@ -95,6 +95,8 @@ def todoist_task_operate(task_json, saveopt, append=False):
     title_date     = re.search(r'\d{1,2}/\d{1,2}\.txt', title).group().strip('.txt').split('/')
     save_log_file  = list(map(lambda i:'{:02d}'.format(int(i)), title_date))
     save_log_file  = f"{logs_dir}{get_year}/{'/'.join(save_log_file)}.txt"
+    # create the month directory if it doesn't already exist
+    os.makedirs(os.path.dirname(save_log_file), exist_ok=True)
     with open(save_log_file, 'a' if append else 'w') as file:
       entries = nl + entries if append else entries
       file.write(entries)
@@ -108,6 +110,8 @@ def todoist_task_operate(task_json, saveopt, append=False):
     if save_log_file == logs_dir:
       print('Please enter a valid file name & path.')
     else:
+      # create the month directory if it doesn't already exist
+      os.makedirs(os.path.dirname(save_log_file), exist_ok=True)
       with open(save_log_file, 'a' if append else 'w') as file:
         entries = nl + entries if append else entries
         file.write(entries)
