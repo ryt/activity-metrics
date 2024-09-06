@@ -9,7 +9,7 @@ For installation & usage, you can navigate to the [installation](#Installation) 
 ### Basics
 
 - A log is a  **.txt** file that holds the entries for a particular day.
-- An example entry could be `- 8am 10m breakfast & coffee`.
+- An example entry could be `- 8am 15m coffee & morning walk`.
 - An entry always starts on it's own line with a hyphen.
 - There are no limits for the number of entries or files for a day.
 - All logs (including their parent directories) are stored in the main `logs/` directory.
@@ -120,7 +120,7 @@ Some of the inspirations for this project:
 * <https://en.wikipedia.org/wiki/Help:Page_history>
 * <https://en.wikipedia.org/wiki/Version_control>
 * <https://calnewport.com/deep-habits-should-you-track-hours-or-milestones/>
-* <https://web.archive.org/web/20140608105232/http://www.wired.com/2012/03/opinion-wolfram-life-analytics/all/>
+* <https://archive.is/h3dz5>
 * <https://gyrosco.pe/about/mission/>
 * <https://jeffhuang.com/productivity_text_file/>
 * <https://todoist.com/inspiration/deep-work>
