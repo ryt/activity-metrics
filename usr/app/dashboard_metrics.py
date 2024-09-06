@@ -125,6 +125,8 @@ def parse_filter(qfilter):
         filter_key = filter_parts[0]
         filter_val = filter_parts[1]
         filter_col_num = int(''.join(filter(str.isdigit, filter_key))) if any(char.isdigit() for char in filter_key) else 0
+        if re.match(r'^col[0-9]+', filter_key):
+          filter_key = 'QUERY_FILTER_COLUMN'
         filter_dicts.append({
           'key'       : filter_key,
           'col_num'   : filter_col_num,
@@ -187,6 +189,10 @@ def df_activity_filter(odf, qf):
 
     fi_key = fi[0]['key']
     fi_val = fi[0]['val']
+
+    if fi_key == 'QUERY_FILTER_COLUMN':
+      fi_key = df.columns[fi[0]['col_num']-1]
+
     if fi[0]['is_quoted'] == True: # exact match e.g. "Music" .. check if val_nq (no quote) == column value
       df = df[df[fi_key] == fi[0]['val_nq']] if fi_key in df else pd.DataFrame({})
     else:
@@ -408,10 +414,10 @@ if gen_csv_file:
        '<div class="filter-lists">',
          '<span class="dim">Filters:</span> ',
         f'<a href="{query_link({ "periods" : ":default:" })}#activities" class="{ifxyz(qf,"","bold")}">All</a>, ',
-        f'<a href="{query_link({ "filter" : "activity:work", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"activity:work","bold")}">Work</a>, ',
-        f'<a href="{query_link({ "filter" : "activity:projects", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"activity:projects","bold")}">Projects</a>, ',
-        f'<a href="{query_link({ "filter" : "activity:study", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"activity:study","bold")}">Study</a>, ',
-        f'<a href="{query_link({ "filter" : "activity:practice", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"activity:practice","bold")}">Practice</a>',
+        f'<a href="{query_link({ "filter" : "C1:Work", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"C1:Work","bold")}">Work</a>, ',
+        f'<a href="{query_link({ "filter" : "C1:Projects", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"C1:Projects","bold")}">Projects</a>, ',
+        f'<a href="{query_link({ "filter" : "C1:Study", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"C1:Study","bold")}">Study</a>, ',
+        f'<a href="{query_link({ "filter" : "C1:Practice", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"C1:Practice","bold")}">Practice</a>',
        '</div>',
     '</div>',
 
