@@ -59,6 +59,8 @@ def query_link(params = {}):
         val = get_query(p)
         if val:
           add += f'{p}={val}&'
+      elif not params[p]:
+        add += ''
       else:
         add += f'{p}={params[p]}&'
 
@@ -91,7 +93,7 @@ def create_periods(periods):
   html = ''
   for i, p in enumerate(periods):
     arrow = f'<a class="arrow" href="https://tools.redment.com/year?from={p["from"][2]}&to={p["to"][2]}" target="blank">&rarr;</a>'
-    html += '<div>'
+    html += '<div class="periodstats">'
     if p['from'][1] == p['to'][1]:
       html += f"<b>{p['label']}:</b> {p['from'][1]} {arrow} <ul>"
     else:
@@ -120,6 +122,8 @@ def parse_filter(qfilter):
     filter_dicts = []
     filter_instances = qfilter.split(',')
     for f in filter_instances:
+      # set default column to 'Description' if no column specified (i.e. no ':')
+      f = f if ':' in f else f'Description:{f}'
       filter_parts = f.split(':')
       if len(filter_parts) == 2:
         filter_key = filter_parts[0]
@@ -169,21 +173,23 @@ def df_activity_filter(odf, qf):
 
   df = odf.copy() # copy odf / [o]riginal [df]
 
-  #if qf == 'activity:soccer':
-  #  df = df[df['activityName'].str.contains('TSC|CSL|Ski Beach', na=False)]
-  #elif qf == 'activity:running':
-  #  df = df[df['activityTypeName'].str.contains('running', na=False)]
-  #elif qf == 'activity:strength':
-  #  df = df[df['activityTypeName'].str.contains('strength', na=False)]
-  #elif qf == 'activity:cycling':
-  #  df = df[df['activityTypeName'].str.contains('cycling', na=False)]
   fi = parse_filter(qf)
 
   if len(fi) > 1: # multiple filters
-    x = True
-    #### TODO: allow multiple filters
-    #### NOTE: multiple filters have not been implemented yet, multiple filters returns empty list
-    df = df.head(0)
+
+    ## note: multiple filters method copied exactly from single filter, but put inside a loop for each filter query ##
+
+    for f_val in fi:
+      fi_key = f_val['key']
+      fi_val = f_val['val']
+
+      if fi_key == 'QUERY_FILTER_COLUMN':
+        fi_key = df.columns[f_val['col_num']-1]
+
+      if f_val['is_quoted'] == True: # exact match e.g. "Music" .. check if val_nq (no quote) == column value
+        df = df[df[fi_key] == f_val['val_nq']] if fi_key in df else pd.DataFrame({})
+      else:
+        df = df[df[fi_key].str.contains(fi_val, na=False)] if fi_key in df else pd.DataFrame({})
 
   else: # single filter
 
@@ -252,6 +258,7 @@ def html_table_from_dataframe(df, apply_filters=False):
       #  #mask = (df['startTimeLocal'] >= '2024-05-25') & (df['startTimeLocal'] <= '2024-05-29')
       #  df = df.loc[mask]
 
+  qs = get_query('sort')
 
   csv_str = StringIO()
   df.to_csv(csv_str, index=False)
@@ -268,6 +275,10 @@ def html_table_from_dataframe(df, apply_filters=False):
     header = html.escape(header)
     html_table += f'<th>{header}</th>'
   html_table += '</tr>\n'
+
+  if qs:
+    if qs == 'za':
+      csv_reader = reversed(list(csv_reader))
 
   for row in csv_reader:
     html_table += '<tr>'
@@ -298,6 +309,7 @@ lnl = "\\n"
 
 qf = get_query('filter')
 qp = get_query('periods')
+qs = get_query('sort')
 
 if qp == 'year' and os.path.isfile(f'{gen_dir}{year}.csv'):
   gen_csv_file  = f'{gen_dir}{year}.csv'
@@ -394,17 +406,21 @@ if gen_csv_file:
 
   frame_table = html_table_from_dataframe(df, apply_filters=True)
 
+  scroll_hash = '' # set to: "#activities" to enable scroll hash
+
   output_html = ''.join((
 
     f'<h3>Metrics {year}</h3>',
+    '<div class="periodstats-outer">',
     create_periods(periods),
+    '</div>',
 
     '<table class="plain">',
      # note: the CSV link below requires/assumes webcsv being installed/used & running on the machine
-     f'<td><h4 id="activities">Metrics CSV (<a href="{webcsv_link(gen_csv_file)}" target="_blank">{os.path.basename(gen_csv_file)}</a>)</h4></td>',
+     f'<td><h4 id="activities">Metrics CSV (<a href="{ webcsv_link(gen_csv_file) }" target="_blank">{ os.path.basename(gen_csv_file) }</a>)</h4></td>',
      f'<td><div class="filter-search">',
         '<table class="plain">',
-         f'<td><input type="text" placeholder="C1:Music,C2:Practice" id="filter-query" value="{html.escape(qf)}"></td>',
+         f'<td><input type="text" placeholder="C1:Music,C2:Practice" id="filter-query" value="{ html.escape(qf) }"></td>',
           '<td><button id="filter-go">Go</button></td>',
         '</table>',
       '</div></td>',
@@ -413,30 +429,40 @@ if gen_csv_file:
     '<div class="filters">',
        '<div class="filter-lists">',
          '<span class="dim">Filters:</span> ',
-        f'<a href="{query_link({ "periods" : ":default:" })}#activities" class="{ifxyz(qf,"","bold")}">All</a>, ',
-        f'<a href="{query_link({ "filter" : "C1:Work", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"C1:Work","bold")}">Work</a>, ',
-        f'<a href="{query_link({ "filter" : "C1:Projects", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"C1:Projects","bold")}">Projects</a>, ',
-        f'<a href="{query_link({ "filter" : "C1:Study", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"C1:Study","bold")}">Study</a>, ',
-        f'<a href="{query_link({ "filter" : "C1:Practice", "periods" : ":default:" })}#activities" class="{ifxyz(qf,"C1:Practice","bold")}">Practice</a>',
+        f'<a href="{ query_link({ "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"","bold") }">Default</a>, ',
+        f'<a href="{ query_link({ "filter" : "C1:Work", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Work","bold") }">Work</a>, ',
+        f'<a href="{ query_link({ "filter" : "C1:Projects", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Projects","bold") }">Projects</a>, ',
+        f'<a href="{ query_link({ "filter" : "C1:Study", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Study","bold") }">Study</a>, ',
+        f'<a href="{ query_link({ "filter" : "C1:Practice", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Practice","bold") }">Practice</a>',
        '</div>',
     '</div>',
 
     '<div class="periods"> <span class="dim">Periods:</span> ',
-    f'<a href="{query_link({ "filter" : ":default:" })}#activities" class="{ifxyz(qp,"","bold")}">All</a>, ',
-    f'<a href="{query_link({ "filter" : ":default:", "periods" : "today" })}#activities" class="{ifxyz(qp,"today","bold")}">Today</a>, ',
-    f'<a href="{query_link({ "filter" : ":default:", "periods" : "yesterday" })}#activities" class="{ifxyz(qp,"yesterday","bold")}">Yesterday</a>, ',
-    f'<a href="{query_link({ "filter" : ":default:", "periods" : "week" })}#activities" class="{ifxyz(qp,"week","bold")}">This Week</a>, ',
-    f'<a href="{query_link({ "filter" : ":default:", "periods" : "month" })}#activities" class="{ifxyz(qp,"month","bold")}">This Month</a>, ',
-    f'<a href="{query_link({ "filter" : ":default:", "periods" : "year" })}#activities" class="{ifxyz(qp,"year","bold")}">This Year</a> ',
+    f'<a href="{ query_link({ "filter" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qp,"","bold") }">Default</a>, ',
+    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "today" }) }{ scroll_hash }" class="{ ifxyz(qp,"today","bold") }">Today</a>, ',
+    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "yesterday" }) }{ scroll_hash }" class="{ ifxyz(qp,"yesterday","bold") }">Yesterday</a>, ',
+    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "week" }) }{ scroll_hash }" class="{ ifxyz(qp,"week","bold") }">This Week</a>, ',
+    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "month" }) }{ scroll_hash }" class="{ ifxyz(qp,"month","bold") }">This Month</a>, ',
+    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "year" }) }{ scroll_hash }" class="{ ifxyz(qp,"year","bold") }">This Year</a> ',
+    ' &middot; ',
+    ' <span class="dim">Sort:</span> ',
+      f'<a href="{ query_link({ "filter" : ":default:", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qs,"","bold") }">A-Z</a> ',
+      f'<a href="{ query_link({ "filter" : ":default:", "periods" : ":default:", "sort": "za" }) }{ scroll_hash }" class="{ ifxyz(qs,"za","bold") }">Z-A</a> ',
     '</div>',
 
-    f'<div class="table-outer" id="data-scroller">{frame_table["html"]}</div>',
-    f'<div class="details">Total: <b>{frame_table["total"]}</b>, <i>{round(frame_table["total_hrs"], 2)}hrs</i> <a href="javascript:;" onclick="downloadCSV();" class="right">Download</a></div>'
+    f'<div class="table-outer" id="data-scroller">{ frame_table["html"] }</div>',
+
+    '<div class="details">',
+      f'Total: <b>{ frame_table["total"] }</b>, <i>{ round(frame_table["total_hrs"], 2) }hrs</i> ',
+       '<a href="javascript:;" onclick="downloadCSV();" class="right">Download</a>',
+    '</div>',
 
 
     f'''
 
     <script type="text/javascript">
+
+      // -- query filter search input functions -- //
 
       function urlPrep(str) {{
         str = encodeURIComponent(str);
@@ -448,19 +474,23 @@ if gen_csv_file:
       var fgo = document.getElementById('filter-go');
 
       function filterGo(){{
-        var link = "{query_link({ "filter": f"{q} + urlPrep(fquery.value) + {q}", "periods" : ":default:" })}#activities";
+        var link = "{ query_link({ "filter": f"{ q } + urlPrep(fquery.value) + { q }", "periods" : ":default:" }) }{ scroll_hash }";
         window.location.href = link;
       }}
 
       fquery.addEventListener('keyup', function(e){{ if ( e.key === "Enter" ) {{ e.preventDefault(); filterGo(); }} }});
       fgo.addEventListener('click', filterGo);
 
-      // scroll to bottom of data table on #activities
+
+      // -- scroll to bottom of data table on #activities -- //
       
       if ( window.location.hash.includes('activities') ) {{
         var dataScroller = document.getElementById('data-scroller');
         dataScroller.scrollTop = dataScroller.scrollHeight;
       }}
+
+
+      // -- csv downloader for rendered table -- //
 
       function downloadCSV() {{
 
