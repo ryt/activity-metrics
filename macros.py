@@ -15,7 +15,7 @@ from datetime import timedelta
 def cap_exclude_word(word):
   """Exclude list for cap_description()"""
 
-  # Todo: add the following options (rom Google sheets original script)
+  # TODO: add the following options (via Google sheets original javascript)
   """
   var clist = [
     'Iphone,iPhone',
@@ -24,8 +24,6 @@ def cap_exclude_word(word):
     'Chatgpt,ChatGPT',
     'Garageband,GarageBand'
   ];
-  [wb + 'W\/', 'w\/'],    // short form of "with"
-  [wb + 'A\/c', 'A\/C'],  // abbr. for "air conditioner"
 
   // capitalize word immediately after slash i.e. movie/[f]ilm
 
@@ -42,14 +40,14 @@ def cap_exclude_word(word):
           word.startswith('#') or 
           word.startswith('/') or 
           word.startswith('$') or 
-          word == 'w/' or 
+          word == 'w/' or # short form of 'with'
           any(e in word for e in excl_samp) or 
           url_pat.match(word))
 
 def cap_description(inp):
   """Converts input to title case & applies custom modifications"""
 
-  # word.title() is applied if it's lowercased & is not quoted/excluded/exception
+  # Title Case is applied if it's lowercased & is not quoted/excluded/exception
 
   words  = inp.split()
   cwords = []
