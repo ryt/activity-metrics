@@ -210,8 +210,7 @@ def df_activity_filter(odf, qf):
 def html_table_from_dataframe(df, apply_filters=False):
   """Create html table view from pandas dataframe of csv data"""
 
-  # move date to column 1
-  #df = df[ ['startTimeLocal'] + [ col for col in df.columns if col != 'startTimeLocal' ] ]
+  #### start: filters & periods ###
 
   if apply_filters:
 
@@ -224,39 +223,31 @@ def html_table_from_dataframe(df, apply_filters=False):
     qp = get_query('periods')
     if qp:
       qp_table = {
-        'today'     : f'{today_f[0]},{today_f[0]}',
-        'yesterday' : f'{yest_f[0]},{yest_f[0]}',
-        'week'      : f'{weekstart_f[0]},{today_f[0]}',
-        'month'     : f'{monthstart_f[0]},{today_f[0]}',
-        'year'      : f'{yearstart_f[0]},{today_f[0]}',
+        'today'     : (today_f[0], today_f[0]),
+        'yesterday' : (yest_f[0], yest_f[0]),
+        'week'      : (weekstart_f[0], today_f[0]),
+        'month'     : (monthstart_f[0], today_f[0]),
+        'year'      : (yearstart_f[0], today_f[0]),
       }
       if qp in qp_table:
         qp = qp_table[qp]
-      else:
-        qp = qp.replace('-', ',')
-      qp_parts = qp.split(',')
-      qp_parts = qp_parts if len(qp_parts) > 1 else (qp_parts[0], qp_parts[0])
-      qp_from  = ''
-      qp_to    = ''
 
-      if re.match('^[0-9]{4}-[0-9]{2}-[0-9]{2}$', qp_parts[0]):
-        qp_from = qp_parts[0] 
-      elif re.match('^[0-9]{2}/[0-9]{2}$', qp_parts[0]):
-        qp_from = datetime.strptime(f'{qp_parts[0]}/{year}', '%m/%d/%Y').strftime('%Y-%m-%d')
+        # make a copy of original date column before conversion
+        df['OriginalDate'] = df['Date']
+        df['Date'] = pd.to_datetime(df['Date'], format='%m/%d/%Y')
 
-      if re.match('^[0-9]{4}-[0-9]{2}-[0-9]{2}$', qp_parts[1]):
-        qp_to = qp_parts[1] 
-      elif re.match('^[0-9]{2}/[0-9]{2}$', qp_parts[1]):
-        qp_to = datetime.strptime(f'{qp_parts[1]}/{year}', '%m/%d/%Y').strftime('%Y-%m-%d')
+        # convert start_date and end_date to datetime
+        start_date = pd.to_datetime(qp[0], format='%Y-%m-%d') # from
+        end_date = pd.to_datetime(qp[1], format='%Y-%m-%d') # to
 
-      #if qp_from and qp_to:
-      #  df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'])
-      #  if qp_from == qp_to:
-      #    mask = (df['startTimeLocal'].dt.date == pd.to_datetime(qp_from).date())
-      #  else:
-      #    mask = (df['startTimeLocal'].dt.date >= pd.to_datetime(qp_from).date()) & (df['startTimeLocal'].dt.date <= pd.to_datetime(qp_to).date())
-      #  #mask = (df['startTimeLocal'] >= '2024-05-25') & (df['startTimeLocal'] <= '2024-05-29')
-      #  df = df.loc[mask]
+        # filter rows between start_date and end_date
+        df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+
+        # copy original date back & drop extra column
+        df['Date'] = df['OriginalDate']
+        df = df.drop(columns=['OriginalDate'])
+
+  #### end: filters & periods ####
 
   qs = get_query('sort')
 
@@ -266,8 +257,7 @@ def html_table_from_dataframe(df, apply_filters=False):
   csv_content = csv_str.getvalue()
 
   html_table = '<table class="csv-table">\n'
-  # added {skipinitialspace=True} to fix issue with commas inside quoted cells
-  csv_reader = csv.reader(csv_content.splitlines(), skipinitialspace=True)
+  csv_reader = csv.reader(csv_content.splitlines(), skipinitialspace=True) # added {skipinitialspace=True} to fix issue with commas inside quoted cells
   headers = next(csv_reader)
 
   html_table += '<tr>'
@@ -276,6 +266,7 @@ def html_table_from_dataframe(df, apply_filters=False):
     html_table += f'<th>{header}</th>'
   html_table += '</tr>\n'
 
+  # sorting: za -> Z-A
   if qs:
     if qs == 'za':
       csv_reader = reversed(list(csv_reader))
@@ -295,40 +286,46 @@ def html_table_from_dataframe(df, apply_filters=False):
     'total_hrs'  : df[df['Description'] != 'Total Logged Hours']['Hours'].sum() if 'Description' in df else 0,
   }
 
+
 def ifxyz(x, y, z, default = ''):
   """Return z if x == y else default (or empty) string"""
   return z if x == y else default
 
+
+#### ---- main metrics dashboard process start ---- ####
+
 # define metrics & log files
+
 gen_dir       = f"{get_query('m').rstrip('/')}/gen/"
 gen_csv_file  = ''
+
+
+# shortcuts for quotes & new lines
 
 q = '"'
 nl = "\n"
 lnl = "\\n"
 
+
+# query string parameters
+
 qf = get_query('filter')
 qp = get_query('periods')
 qs = get_query('sort')
 
-if qp == 'year' and os.path.isfile(f'{gen_dir}{year}.csv'):
+if ( qp == 'year' or 
+     qp == 'month' or 
+     qp == 'week' ) and os.path.isfile(f'{gen_dir}{year}.csv'):
   gen_csv_file  = f'{gen_dir}{year}.csv'
-elif qp == 'month' and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m")}.csv'):
-  gen_csv_file  = f'{gen_dir}{today.strftime("%Y-%m")}.csv'
-elif qp == 'week' and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m")}.csv'):
-  gen_csv_file  = f'{gen_dir}{today.strftime("%Y-%m")}.csv'
-elif qp == 'yesterday' and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m")}.csv'):
-  gen_csv_file  = f'{gen_dir}{yest_f[0]}.csv'
+
 elif qp == 'today' and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m")}.csv'):
   gen_csv_file  = f'{gen_dir}{today_f[0]}.csv'
-else:
-  if os.path.isfile(f'{gen_dir}{today_f[0]}.csv'):
-    gen_csv_file  = f'{gen_dir}{today_f[0]}.csv'
-  elif os.path.isfile(f'{gen_dir}{yest_f[0]}.csv'):
-    gen_csv_file  = f'{gen_dir}{yest_f[0]}.csv'
-  elif os.path.isfile(f"{(today - timedelta(days=2)).strftime('%Y-%m-%d')}.csv"):
-    gen_csv_file  = f"{(today - timedelta(days=2)).strftime('%Y-%m-%d')}.csv"
 
+elif qp == 'yesterday' and os.path.isfile(f'{gen_dir}{yest_f[0]}.csv'):
+  gen_csv_file  = f'{gen_dir}{yest_f[0]}.csv'
+
+elif os.path.isfile(f'{gen_dir}{year}.csv'): # use year.csv for all other cases (if file exists)
+  gen_csv_file  = f'{gen_dir}{year}.csv'
 
 
 # load & analyze data with pandas
