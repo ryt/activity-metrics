@@ -313,12 +313,14 @@ qf = get_query('filter')
 qp = get_query('periods')
 qs = get_query('sort')
 
+# default view & periods filtering views (files: year.csv today.csv yesterday.csv) 
+
 if ( qp == 'year' or 
      qp == 'month' or 
      qp == 'week' ) and os.path.isfile(f'{gen_dir}{year}.csv'):
   gen_csv_file  = f'{gen_dir}{year}.csv'
 
-elif qp == 'today' and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m")}.csv'):
+elif (qp == 'today' or not qp) and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m-%d")}.csv'): # today and Default
   gen_csv_file  = f'{gen_dir}{today_f[0]}.csv'
 
 elif qp == 'yesterday' and os.path.isfile(f'{gen_dir}{yest_f[0]}.csv'):
