@@ -12,16 +12,62 @@ from functools import reduce
 from datetime import datetime
 from datetime import timedelta
 
+def cap_exclude_word(word):
+  """Exclude list for cap_description()"""
+
+  # Todo: add the following options (rom Google sheets original script)
+  """
+  var clist = [
+    'Iphone,iPhone',
+    'Ipad,iPad',
+    'Imac,iMac',
+    'Chatgpt,ChatGPT',
+    'Garageband,GarageBand'
+  ];
+  [wb + 'W\/', 'w\/'],    // short form of "with"
+  [wb + 'A\/c', 'A\/C'],  // abbr. for "air conditioner"
+
+  // capitalize word immediately after slash i.e. movie/[f]ilm
+
+  // Certain minor words should be left lowercase unless they are the first or last words in the string
+  lowers = ['A', 'An', 'The', 'And', 'But', 'Or', 'For', 'Nor', 'As', 'At','By', 'For', 'From', 'In', 'Into', 'Near', 'Of', 'On', 'Onto', 'To', 'With'];
+
+  // Certain words such as initialisms or custom acronyms should be left uppercase
+  uppers = 'Atm,Id,Tv,Usa,Fsl,Csl,Js,Daw,Usd,Midi,Fl,Yt,Fb,Ig,Aci,Acifna,Sdsu,Ucsd,Usc,Mit,Sdge,Vpn,Hrm,Mpk,Sqj,Rli,Hdmi,Sd,Ca,Ups,Usps,Apx';
+  """
+
+  excl_samp = ('.', 'etc.')
+  url_pat = re.compile(r'https?://\S+|www\.\S+')
+  return (word.startswith('@') or 
+          word.startswith('#') or 
+          word.startswith('/') or 
+          word.startswith('$') or 
+          word == 'w/' or 
+          any(e in word for e in excl_samp) or 
+          url_pat.match(word))
+
 def cap_description(inp):
   """Converts input to title case & applies custom modifications"""
 
-  # todo: words with dots (e.g. domains), words with slashes (e.g. /dir/), etc...
-
-  # only convert to title case if it's lowercased
+  # word.title() is applied if it's lowercased & is not quoted/excluded/exception
 
   words  = inp.split()
-  cwords = [word.title() if word.islower() and not is_quoted_or_braced(word) else word for word in words]
-  inp    = ' '.join(cwords)
+  cwords = []
+
+  for word in words:
+    if word.islower() and not is_quoted_or_braced(word) and not cap_exclude_word(word):
+      # Title Case
+      modword = word.title()
+      # exceptions
+      if word.endswith("'s"): # includes apostrophe s ('s)
+        modword = word.capitalize()
+      if any(char.isdigit() for char in word): # includes number (0-9)
+        modword = word.capitalize()
+      cwords.append(modword)
+    else:
+      cwords.append(word)
+
+  inp = ' '.join(cwords)
 
   return inp
 
