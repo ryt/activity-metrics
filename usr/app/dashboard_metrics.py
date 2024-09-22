@@ -49,6 +49,22 @@ def get_query(param):
   except:
     return ''
 
+
+def url_modify(val):
+  """Modify url parts with custom replacements"""
+  if val:
+    url_replacements = {
+      '!!' : '#', # replace !! (double exclamation) in urls to # (hashtag) as alternative to '%23'
+    }
+    for rk, rv in url_replacements.items():
+      val = val.replace(rk, rv)
+
+    return val
+
+  else:
+    return ''
+
+
 def query_link(params = {}):
   """Create a query string link with the dict"""
   add = ''
@@ -110,13 +126,13 @@ def create_periods(periods):
 def parse_filter(qfilter):
   """Parse a filter (query) string and convert it into dictionary with keys, values, & attributes"""
 
-  empty_filter = {
+  empty_filter = [{
     'key'       : '', 
     'col_num'   : '', 
     'val'       : '',
     'is_quoted' : False,
     'val_nq'    : '',
-  }
+  }]
 
   if qfilter:
     filter_dicts = []
@@ -215,7 +231,7 @@ def html_table_from_dataframe(df, apply_filters=False):
   if apply_filters:
 
     # ?filter=:filter:
-    qf = get_query('filter')
+    qf = url_modify(get_query('filter'))
     if qf:
       df = df_activity_filter(df, qf)
 
@@ -229,7 +245,7 @@ def html_table_from_dataframe(df, apply_filters=False):
         'month'     : (monthstart_f[0], today_f[0]),
         'year'      : (yearstart_f[0], today_f[0]),
       }
-      if qp in qp_table:
+      if qp in qp_table and 'Date' in df:
         qp = qp_table[qp]
 
         # make a copy of original date column before conversion
@@ -309,11 +325,11 @@ lnl = "\\n"
 
 # query string parameters
 
-qf = get_query('filter')
+qf = url_modify(get_query('filter'))
 qp = get_query('periods')
 qs = get_query('sort')
 
-# default view & periods filtering views (files: year.csv today.csv yesterday.csv) 
+# default view & periods filtering views (files: today.csv yesterday.csv year.csv) 
 
 if ( qp == 'year' or 
      qp == 'month' or 
@@ -323,7 +339,7 @@ if ( qp == 'year' or
 elif (qp == 'today' or not qp) and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m-%d")}.csv'): # today and Default
   gen_csv_file  = f'{gen_dir}{today_f[0]}.csv'
 
-elif qp == 'yesterday' and os.path.isfile(f'{gen_dir}{yest_f[0]}.csv'):
+elif (qp == 'yesterday' or not qp) and os.path.isfile(f'{gen_dir}{yest_f[0]}.csv'):
   gen_csv_file  = f'{gen_dir}{yest_f[0]}.csv'
 
 elif os.path.isfile(f'{gen_dir}{year}.csv'): # use year.csv for all other cases (if file exists)
