@@ -65,8 +65,8 @@ def commands(subpath=None):
     'output_html' : '',
   }
 
-  if getm:
-    getm = getm.rstrip('/')
+  getm = getm.rstrip('/')
+  if getm and os.path.isdir(f'{getm}/logs/'):
     if os.path.isfile(f'{getm}/app/dashboard_commands.py'):
       sys.path.append(f'{getm}/app/')
       import dashboard_commands
@@ -80,7 +80,7 @@ def commands(subpath=None):
       view['error']   = True
       view['message'] = 'Sorry the commands module could not be found in the metrics app directory.'
   else:
-    view['message'] = 'Please specify a command and app directory path. /commands?m=/Path/to/Metrics/&cmd=command'
+    view['message'] = 'Please specify a command and a valid metrics directory path. /commands?m=/Path/to/Metrics/&cmd=command'
 
   return render_template('acmedash.html', view=view)
 
@@ -100,8 +100,8 @@ def garmin(subpath=None):
     'output_html' : '',
   }
 
-  if getm:
-    getm = getm.rstrip('/')
+  getm = getm.rstrip('/')
+  if getm and os.path.isdir(f'{getm}/logs/'):
     if os.path.isfile(f'{getm}/app/dashboard_garmin_connect.py'):
       sys.path.append(f'{getm}/app/')
       import dashboard_garmin_connect
@@ -114,7 +114,7 @@ def garmin(subpath=None):
       view['error']   = True
       view['message'] = 'Sorry the dashboard garmin connect module could not be found in the metrics app directory.'
   else:
-    view['message'] = 'Please specify an app directory path for the garmin connect module. ?m=/Path/to/Metrics/'
+    view['message'] = 'Please specify a valid metrics directory path for the garmin connect module. ?m=/Path/to/Metrics/'
 
   return render_template('acmedash.html', view=view)
 
@@ -134,8 +134,8 @@ def custom(subpath=None):
     'output_html' : '',
   }
 
-  if getm:
-    getm = getm.rstrip('/')
+  getm = getm.rstrip('/')
+  if getm and os.path.isdir(f'{getm}/logs/'):
     if os.path.isfile(f'{getm}/app/dashboard_custom.py'):
       sys.path.append(f'{getm}/app/')
       import dashboard_custom
@@ -148,7 +148,7 @@ def custom(subpath=None):
       view['error']   = True
       view['message'] = 'Sorry the dashboard custom module could not be found in the metrics app directory.'
   else:
-    view['message'] = 'Please specify an app directory path for the custom module. ?m=/Path/to/Metrics/'
+    view['message'] = 'Please specify a valid metrics directory path for the custom module. ?m=/Path/to/Metrics/'
 
   return render_template('acmedash.html', view=view)
 
@@ -172,8 +172,8 @@ def index(subpath=None):
     'output_html' : '',
   }
 
-  if getm:
-    getm = getm.rstrip('/')
+  getm = getm.rstrip('/')
+  if getm and os.path.isdir(f'{getm}/logs/'):
     if os.path.isfile(f'usr/app/dashboard_metrics.py'):
       sys.path.append(f'usr/app/')
       import dashboard_metrics
@@ -187,7 +187,7 @@ def index(subpath=None):
       view['error']   = True
       view['message'] = 'Sorry the dashboard metrics module could not be found in the activity metrics app directory.'
   else:
-    view['message'] = 'Please specify an app directory path for the metrics module. ?m=/Path/to/Metrics/'
+    view['message'] = 'Please specify a valid path for the metrics directory. ?m=/Path/to/Metrics/'
 
   return render_template('acmedash.html', view=view)
 
