@@ -426,6 +426,7 @@ if gen_csv_file:
   output_html = ''.join((
 
     f'<h3>Metrics {year}</h3>',
+    'Summary Reports: Started/Finished Projects/Subprojects, Total Project/Work/Study Hours <br><br> ',
     '<div class="periodstats-outer">',
     create_periods(periods),
     '</div>',
