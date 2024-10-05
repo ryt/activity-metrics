@@ -8,6 +8,7 @@ This app uses Flask & Gunicorn with ryt/runapp for deployment.
 import os
 import sys
 import csv
+import time
 import html
 import itertools
 import importlib
@@ -20,10 +21,14 @@ from configparser import ConfigParser
 
 app = Flask(__name__)
 
+# -- set timezone to america/los_angeles -- #
+os.environ['TZ'] = 'America/Los_Angeles'
+time.tzset()
+
 limitpath = ''
 app_path  = '/'
 
-# -- start: parse runapp.conf (if it exists) and make modifications
+# -- start: parse runapp.conf (if it exists) and make modifications -- #
 conf = 'runapp.conf'
 if os.path.exists(conf):
   with open(conf) as cf:
