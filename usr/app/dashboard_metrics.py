@@ -490,7 +490,7 @@ if gen_csv_file:
       var fgo = document.getElementById('filter-go');
 
       function filterGo(){{
-        var link = "{ query_link({ "filter": f"{ q } + urlPrep(fquery.value) + { q }", "periods" : ":default:" }) }{ scroll_hash }";
+        var link = "{ query_link({ "filter": f"{ q } + urlPrep(fquery.value) + { q }", "periods" : "year" if not qp else ":default:" }) }{ scroll_hash }";
         window.location.href = link;
       }}
 
