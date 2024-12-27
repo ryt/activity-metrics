@@ -239,7 +239,7 @@ def convert_to_csv(entries, ymd_date):
 
     # regex101 (ryt) v2: https://regex101.com/r/lrm5IQ/2
 
-    pattern = r'^-(\s*(?:[\d\:\.]+(?:m|h|s|am|pm|a|p)[\s\,]*[\s\;]*)+)(.*)$'
+    pattern = r'^-(\s*(?:[\d\:\.]+(?:m|h|s)[\s\,]*[\s\;]*)+)(.*)$'
     match = re.search(pattern, line)
     newline = []
 
@@ -260,7 +260,7 @@ def convert_to_csv(entries, ymd_date):
       # -- 2. apply default macros
 
       newtime = time_macro(newtime)
-      newdesc = str(newtime[2]) + cap_macro(newdesc)
+      newdesc = cap_macro(newdesc)
 
       #           0: Date    1: Duration                           2: Description            3: Hours       4: Sum Formula
       newline = [datefrm,   macros.hours_to_human(newtime[1]),   escape_for_csv(newdesc),   newtime[1],   escape_for_csv(newtime[0]) ]
@@ -440,7 +440,7 @@ def analyze(params, called, meta):
               interval_to   = interval_parts[1]
 
             if interval_length == 3:
-              interval_seperator = ''.join(i for i in interval_parts[2] if i not in '\/:*?<>|#')
+              interval_seperator = ''.join(i for i in interval_parts[2] if i not in '/:*?<>|#') # 12/26/24 note: potential syntax warning/error in '\/:*?<>|#'
 
             if interval_length == 0 or interval_length > 3:
               printx(invalid_interval_text, invalid_interval_code)

@@ -118,21 +118,16 @@ def hours_to_human(inp):
 
 
 def raw_time_to_excel_sum(inp):
-  """Receives a raw time string & returns a tuple: (excel sum function, calculation in hours, optional timestamp)"""
+  """Receives a raw time string & returns a tuple: (excel sum function, calculation in hours)"""
   sumfunc = ''
   calchrs = ''
   timestp = ''
   inp = inp.strip()
 
-  # group 1: 7a|7am|7:30am etc...
-  # group 2: 1m|2.5s|1:30h|1.234h etc...
-
-  pattern = r'^([\d\:]+(?:am|pm|a|p)[\s\,]*)?(.*)$'
-  match = re.search(pattern, inp)
-
-  if match:
-    tmsp = match.group(1)
-    rwtm = match.group(2)
+  # inp: 1m|2.5s|1:30h|1.234h etc...
+  
+  if inp:
+    rwtm = inp
 
     if rwtm:
       rwtm = rwtm.strip(';,')
@@ -152,10 +147,7 @@ def raw_time_to_excel_sum(inp):
       # apply the sum function to the new list -> str()
       calchrs = str(round(reduce(lambda a, b: a + b, cvtm, 0), 2))
 
-    if tmsp:
-      timestp = tmsp.strip() + ' '
-
-  return (sumfunc, calchrs, timestp)
+  return (sumfunc, calchrs)
 
 
 def is_date_input(inp):
