@@ -118,7 +118,7 @@ def hours_to_human(inp):
 
 
 def raw_time_to_excel_sum(inp):
-  """Receives a raw time string & returns a tuple: (excel sum function, calculation in hours)"""
+  """Receives a raw time string & returns a tuple: (list of hour splits, calculation in hours)"""
   sumfunc = ''
   calchrs = ''
   timestp = ''
@@ -138,14 +138,14 @@ def raw_time_to_excel_sum(inp):
       rwtm = rwtm.split(',')
 
       # convert each unit into hours
-      cvtm = [convert_to_hours(u) for u in rwtm]
+      cvtm = [round(convert_to_hours(u), 4) for u in rwtm]
 
       # create a new list with the converted units
-      rwtm = ', '.join(str(u) for u in cvtm)
-      sumfunc = f'=sum({rwtm})'
+      rwtm = ' '.join(str(u) for u in cvtm)
+      sumfunc = rwtm
 
       # apply the sum function to the new list -> str()
-      calchrs = str(round(reduce(lambda a, b: a + b, cvtm, 0), 2))
+      calchrs = str(round(reduce(lambda a, b: a + b, cvtm, 0), 4))
 
   return (sumfunc, calchrs)
 

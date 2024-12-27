@@ -356,20 +356,20 @@ if gen_csv_file:
   # define periods
 
   # custom calculations
-  tod_total_work_hours = get_total_hours(df, today_f[0], today_f[0], 'C1:"Work"')
-  tod_total_project_hours = get_total_hours(df, today_f[0], today_f[0], 'C1:"Projects"')
+  tod_total_work_hours = '--' # get_total_hours(df, today_f[0], today_f[0], 'C1:"Work"')
+  tod_total_project_hours = '--' # get_total_hours(df, today_f[0], today_f[0], 'C1:"Projects"')
 
-  yest_total_work_hours = get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Work"')
-  yest_total_project_hours = get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Projects"')
+  yest_total_work_hours = '--' # get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Work"')
+  yest_total_project_hours = '--' # get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Projects"')
 
-  week_total_work_hours = get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Work"')
-  week_total_project_hours = get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Projects"')
+  week_total_work_hours = '--' # get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Work"')
+  week_total_project_hours = '--' # get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Projects"')
 
-  month_total_work_hours = get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Work"')
-  month_total_project_hours = get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Projects"')
+  month_total_work_hours = '--' # get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Work"')
+  month_total_project_hours = '--' # get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Projects"')
 
-  year_total_work_hours = get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Work"')
-  year_total_project_hours = get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Projects"')
+  year_total_work_hours = '--' # get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Work"')
+  year_total_project_hours = '--' # get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Projects"')
 
   periods = [
     {
@@ -426,7 +426,10 @@ if gen_csv_file:
   output_html = ''.join((
 
     f'<h3>Metrics {year}</h3>',
-    'Summary Reports: Started/Finished Projects/Subprojects, Total Project/Work/Study Hours <br><br> ',
+    'Summary Reports: <br>',
+    '- Projects: Subprojects: Miniprojects: Microprojects <br>',
+    '- Total Hours: Projects, Work, Study, Training, Practice <br> ',
+    '- Started, Finished, Active, Archived <br><br>',
     '<div class="periodstats-outer">',
     create_periods(periods),
     '</div>',
