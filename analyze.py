@@ -238,8 +238,9 @@ def convert_to_csv(entries, ymd_date):
     # group 2: description text
 
     # regex101 (ryt) v2: https://regex101.com/r/lrm5IQ/2
+    # feature update 1/21/2025: dots (.) can be used to start entries along with hyphens (-)
 
-    pattern = r'^-(\s*(?:[\d\:\.]+(?:m|h|s)[\s\,]*[\s\;]*)+)(.*)$'
+    pattern = r'^[-\.](\s*(?:[\d\:\.]+(?:m|h|s)[\s\,]*[\s\;]*)+)(.*)$'
     match = re.search(pattern, line)
     newline = []
 
