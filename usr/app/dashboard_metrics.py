@@ -41,6 +41,8 @@ monthstart_f = (monthstart.strftime('%Y-%m-%d'), monthstart.strftime('%b %-d'), 
 year = today.strftime('%Y')
 yearstart_f = (f'{year}-01-01', 'Jan 1', '01/01')
 
+last_year = str(int(year)-1)
+
 
 def get_query(param):
   """Get query string param (if exists & has value) or empty string"""
@@ -331,10 +333,19 @@ qs = get_query('sort')
 
 # default view & periods filtering views (files: today.csv yesterday.csv year.csv) 
 
+
+# if requested year is valid year format (i.e. 2024) use that year, otherwise use current year
+try:
+  if int(qp):
+    print(f'the year is correct: {qp}')
+    use_year = qp
+except ValueError:
+  use_year = year
+
 if ( qp == 'year' or 
      qp == 'month' or 
-     qp == 'week' ) and os.path.isfile(f'{gen_dir}{year}.csv'):
-  gen_csv_file  = f'{gen_dir}{year}.csv'
+     qp == 'week' ) and os.path.isfile(f'{gen_dir}{use_year}.csv'):
+  gen_csv_file  = f'{gen_dir}{use_year}.csv'
 
 elif (qp == 'today' or not qp) and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m-%d")}.csv'): # today and Default
   gen_csv_file  = f'{gen_dir}{today_f[0]}.csv'
@@ -342,8 +353,8 @@ elif (qp == 'today' or not qp) and os.path.isfile(f'{gen_dir}{today.strftime("%Y
 elif (qp == 'yesterday' or not qp) and os.path.isfile(f'{gen_dir}{yest_f[0]}.csv'):
   gen_csv_file  = f'{gen_dir}{yest_f[0]}.csv'
 
-elif os.path.isfile(f'{gen_dir}{year}.csv'): # use year.csv for all other cases (if file exists)
-  gen_csv_file  = f'{gen_dir}{year}.csv'
+elif os.path.isfile(f'{gen_dir}{use_year}.csv'): # use year.csv for all other cases (if file exists)
+  gen_csv_file  = f'{gen_dir}{use_year}.csv'
 
 
 # load & analyze data with pandas
@@ -462,7 +473,8 @@ if gen_csv_file:
     f'<a href="{ query_link({ "filter" : ":default:", "periods" : "yesterday" }) }{ scroll_hash }" class="{ ifxyz(qp,"yesterday","bold") }">Yesterday</a>, ',
     f'<a href="{ query_link({ "filter" : ":default:", "periods" : "week" }) }{ scroll_hash }" class="{ ifxyz(qp,"week","bold") }">This Week</a>, ',
     f'<a href="{ query_link({ "filter" : ":default:", "periods" : "month" }) }{ scroll_hash }" class="{ ifxyz(qp,"month","bold") }">This Month</a>, ',
-    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "year" }) }{ scroll_hash }" class="{ ifxyz(qp,"year","bold") }">This Year</a> ',
+    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "year" }) }{ scroll_hash }" class="{ ifxyz(qp,"year","bold") }">This Year</a>, ',
+    f'<a href="{ query_link({ "filter" : ":default:", "periods" : last_year }) }{ scroll_hash }" class="{ ifxyz(qp,last_year,"bold") }">{last_year}</a> ',
     ' &middot; ',
     ' <span class="dim">Sort:</span> ',
       f'<a href="{ query_link({ "filter" : ":default:", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qs,"","bold") }">A-Z</a> ',
