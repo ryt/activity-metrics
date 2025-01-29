@@ -92,7 +92,7 @@ def webcsv_link(file):
   """Create a link to the file through webcsv (if installed & running)"""
   host = urlparse(request.url_root).hostname
   port = urlparse(request.url_root).port
-  csvurl = gen_csv_file
+  csvurl = file
   if port == 8100:
     preurl = f'http://{host}:8002'
   else:
@@ -312,251 +312,257 @@ def ifxyz(x, y, z, default = ''):
 
 #### ---- main metrics dashboard process start ---- ####
 
-# define metrics & log files
+def run_main():
 
-gen_dir       = f"{get_query('m').rstrip('/')}/gen/"
-gen_csv_file  = ''
+  # define metrics & log files
 
-
-# shortcuts for quotes & new lines
-
-q = '"'
-nl = "\n"
-lnl = "\\n"
+  gen_dir       = f"{get_query('m').rstrip('/')}/gen/"
+  gen_csv_file  = ''
 
 
-# query string parameters
+  # shortcuts for quotes & new lines
 
-qf = url_modify(get_query('filter'))
-qp = get_query('periods')
-qs = get_query('sort')
-
-# default view & periods filtering views (files: today.csv yesterday.csv year.csv) 
+  q = '"'
+  nl = "\n"
+  lnl = "\\n"
 
 
-# if requested year is valid year format (i.e. 2024) use that year, otherwise use current year
-try:
-  if int(qp):
-    print(f'the year is correct: {qp}')
-    use_year = qp
-except ValueError:
-  use_year = year
+  # query string parameters
 
-if ( qp == 'year' or 
-     qp == 'month' or 
-     qp == 'week' ) and os.path.isfile(f'{gen_dir}{use_year}.csv'):
-  gen_csv_file  = f'{gen_dir}{use_year}.csv'
+  qf = url_modify(get_query('filter'))
+  qp = get_query('periods')
+  qs = get_query('sort')
 
-elif (qp == 'today' or not qp) and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m-%d")}.csv'): # today and Default
-  gen_csv_file  = f'{gen_dir}{today_f[0]}.csv'
-
-elif (qp == 'yesterday' or not qp) and os.path.isfile(f'{gen_dir}{yest_f[0]}.csv'):
-  gen_csv_file  = f'{gen_dir}{yest_f[0]}.csv'
-
-elif os.path.isfile(f'{gen_dir}{use_year}.csv'): # use year.csv for all other cases (if file exists)
-  gen_csv_file  = f'{gen_dir}{use_year}.csv'
+  # default view & periods filtering views (files: today.csv yesterday.csv year.csv) 
 
 
-# load & analyze data with pandas
+  # if requested year is valid year format (i.e. 2024) use that year, otherwise use current year
+  try:
+    if int(qp):
+      print(f'the year is correct: {qp}')
+      use_year = qp
+  except ValueError:
+    use_year = year
 
-if gen_csv_file:
+  if ( qp == 'year' or 
+       qp == 'month' or 
+       qp == 'week' ) and os.path.isfile(f'{gen_dir}{use_year}.csv'):
+    gen_csv_file  = f'{gen_dir}{use_year}.csv'
 
-  # Load the csv file as a DataFrame
-  df = pd.read_csv(gen_csv_file) if os.path.isfile(gen_csv_file) else pd.DataFrame({})
+  elif (qp == 'today' or not qp) and os.path.isfile(f'{gen_dir}{today.strftime("%Y-%m-%d")}.csv'): # today and Default
+    gen_csv_file  = f'{gen_dir}{today_f[0]}.csv'
 
-  # define periods
+  elif (qp == 'yesterday' or not qp) and os.path.isfile(f'{gen_dir}{yest_f[0]}.csv'):
+    gen_csv_file  = f'{gen_dir}{yest_f[0]}.csv'
 
-  # custom calculations
-  tod_total_work_hours = '--' # get_total_hours(df, today_f[0], today_f[0], 'C1:"Work"')
-  tod_total_project_hours = '--' # get_total_hours(df, today_f[0], today_f[0], 'C1:"Projects"')
+  elif os.path.isfile(f'{gen_dir}{use_year}.csv'): # use year.csv for all other cases (if file exists)
+    gen_csv_file  = f'{gen_dir}{use_year}.csv'
 
-  yest_total_work_hours = '--' # get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Work"')
-  yest_total_project_hours = '--' # get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Projects"')
 
-  week_total_work_hours = '--' # get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Work"')
-  week_total_project_hours = '--' # get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Projects"')
+  # load & analyze data with pandas
 
-  month_total_work_hours = '--' # get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Work"')
-  month_total_project_hours = '--' # get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Projects"')
+  if gen_csv_file:
 
-  year_total_work_hours = '--' # get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Work"')
-  year_total_project_hours = '--' # get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Projects"')
+    # Load the csv file as a DataFrame
+    df = pd.read_csv(gen_csv_file) if os.path.isfile(gen_csv_file) else pd.DataFrame({})
 
-  periods = [
-    {
-      'label' : 'Today',
-      'from'  : (today_f[0], today_f[1], today_f[2]),
-      'to'    : (today_f[0], today_f[1], today_f[2]),
-      'metrics' : {
-        'total_work_hours'    : tod_total_work_hours,
-        'total_project_hours' : tod_total_project_hours,
+    # define periods
+
+    # custom calculations
+    tod_total_work_hours = '--' # get_total_hours(df, today_f[0], today_f[0], 'C1:"Work"')
+    tod_total_project_hours = '--' # get_total_hours(df, today_f[0], today_f[0], 'C1:"Projects"')
+
+    yest_total_work_hours = '--' # get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Work"')
+    yest_total_project_hours = '--' # get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Projects"')
+
+    week_total_work_hours = '--' # get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Work"')
+    week_total_project_hours = '--' # get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Projects"')
+
+    month_total_work_hours = '--' # get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Work"')
+    month_total_project_hours = '--' # get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Projects"')
+
+    year_total_work_hours = '--' # get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Work"')
+    year_total_project_hours = '--' # get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Projects"')
+
+    periods = [
+      {
+        'label' : 'Today',
+        'from'  : (today_f[0], today_f[1], today_f[2]),
+        'to'    : (today_f[0], today_f[1], today_f[2]),
+        'metrics' : {
+          'total_work_hours'    : tod_total_work_hours,
+          'total_project_hours' : tod_total_project_hours,
+        }
+      },
+      {
+        'label' : 'Yesterday',
+        'from'  : (yest_f[0], yest_f[1], yest_f[2]),
+        'to'    : (yest_f[0], yest_f[1], yest_f[2]),
+        'metrics' : {
+          'total_work_hours'    : yest_total_work_hours,
+          'total_project_hours' : yest_total_project_hours,
+        }
+      },
+      {
+        'label' : 'This week',
+        'from'  : (weekstart_f[0], weekstart_f[1], weekstart_f[2]),
+        'to'    : (today_f[0], today_f[1], today_f[2]),
+        'metrics' : {
+          'total_work_hours'    : week_total_work_hours,
+          'total_project_hours' : week_total_project_hours,
+        }
+      },
+      {
+        'label' : 'This month',
+        'from'  : (monthstart_f[0], monthstart_f[1], monthstart_f[2]),
+        'to'    : (today_f[0], today_f[1], today_f[2]),
+        'metrics' : {
+          'total_work_hours'    : month_total_work_hours,
+          'total_project_hours' : month_total_project_hours,
+        }
+      },
+      {
+        'label' : 'This year',
+        'from'  : (yearstart_f[0], yearstart_f[1], yearstart_f[2]),
+        'to'    : (today_f[0], today_f[1], today_f[2]),
+        'metrics' : {
+          'total_work_hours'    : year_total_work_hours,
+          'total_project_hours' : year_total_project_hours,
+        }
       }
-    },
-    {
-      'label' : 'Yesterday',
-      'from'  : (yest_f[0], yest_f[1], yest_f[2]),
-      'to'    : (yest_f[0], yest_f[1], yest_f[2]),
-      'metrics' : {
-        'total_work_hours'    : yest_total_work_hours,
-        'total_project_hours' : yest_total_project_hours,
-      }
-    },
-    {
-      'label' : 'This week',
-      'from'  : (weekstart_f[0], weekstart_f[1], weekstart_f[2]),
-      'to'    : (today_f[0], today_f[1], today_f[2]),
-      'metrics' : {
-        'total_work_hours'    : week_total_work_hours,
-        'total_project_hours' : week_total_project_hours,
-      }
-    },
-    {
-      'label' : 'This month',
-      'from'  : (monthstart_f[0], monthstart_f[1], monthstart_f[2]),
-      'to'    : (today_f[0], today_f[1], today_f[2]),
-      'metrics' : {
-        'total_work_hours'    : month_total_work_hours,
-        'total_project_hours' : month_total_project_hours,
-      }
-    },
-    {
-      'label' : 'This year',
-      'from'  : (yearstart_f[0], yearstart_f[1], yearstart_f[2]),
-      'to'    : (today_f[0], today_f[1], today_f[2]),
-      'metrics' : {
-        'total_work_hours'    : year_total_work_hours,
-        'total_project_hours' : year_total_project_hours,
-      }
-    }
-  ]
+    ]
 
-  frame_table = html_table_from_dataframe(df, apply_filters=True)
+    frame_table = html_table_from_dataframe(df, apply_filters=True)
 
-  scroll_hash = '' # set to: "#activities" to enable scroll hash
+    scroll_hash = '' # set to: "#activities" to enable scroll hash
 
-  output_html = ''.join((
+    output_html = ''.join((
 
-    f'<h3>Metrics {year}</h3>',
-    'Summary Reports: <br>',
-    '- Projects: Subprojects: Miniprojects: Microprojects <br>',
-    '- Total Hours: Projects, Work, Study, Training, Practice <br> ',
-    '- Started, Finished, Active, Archived <br><br>',
-    '<div class="periodstats-outer">',
-    create_periods(periods),
-    '</div>',
+      f'<h3>Metrics {year}</h3>',
+      'Summary Reports: <br>',
+      '- Projects: Subprojects: Miniprojects: Microprojects <br>',
+      '- Total Hours: Projects, Work, Study, Training, Practice <br> ',
+      '- Started, Finished, Active, Archived <br><br>',
+      '<div class="periodstats-outer">',
+      create_periods(periods),
+      '</div>',
 
-    '<table class="plain">',
-     # note: the CSV link below requires/assumes webcsv being installed/used & running on the machine
-     f'<td><h4 id="activities">Metrics CSV (<a href="{ webcsv_link(gen_csv_file) }" target="_blank">{ os.path.basename(gen_csv_file) }</a>)</h4></td>',
-     f'<td><div class="filter-search">',
-        '<table class="plain">',
-         f'<td><input type="text" placeholder="C1:Music,C2:Practice" id="filter-query" value="{ html.escape(qf) }"></td>',
-          '<td><button id="filter-go">Go</button></td>',
-        '</table>',
-      '</div></td>',
-    '</table>',
+      '<table class="plain">',
+       # note: the CSV link below requires/assumes webcsv being installed/used & running on the machine
+       f'<td><h4 id="activities">Metrics CSV (<a href="{ webcsv_link(gen_csv_file) }" target="_blank">{ os.path.basename(gen_csv_file) }</a>)</h4></td>',
+       f'<td><div class="filter-search">',
+          '<table class="plain">',
+           f'<td><input type="text" placeholder="C1:Music,C2:Practice" id="filter-query" value="{ html.escape(qf) }"></td>',
+            '<td><button id="filter-go">Go</button></td>',
+          '</table>',
+        '</div></td>',
+      '</table>',
 
-    '<div class="filters">',
-       '<div class="filter-lists">',
-         '<span class="dim">Filters:</span> ',
-        f'<a href="{ query_link({ "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"","bold") }">Default</a>, ',
-        f'<a href="{ query_link({ "filter" : "C1:Work", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Work","bold") }">Work</a>, ',
-        f'<a href="{ query_link({ "filter" : "C1:Projects", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Projects","bold") }">Projects</a>, ',
-        f'<a href="{ query_link({ "filter" : "C1:Study", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Study","bold") }">Study</a>, ',
-        f'<a href="{ query_link({ "filter" : "C1:Practice", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Practice","bold") }">Practice</a>',
-       '</div>',
-    '</div>',
+      '<div class="filters">',
+         '<div class="filter-lists">',
+           '<span class="dim">Filters:</span> ',
+          f'<a href="{ query_link({ "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"","bold") }">Default</a>, ',
+          f'<a href="{ query_link({ "filter" : "C1:Work", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Work","bold") }">Work</a>, ',
+          f'<a href="{ query_link({ "filter" : "C1:Projects", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Projects","bold") }">Projects</a>, ',
+          f'<a href="{ query_link({ "filter" : "C1:Study", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Study","bold") }">Study</a>, ',
+          f'<a href="{ query_link({ "filter" : "C1:Practice", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Practice","bold") }">Practice</a>',
+         '</div>',
+      '</div>',
 
-    '<div class="periods"> <span class="dim">Periods:</span> ',
-    f'<a href="{ query_link({ "filter" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qp,"","bold") }">Default</a>, ',
-    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "today" }) }{ scroll_hash }" class="{ ifxyz(qp,"today","bold") }">Today</a>, ',
-    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "yesterday" }) }{ scroll_hash }" class="{ ifxyz(qp,"yesterday","bold") }">Yesterday</a>, ',
-    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "week" }) }{ scroll_hash }" class="{ ifxyz(qp,"week","bold") }">This Week</a>, ',
-    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "month" }) }{ scroll_hash }" class="{ ifxyz(qp,"month","bold") }">This Month</a>, ',
-    f'<a href="{ query_link({ "filter" : ":default:", "periods" : "year" }) }{ scroll_hash }" class="{ ifxyz(qp,"year","bold") }">This Year</a>, ',
-    f'<a href="{ query_link({ "filter" : ":default:", "periods" : last_year }) }{ scroll_hash }" class="{ ifxyz(qp,last_year,"bold") }">{last_year}</a> ',
-    ' &middot; ',
-    ' <span class="dim">Sort:</span> ',
-      f'<a href="{ query_link({ "filter" : ":default:", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qs,"","bold") }">A-Z</a> ',
-      f'<a href="{ query_link({ "filter" : ":default:", "periods" : ":default:", "sort": "za" }) }{ scroll_hash }" class="{ ifxyz(qs,"za","bold") }">Z-A</a> ',
-    '</div>',
+      '<div class="periods"> <span class="dim">Periods:</span> ',
+      f'<a href="{ query_link({ "filter" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qp,"","bold") }">Default</a>, ',
+      f'<a href="{ query_link({ "filter" : ":default:", "periods" : "today" }) }{ scroll_hash }" class="{ ifxyz(qp,"today","bold") }">Today</a>, ',
+      f'<a href="{ query_link({ "filter" : ":default:", "periods" : "yesterday" }) }{ scroll_hash }" class="{ ifxyz(qp,"yesterday","bold") }">Yesterday</a>, ',
+      f'<a href="{ query_link({ "filter" : ":default:", "periods" : "week" }) }{ scroll_hash }" class="{ ifxyz(qp,"week","bold") }">This Week</a>, ',
+      f'<a href="{ query_link({ "filter" : ":default:", "periods" : "month" }) }{ scroll_hash }" class="{ ifxyz(qp,"month","bold") }">This Month</a>, ',
+      f'<a href="{ query_link({ "filter" : ":default:", "periods" : "year" }) }{ scroll_hash }" class="{ ifxyz(qp,"year","bold") }">This Year</a>, ',
+      f'<a href="{ query_link({ "filter" : ":default:", "periods" : last_year }) }{ scroll_hash }" class="{ ifxyz(qp,last_year,"bold") }">{last_year}</a> ',
+      ' &middot; ',
+      ' <span class="dim">Sort:</span> ',
+        f'<a href="{ query_link({ "filter" : ":default:", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qs,"","bold") }">A-Z</a> ',
+        f'<a href="{ query_link({ "filter" : ":default:", "periods" : ":default:", "sort": "za" }) }{ scroll_hash }" class="{ ifxyz(qs,"za","bold") }">Z-A</a> ',
+      '</div>',
 
-    f'<div class="table-outer" id="data-scroller">{ frame_table["html"] }</div>',
+      f'<div class="table-outer" id="data-scroller">{ frame_table["html"] }</div>',
 
-    '<div class="details">',
-      f'Total: <b>{ frame_table["total"] }</b>, <i>{ round(frame_table["total_hrs"], 2) }hrs</i> ',
-       '<a href="javascript:;" onclick="downloadCSV();" class="right">Download</a>',
-    '</div>',
+      '<div class="details">',
+        f'Total: <b>{ frame_table["total"] }</b>, <i>{ round(frame_table["total_hrs"], 2) }hrs</i> ',
+         '<a href="javascript:;" onclick="downloadCSV();" class="right">Download</a>',
+      '</div>',
 
 
-    f'''
+      f'''
 
-    <script type="text/javascript">
+      <script type="text/javascript">
 
-      // -- query filter search input functions -- //
+        // -- query filter search input functions -- //
 
-      function urlPrep(str) {{
-        str = encodeURIComponent(str);
-        str = str.replace(/%3A/g,":"); // ignore :
-        return str;
-      }}
+        function urlPrep(str) {{
+          str = encodeURIComponent(str);
+          str = str.replace(/%3A/g,":"); // ignore :
+          return str;
+        }}
 
-      var fquery = document.getElementById('filter-query');
-      var fgo = document.getElementById('filter-go');
+        var fquery = document.getElementById('filter-query');
+        var fgo = document.getElementById('filter-go');
 
-      function filterGo(){{
-        var link = "{ query_link({ "filter": f"{ q } + urlPrep(fquery.value) + { q }", "periods" : "year" if not qp else ":default:" }) }{ scroll_hash }";
-        window.location.href = link;
-      }}
+        function filterGo(){{
+          var link = "{ query_link({ "filter": f"{ q } + urlPrep(fquery.value) + { q }", "periods" : "year" if not qp else ":default:" }) }{ scroll_hash }";
+          window.location.href = link;
+        }}
 
-      fquery.addEventListener('keyup', function(e){{ if ( e.key === "Enter" ) {{ e.preventDefault(); filterGo(); }} }});
-      fgo.addEventListener('click', filterGo);
-
-
-      // -- scroll to bottom of data table on #activities -- //
-      
-      if ( window.location.hash.includes('activities') ) {{
-        var dataScroller = document.getElementById('data-scroller');
-        dataScroller.scrollTop = dataScroller.scrollHeight;
-      }}
+        fquery.addEventListener('keyup', function(e){{ if ( e.key === "Enter" ) {{ e.preventDefault(); filterGo(); }} }});
+        fgo.addEventListener('click', filterGo);
 
 
-      // -- csv downloader for rendered table -- //
+        // -- scroll to bottom of data table on #activities -- //
+        
+        if ( window.location.hash.includes('activities') ) {{
+          var dataScroller = document.getElementById('data-scroller');
+          dataScroller.scrollTop = dataScroller.scrollHeight;
+        }}
 
-      function downloadCSV() {{
 
-        var table = document.querySelector(".csv-table");
-        var rows = Array.from(table.querySelectorAll("tr"));
-        var csvContent = "";
+        // -- csv downloader for rendered table -- //
 
-        rows.forEach(function(row, rowIndex) {{
-            var columns = Array.from(row.querySelectorAll("td, th"));
+        function downloadCSV() {{
 
-            columns.forEach(function(column, columnIndex) {{
-              csvContent += '"' + column.innerText.replace(/"/g, '""') + '"';
-              if ( columnIndex < columns.length - 1 ) {{
-                csvContent += ',';
-              }}
-            }});
-            csvContent += "\\n";
-        }});
+          var table = document.querySelector(".csv-table");
+          var rows = Array.from(table.querySelectorAll("tr"));
+          var csvContent = "";
 
-        csvContent += "{',' + macros.hours_to_human(round(frame_table["total_hrs"], 2)) + ',,,,,Total Hours,' + str(round(frame_table["total_hrs"], 2))  + ','+lnl if qf else ''}";
+          rows.forEach(function(row, rowIndex) {{
+              var columns = Array.from(row.querySelectorAll("td, th"));
 
-        var downloadLink = document.createElement("a");
-        var blob = new Blob(["\\ufeff", csvContent]);
-        var url = URL.createObjectURL(blob);
-        downloadLink.href = url;
-        downloadLink.download = '{os.path.basename(gen_csv_file)}';
+              columns.forEach(function(column, columnIndex) {{
+                csvContent += '"' + column.innerText.replace(/"/g, '""') + '"';
+                if ( columnIndex < columns.length - 1 ) {{
+                  csvContent += ',';
+                }}
+              }});
+              csvContent += "\\n";
+          }});
 
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-      }}
+          csvContent += "{',' + macros.hours_to_human(round(frame_table["total_hrs"], 2)) + ',,,,,Total Hours,' + str(round(frame_table["total_hrs"], 2))  + ','+lnl if qf else ''}";
 
-    </script>
+          var downloadLink = document.createElement("a");
+          var blob = new Blob(["\\ufeff", csvContent]);
+          var url = URL.createObjectURL(blob);
+          downloadLink.href = url;
+          downloadLink.download = '{os.path.basename(gen_csv_file)}';
 
-    ''',
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+        }}
 
-  ))
+      </script>
+
+      ''',
+
+    ))
+
+  return output_html
+
+
 

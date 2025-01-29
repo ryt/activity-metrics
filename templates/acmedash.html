@@ -10,12 +10,13 @@
   <title>acme: Activity Metrics Web Dashboard</title>
   <style>
     body { margin: 0; font: 14px sans-serif; }
-    h2 { margin: 0; padding: 8px 16px; background: #ddd; border-bottom: 1px solid #bbb; }
-    h2 a { color:#000; text-decoration: none; }
-    h2 a.nav { font-size: 12px; font-weight: bold; margin-left:10px; padding: 4px 6px; border-radius: 2px; position: relative; top: -2px; }
-    h2 a.nav-gear { font-size:20px; top:0px; }
-    h2 a.nav:hover { text-decoration: none; }
-    h2 a.cur { color: #fff; background: #333;  }
+    .nav-holder { margin: 0; padding: 8px 16px; background: #ddd; border-bottom: 1px solid #bbb; }
+    .nav-holder a { color:#000; text-decoration: none; }
+    .nav-holder a.nav { font-size:12px;font-weight:bold;margin-left:10px;padding:4px 6px;border-radius:2px;position:relative;top:-2px; }
+    .nav-holder a.nav-gear { font-size:20px; top:0px; }
+    .nav-holder a.nav:hover { text-decoration: none; }
+    .nav-holder a.cur { color: #fff; background: #333;  }
+    .nav-holder a.logo { font-weight:bold;font-size:21px; }
     h4 { margin-bottom:10px; }
     a { color: #000; text-decoration: none; }
     a:hover { text-decoration: underline; }
@@ -52,6 +53,7 @@
     .left { float:left; }
     .right { float: right; }
     .clear { clear: both; }
+    .flex { display: flex; }
     .filter-search { margin:5px 0 0 20px;  }
     #filter-query { border: 1px solid #999; padding: 4px 5px; margin: 0; border-radius: 4px 0 0 4px; border-right: none; width:300px; }
     #filter-go { padding: 5px 8px; background: #555; border: none; color: #fff; border-radius: 0px 4px 4px 0; cursor: pointer; }
@@ -59,22 +61,33 @@
 
     @media (max-width: 568px) { 
       .address { font-size: 12px; line-height: 1.25; }
-      h2 a.nav { margin-left:5px; }
       .filters { }
       .filter-search { }
+    }
+
+    @media (max-width:468px) {
+      .nav-holder { padding-bottom:2px; }
+      .nav-right { line-height:2; }
     }
 
   </style>
 </head>
 <body>
 
-    <h2>
-      <a href="{{ view.app_path }}?{{ view.query_m }}">acme</a>
+  <div class="nav-holder flex">
+    <div class="nav-left">
+      <a class="logo" href="{{ view.app_path }}?{{ view.query_m }}">acme</a>
+    </div>
+    <div class="nav-right">
       <a class="nav {{ 'cur' if view.page == 'index' }}" href="{{ view.app_path }}?{{ view.query_m }}">dashboard</a>
-      <a class="nav {{ 'cur' if view.page == 'commands' }}" href="{{ view.app_path }}commands?{{ view.query_m }}">commands</a>
+      <a class="nav {{ 'cur' if view.page == 'commands' }}" href="{{ view.app_path }}commands?{{ view.query_m }}">cmds</a>
       <a class="nav {{ 'cur' if view.page == 'garmin' }}" href="{{ view.app_path }}garmin?{{ view.query_m }}">garmin</a>
+      <a class="nav {{ 'cur' if view.page == 'athletics' }}" href="{{ view.app_path }}athletics?{{ view.query_m }}">athletics</a>
+      <a class="nav {{ 'cur' if view.page == 'nutrition' }}" href="{{ view.app_path }}nutrition?{{ view.query_m }}">nutrition</a>
+      <a class="nav {{ 'cur' if view.page == 'health' }}" href="{{ view.app_path }}health?{{ view.query_m }}">health</a>
       <a class="nav nav-gear {{ 'cur' if view.page == 'custom' }}" href="{{ view.app_path }}custom?{{ view.query_m }}">&#9881;</a>
-    </h2>
+    </div>
+  </div>
 
   {% if view.page == 'commands' %}
 
@@ -121,6 +134,7 @@
 
     <div class="dir-list">
       {% if view.getm %}
+        {{ view.message }}
         {{ view.output_html | safe }}
       {% else %}
         Please specify a metrics directory with the <i>m</i> parameter. {{ view.app_path }}?m=/Path/to/Metrics

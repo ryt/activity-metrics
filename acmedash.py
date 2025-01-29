@@ -79,7 +79,7 @@ def commands(subpath=None):
 
       view['message']       = getcmd
       view['command']       = getcmd
-      view['output_html']   = dashboard_commands.output_html
+      view['output_html']   = dashboard_commands.run_main()
 
     else:
       view['error']   = True
@@ -90,14 +90,22 @@ def commands(subpath=None):
   return render_template('acmedash.html', view=view)
 
 
-@app.route(f'{app_path}garmin',  methods=['GET'])
-def garmin(subpath=None):
+# default modules list
 
-  getm        = get_query('m')
+module_list = {
+  'athletics' : ('dashboard_athletics.py',      'athletics'),
+  'garmin'    : ('dashboard_garmin_connect.py', 'garmin connect'),
+  'nutrition' : ('dashboard_nutrition.py',      'nutrition'),
+  'health'    : ('dashboard_health.py',         'health'),
+}
 
+@app.route(f'{app_path}<module>',  methods=['GET'])
+def default_modules(module):
+
+  getm = get_query('m')
   view = {
     'app_path'    : app_path,
-    'page'        : 'garmin',
+    'page'        : module,
     'getm'        : getm,
     'query_m'     : f'm={getm}',
     'error'       : False, 
@@ -105,21 +113,32 @@ def garmin(subpath=None):
     'output_html' : '',
   }
 
-  getm = getm.rstrip('/')
-  if getm and os.path.isdir(f'{getm}/logs/'):
-    if os.path.isfile(f'{getm}/app/dashboard_garmin_connect.py'):
-      sys.path.append(f'{getm}/app/')
-      import dashboard_garmin_connect
-      importlib.reload(dashboard_garmin_connect)
+  if module in module_list:
 
-      view['message']       = ''
-      view['output_html']   = dashboard_garmin_connect.output_html
+    module_script = module_list[module][0]
+    module_name   = module_list[module][1]
+    module_call   = module_script.rstrip('.py')
 
+    getm = getm.rstrip('/')
+    if getm and os.path.isdir(f'{getm}/logs/'):
+      if os.path.isfile(f'{getm}/app/{module_script}'):
+        sys.path.append(f'{getm}/app/')
+
+        module_run = importlib.import_module(module_call)
+        importlib.reload(module_run)
+
+        view['message']       = ''
+        view['output_html']   = module_run.run_main()
+
+      else:
+        view['error']   = True
+        view['message'] = f'Sorry the dashboard {module_name} module could not be found in the metrics app directory.'
     else:
-      view['error']   = True
-      view['message'] = 'Sorry the dashboard garmin connect module could not be found in the metrics app directory.'
+      view['message'] = f'Please specify a valid metrics directory path for the {module_name} module. ?m=/Path/to/Metrics/'
+
   else:
-    view['message'] = 'Please specify a valid metrics directory path for the garmin connect module. ?m=/Path/to/Metrics/'
+    view['error']   = True
+    view['message'] = 'Sorry there is no module with that name.'
 
   return render_template('acmedash.html', view=view)
 
@@ -147,7 +166,7 @@ def custom(subpath=None):
       importlib.reload(dashboard_custom)
 
       view['message']       = ''
-      view['output_html']   = dashboard_custom.output_html
+      view['output_html']   = dashboard_custom.run_main()
 
     else:
       view['error']   = True
@@ -186,7 +205,7 @@ def index(subpath=None):
 
       view['message']       = ''
       view['command']       = ''
-      view['output_html']   = dashboard_metrics.output_html
+      view['output_html']   = dashboard_metrics.run_main()
 
     else:
       view['error']   = True
