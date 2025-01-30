@@ -80,8 +80,7 @@
     </div>
     <div class="nav-right">
       <a class="nav {{ 'cur' if view.page == 'index' }}" href="{{ view.app_path }}?{{ view.query_m }}">dashboard</a>
-      <a class="nav {{ 'cur' if view.page == 'commands' }}" href="{{ view.app_path }}commands?{{ view.query_m }}">cmds</a>
-      <a class="nav {{ 'cur' if view.page == 'garmin' }}" href="{{ view.app_path }}garmin?{{ view.query_m }}">garmin</a>
+      <a class="nav {{ 'cur' if view.page == 'commands' }}" href="{{ view.app_path }}commands?{{ view.query_m }}">commands</a>
       <a class="nav {{ 'cur' if view.page == 'athletics' }}" href="{{ view.app_path }}athletics?{{ view.query_m }}">athletics</a>
       <a class="nav {{ 'cur' if view.page == 'nutrition' }}" href="{{ view.app_path }}nutrition?{{ view.query_m }}">nutrition</a>
       <a class="nav {{ 'cur' if view.page == 'health' }}" href="{{ view.app_path }}health?{{ view.query_m }}">health</a>
@@ -101,18 +100,6 @@
       {{ view.output_html | safe }}
     </div>
 
-  {% elif view.page == 'garmin' %}
-
-    <div class="address">
-      {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
-      <a href="{{ view.app_path }}garmin?{{ view.query_m }}">garmin</a> <span>/</span> 
-    </div>
-
-    <div class="dir-list">
-      {{ view.message }}
-      {{ view.output_html | safe }}
-    </div>
-
   {% elif view.page == 'custom' %}
 
     <div class="address">
@@ -129,6 +116,9 @@
 
     <div class="address">
       {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
+      {% if view.page %}
+      <a href="{{ view.app_path }}{{ view.page }}?{{ view.query_m }}">{{ view.page }}</a> <span>/</span> 
+      {% endif %}
     </div>
 
 

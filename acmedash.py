@@ -94,7 +94,6 @@ def commands(subpath=None):
 
 module_list = {
   'athletics' : ('dashboard_athletics.py',      'athletics'),
-  'garmin'    : ('dashboard_garmin_connect.py', 'garmin connect'),
   'nutrition' : ('dashboard_nutrition.py',      'nutrition'),
   'health'    : ('dashboard_health.py',         'health'),
 }
