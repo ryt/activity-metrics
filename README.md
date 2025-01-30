@@ -2,15 +2,16 @@
 
 Overview
 --------
-Activity Metrics is a tool that can be used to analyze and display personal activity statistics. The app works by parsing daily log files that are written with a simple formatting style. The parsed data can then be converted into spreadsheets (e.g. timesheets), charts, and other useful formats such as custom textual and graphical data displays.
+Activity Metrics is a tool that can be used to track and manage personal activity statistics. The app creates CSV files from daily logs that have a simple formatting style. The CSV data can be used in Google Sheets, Excel, or be processed by data visualization libraries to for custom textual and graphical needs.
 
-For installation & usage, you can navigate to the [installation](#Installation) section at the bottom, otherwise keep reading for a simple overview of the system.
+For installation & usage, you can navigate to the [installation](#Installation) section at the bottom. Here's a simple overview of the system.
 
 ### Basics
 
 - A log is a  **.txt** file that holds the entries for a particular day.
-- An example entry could be `- 8am 15m coffee & morning walk`.
-- An entry always starts on it's own line with a hyphen.
+- An example entry could be `- 15m 8a guitar practice: minor chords`.
+- An entry is a line that starts with a hyphen `-` or dot `.`.
+- Everything else in the file gets ignored.
 - There are no limits for the number of entries or files for a day.
 - All logs (including their parent directories) are stored in the main `logs/` directory.
 
