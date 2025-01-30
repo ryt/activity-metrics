@@ -447,16 +447,18 @@ def run_main():
       create_periods(periods),
       '</div>',
 
-      '<table class="plain">',
-       # note: the CSV link below requires/assumes webcsv being installed/used & running on the machine
-       f'<td><h4 id="activities">Metrics CSV (<a href="{ webcsv_link(gen_csv_file) }" target="_blank">{ os.path.basename(gen_csv_file) }</a>)</h4></td>',
-       f'<td><div class="filter-search">',
-          '<table class="plain">',
-           f'<td><input type="text" placeholder="C1:Music,C2:Practice" id="filter-query" value="{ html.escape(qf) }"></td>',
-            '<td><button id="filter-go">Go</button></td>',
-          '</table>',
-        '</div></td>',
-      '</table>',
+      '<div class="flex vcenter search-holder">',
+         # note: the CSV link below requires/assumes webcsv being installed/used & running on the machine
+         f'<div class="flex-col"><h4 id="activities">Metrics CSV (<a href="{ webcsv_link(gen_csv_file) }" target="_blank">{ os.path.basename(gen_csv_file) }</a>)</h4></div>',
+          '<div class="flex-col">',
+             '<div class="filter-search">',
+                '<table class="plain">',
+                 f'<td><input type="text" placeholder="C1:Music,C2:Practice" id="filter-query" value="{ html.escape(qf) }"></td>',
+                  '<td><button id="filter-go">Go</button></td>',
+                '</table>',
+              '</div>',
+         '</div>',
+      '</div>',
 
       '<div class="filters">',
          '<div class="filter-lists">',
