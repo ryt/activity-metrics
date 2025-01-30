@@ -2,7 +2,7 @@
 
 Overview
 --------
-Activity Metrics is a tool that can be used to track and manage personal activity statistics. The app creates CSV files from daily logs that have a simple formatting style. The CSV data can be used in Google Sheets, Excel, or be processed by data visualization libraries to for custom textual and graphical needs.
+Activity Metrics is a tool for tracking personal activity stats. It creates CSV files from daily logs in a simple format. These files can be used in Google Sheets, Excel, or other spreadsheet apps and work with data visualization tools for custom charts and reports.
 
 For installation & usage, you can navigate to the [installation](#Installation) section at the bottom. Here's a simple overview of the system.
 
