@@ -63,7 +63,7 @@ def parse_settings(getm):
 
 # default commands router
 
-@app.route(f'{app_path}commands',  methods=['GET'])
+@app.route(f'{app_path}commands',  methods=['GET', 'POST'])
 def commands(subpath=None):
 
   getm        = get_query('m')
@@ -106,7 +106,7 @@ def commands(subpath=None):
 
 # default local modules router
 
-@app.route(f'{app_path}<module>',  methods=['GET'])
+@app.route(f'{app_path}<module>',  methods=['GET', 'POST'])
 def default_modules(module):
 
   getm = get_query('m')
@@ -160,7 +160,7 @@ def default_modules(module):
 
 # default index router
 
-@app.route(f'{app_path}', methods=['GET'])
+@app.route(f'{app_path}', methods=['GET', 'POST'])
 
 def index(subpath=None):
 
