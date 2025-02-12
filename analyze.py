@@ -331,7 +331,7 @@ def analyze(params, called, meta):
 
   glossary          = module_settings.use_glossary
   default_modules   = module_settings.use_default_modules
-  local_modules     = module_settings.use_local_modules
+  local_modules     = module_settings.run_local_modules
 
   apply_modules     = {}
   apply_glossary    = {}
@@ -344,11 +344,6 @@ def analyze(params, called, meta):
     if dm:
       # imports modules from {install_dir}usr/app/
       apply_modules[dm] = importlib.import_module(dm)
-
-  for lm in local_modules:
-    if lm:
-      # imports modules from {app_dir}
-      apply_modules[lm] = importlib.import_module(lm)
 
   # -- end: import custom modules
 

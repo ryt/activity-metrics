@@ -119,7 +119,7 @@ def default_modules(module):
     sys.path.append(f'{getm}/app/')
     import module_settings
 
-    module_list = module_settings.use_local_modules
+    module_list = module_settings.run_local_modules
     view['add_nav_links'] = module_settings.add_nav_links
 
     if module in module_list:

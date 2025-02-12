@@ -20,9 +20,9 @@ use_default_modules = (
 )
 
 
-# use custom local modules in local app/ directory
+# run custom local modules in local app/ directory
 
-use_local_modules = {
+run_local_modules = {
   # /<path>,      {module_script},                {module_name}
   # 'athletics' : ('dashboard_athletics.py',      'athletics'),
   # 'nutrition' : ('dashboard_nutrition.py',      'nutrition'),
