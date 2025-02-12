@@ -85,9 +85,11 @@
     <div class="nav-right">
       <a class="nav {{ 'cur' if view.page == 'index' }}" href="{{ view.app_path }}?{{ view.query_m }}">dashboard</a>
       <a class="nav {{ 'cur' if view.page == 'commands' }}" href="{{ view.app_path }}commands?{{ view.query_m }}">commands</a>
-      <a class="nav {{ 'cur' if view.page == 'athletics' }}" href="{{ view.app_path }}athletics?{{ view.query_m }}">athletics</a>
-      <a class="nav {{ 'cur' if view.page == 'nutrition' }}" href="{{ view.app_path }}nutrition?{{ view.query_m }}">nutrition</a>
-      <a class="nav {{ 'cur' if view.page == 'health' }}" href="{{ view.app_path }}health?{{ view.query_m }}">health</a>
+      {% if view.add_nav_links %}
+        {% for link in view.add_nav_links %}
+      <a class="nav {{ 'cur' if view.page == link[1] }}" href="{{ view.app_path }}{{ link[1] }}?{{ view.query_m }}">{{ link[2] }}</a>
+        {% endfor %}
+      {% endif %}
       <a class="nav nav-gear {{ 'cur' if view.page == 'custom' }}" href="{{ view.app_path }}custom?{{ view.query_m }}">&#9881;</a>
     </div>
   </div>

@@ -60,14 +60,15 @@ def commands(subpath=None):
   getcmd      = get_query('cmd')
 
   view = {
-    'app_path'    : app_path,
-    'page'        : 'commands',
-    'getm'        : getm,
-    'query_m'     : f'm={getm}',
-    'command'     : '', 
-    'error'       : False, 
-    'message'     : '',
-    'output_html' : '',
+    'app_path'      : app_path,
+    'page'          : 'commands',
+    'getm'          : getm,
+    'query_m'       : f'm={getm}',
+    'command'       : '', 
+    'error'         : False, 
+    'message'       : '',
+    'output_html'   : '',
+    'add_nav_links' : (),
   }
 
   getm = getm.rstrip('/')
@@ -76,6 +77,9 @@ def commands(subpath=None):
       sys.path.append(f'{getm}/app/')
       import dashboard_commands
       importlib.reload(dashboard_commands)
+
+      import module_settings
+      view['add_nav_links'] = module_settings.add_nav_links
 
       view['message']       = getcmd
       view['command']       = getcmd
@@ -90,38 +94,41 @@ def commands(subpath=None):
   return render_template('acmedash.html', view=view)
 
 
-# default modules list
-
-module_list = {
-  'athletics' : ('dashboard_athletics.py',      'athletics'),
-  'nutrition' : ('dashboard_nutrition.py',      'nutrition'),
-  'health'    : ('dashboard_health.py',         'health'),
-}
+# default local modules router
 
 @app.route(f'{app_path}<module>',  methods=['GET'])
 def default_modules(module):
 
   getm = get_query('m')
   view = {
-    'app_path'    : app_path,
-    'page'        : module,
-    'getm'        : getm,
-    'query_m'     : f'm={getm}',
-    'error'       : False, 
-    'message'     : '',
-    'output_html' : '',
+    'app_path'      : app_path,
+    'page'          : module,
+    'getm'          : getm,
+    'query_m'       : f'm={getm}',
+    'error'         : False, 
+    'message'       : '',
+    'output_html'   : '',
+    'add_nav_links' : (),
   }
 
-  if module in module_list:
+  getm = getm.rstrip('/')
+  if getm and os.path.isdir(f'{getm}/logs/'):
 
-    module_script = module_list[module][0]
-    module_name   = module_list[module][1]
-    module_call   = module_script.rstrip('.py')
+    # default local modules import
 
-    getm = getm.rstrip('/')
-    if getm and os.path.isdir(f'{getm}/logs/'):
+    sys.path.append(f'{getm}/app/')
+    import module_settings
+
+    module_list = module_settings.use_local_modules
+    view['add_nav_links'] = module_settings.add_nav_links
+
+    if module in module_list:
+
+      module_script = module_list[module][0]
+      module_name   = module_list[module][1]
+      module_call   = module_script.rstrip('.py')
+
       if os.path.isfile(f'{getm}/app/{module_script}'):
-        sys.path.append(f'{getm}/app/')
 
         module_run = importlib.import_module(module_call)
         importlib.reload(module_run)
@@ -132,12 +139,13 @@ def default_modules(module):
       else:
         view['error']   = True
         view['message'] = f'Sorry the dashboard {module_name} module could not be found in the metrics app directory.'
+
     else:
-      view['message'] = f'Please specify a valid metrics directory path for the {module_name} module. ?m=/Path/to/Metrics/'
+      view['error']   = True
+      view['message'] = 'Sorry there is no module with that name.'
 
   else:
-    view['error']   = True
-    view['message'] = 'Sorry there is no module with that name.'
+    view['message'] = f'Please specify a valid metrics directory path for the {module_name} module. ?m=/Path/to/Metrics/'
 
   return render_template('acmedash.html', view=view)
 
@@ -148,13 +156,14 @@ def custom(subpath=None):
   getm        = get_query('m')
 
   view = {
-    'app_path'    : app_path,
-    'page'        : 'custom',
-    'getm'        : getm,
-    'query_m'     : f'm={getm}',
-    'error'       : False, 
-    'message'     : '',
-    'output_html' : '',
+    'app_path'      : app_path,
+    'page'          : 'custom',
+    'getm'          : getm,
+    'query_m'       : f'm={getm}',
+    'error'         : False, 
+    'message'       : '',
+    'output_html'   : '',
+    'add_nav_links' : (),
   }
 
   getm = getm.rstrip('/')
@@ -163,6 +172,9 @@ def custom(subpath=None):
       sys.path.append(f'{getm}/app/')
       import dashboard_custom
       importlib.reload(dashboard_custom)
+
+      import module_settings
+      view['add_nav_links'] = module_settings.add_nav_links
 
       view['message']       = ''
       view['output_html']   = dashboard_custom.run_main()
@@ -184,15 +196,16 @@ def index(subpath=None):
 
   getm        = get_query('m')
 
-  view   = {
-    'app_path'    : app_path,
-    'page'        : 'index',
-    'getm'        : getm,
-    'query_m'     : f'm={getm}',
-    'app_path'    : app_path,
-    'error'       : False, 
-    'message'     : '',
-    'output_html' : '',
+  view = {
+    'app_path'      : app_path,
+    'page'          : 'index',
+    'getm'          : getm,
+    'query_m'       : f'm={getm}',
+    'app_path'      : app_path,
+    'error'         : False, 
+    'message'       : '',
+    'output_html'   : '',
+    'add_nav_links' : (),
   }
 
   getm = getm.rstrip('/')
@@ -201,6 +214,10 @@ def index(subpath=None):
       sys.path.append(f'usr/app/')
       import dashboard_metrics
       importlib.reload(dashboard_metrics)
+
+      sys.path.append(f'{getm}/app/')
+      import module_settings
+      view['add_nav_links'] = module_settings.add_nav_links
 
       view['message']       = ''
       view['command']       = ''
