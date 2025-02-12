@@ -27,9 +27,10 @@ time.tzset()
 
 limitpath  = ''
 app_path   = '/'
+sslcertkey = ''
 secret_key = ''
 
-# -- start: parse runapp.conf (if it exists) and make modifications -- #
+# -- start: parse runapp.conf (if it exists) and apply settings -- #
 conf = 'runapp.conf'
 if os.path.exists(conf):
   with open(conf) as cf:
@@ -44,7 +45,11 @@ if os.path.exists(conf):
     except:
       app_path = app_path
     try:
-      secret_key = config.get('global', 'secret_key') # optional app.secret_key
+      sslcertkey = config.get('global', 'sslcertkey')
+    except:
+      sslcertkey = ''
+    try:
+      secret_key = config.get('global', 'secret_key')
     except:
       secret_key = secret_key
 # -- end: parse runapp config
@@ -211,5 +216,8 @@ def index(subpath=None):
 
 
 if __name__ == '__main__':
-  app.run(debug=True)
-
+  sslck = sslcertkey.split(' ')
+  if len(sslck) == 2:
+    app.run(ssl_context=(sslck[0], sslck[1]), debug=True)
+  else:
+    app.run(debug=True)
