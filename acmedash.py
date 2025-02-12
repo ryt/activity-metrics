@@ -44,7 +44,7 @@ if os.path.exists(conf):
     except:
       app_path = app_path
     try:
-      secret_key = config.getm('global', 'secret_key')
+      secret_key = config.get('global', 'secret_key')
     except:
       secret_key = secret_key
 # -- end: parse runapp config
