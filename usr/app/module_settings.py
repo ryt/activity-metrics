@@ -27,6 +27,7 @@ run_local_modules = {
   # 'athletics' : ('dashboard_athletics.py',      'athletics'),
   # 'nutrition' : ('dashboard_nutrition.py',      'nutrition'),
   # 'health'    : ('dashboard_health.py',         'health'),
+  # 'custom'    : ('dashboard_custom.py',         'custom'),
 }
 
 # additional top bar navigation links
