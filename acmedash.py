@@ -25,8 +25,9 @@ app = Flask(__name__)
 os.environ['TZ'] = 'America/Los_Angeles'
 time.tzset()
 
-limitpath = ''
-app_path  = '/'
+limitpath  = ''
+app_path   = '/'
+secret_key = ''
 
 # -- start: parse runapp.conf (if it exists) and make modifications -- #
 conf = 'runapp.conf'
@@ -42,8 +43,14 @@ if os.path.exists(conf):
       app_path = config.get('global', 'app_path')
     except:
       app_path = app_path
+    try:
+      secret_key = config.getm('global', 'secret_key')
+    except:
+      secret_key = secret_key
 # -- end: parse runapp config
 
+if secret_key:
+  app.secret_key = secret_key
 
 def get_query(param):
   """Get query string param (if exists & has value) or empty string"""
