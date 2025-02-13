@@ -121,7 +121,7 @@ def commands(subpath=None):
 @app.route(f'{app_path}<module>',  methods=['GET', 'POST'])
 def default_modules(module):
 
-  module_script, module_name, module_call = ''
+  module_script, module_name, module_call = '', '', ''
 
   getm = get_query('m')
   view = {
