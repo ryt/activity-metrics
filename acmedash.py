@@ -71,55 +71,14 @@ def parse_settings(getm):
     exec(f.read(), {}, module)
   return module
 
-# routers start
-
-# default commands router
-
-@app.route(f'{app_path}commands',  methods=['GET', 'POST'])
-def commands(subpath=None):
-
-  getm        = get_query('m')
-  getcmd      = get_query('cmd')
-
-  view = {
-    'app_path'      : app_path,
-    'page'          : 'commands',
-    'getm'          : getm,
-    'query_m'       : f'm={getm}',
-    'command'       : '', 
-    'error'         : False, 
-    'message'       : '',
-    'output_html'   : '',
-    'add_nav_links' : (),
-  }
-
-  getm = getm.rstrip('/')
-  if getm and os.path.isdir(f'{getm}/logs/'):
-    if os.path.isfile(f'{getm}/app/dashboard_commands.py'):
-      sys.path.append(f'{getm}/app/')
-      import dashboard_commands
-      importlib.reload(dashboard_commands)
-
-      module_settings = parse_settings(getm)
-      view['add_nav_links'] = module_settings['add_nav_links']
-
-      view['message']       = getcmd
-      view['command']       = getcmd
-      view['output_html']   = dashboard_commands.run_main()
-
-    else:
-      view['error']   = True
-      view['message'] = 'Sorry the commands module could not be found in the metrics app directory.'
-  else:
-    view['message'] = 'Please specify a command and a valid metrics directory path. /commands?m=/Path/to/Metrics/&cmd=command'
-
-  return render_template('acmedash.html', view=view)
+# router start
 
 
-# default local modules router
+# router for [index] and [custom local modules]
 
+@app.route(f'{app_path}', methods=['GET', 'POST'])
 @app.route(f'{app_path}<module>',  methods=['GET', 'POST'])
-def default_modules(module):
+def default_modules(module='index'):
 
   module_script, module_name, module_call = '', '', ''
 
@@ -164,7 +123,11 @@ def default_modules(module):
 
     else:
       view['error']   = True
-      view['message'] = 'Sorry there is no module with that name.'
+      view['message'] = ''.join((
+        f'<div class="linemid">Sorry a module named "{module}" could not be found. ',
+        f'Please make sure the file "dashboard_{module}.py" exists. <br> ',
+        f'If it exists, please enable it in <i>module_settings.py</i> -> [run_local_modules] in your local metrics directory.</div>',
+      ))
 
   else:
     view['message'] = f'Please specify a valid metrics directory path for the {module_name} module. ?m=/Path/to/Metrics/'
@@ -174,9 +137,9 @@ def default_modules(module):
 
 # default index router
 
-@app.route(f'{app_path}', methods=['GET', 'POST'])
+@app.route(f'{app_path}_old', methods=['GET', 'POST'])
 
-def index(subpath=None):
+def index_old(subpath=None):
 
   global app_path
 
@@ -196,17 +159,17 @@ def index(subpath=None):
 
   getm = getm.rstrip('/')
   if getm and os.path.isdir(f'{getm}/logs/'):
-    if os.path.isfile(f'usr/app/dashboard_metrics.py'):
+    if os.path.isfile(f'usr/app/dashboard_index.py'):
       sys.path.append(f'usr/app/')
-      import dashboard_metrics
-      importlib.reload(dashboard_metrics)
+      import dashboard_index
+      importlib.reload(dashboard_index)
 
       module_settings = parse_settings(getm)
       view['add_nav_links'] = module_settings['add_nav_links']
 
       view['message']       = ''
       view['command']       = ''
-      view['output_html']   = dashboard_metrics.run_main()
+      view['output_html']   = dashboard_index.run_main()
 
     else:
       view['error']   = True
@@ -223,3 +186,4 @@ if __name__ == '__main__':
     app.run(ssl_context=(sslck[0], sslck[1]), debug=True)
   else:
     app.run(debug=True)
+

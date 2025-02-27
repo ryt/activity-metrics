@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-"""Metrics Dashboard Module"""
+"""Dashboard Index Module"""
 
 """
-The Metrics dashboard module provides a web interface for analyzing and displaying metrics logs & data.
+The index module provides a basic template for viewing and managing generated metrics.
 """
-
-# TODO: Idea inspirations from gyroscope -> https://gyrosco.pe/aprilzero/
 
 import os
 import re
@@ -107,23 +105,6 @@ def html_return_error(text):
 
 # data analysis functions
 
-def create_periods(periods):
-  html = ''
-  for i, p in enumerate(periods):
-    arrow = f'<a class="arrow" href="https://tools.redment.com/year?from={p["from"][2]}&to={p["to"][2]}" target="blank">&rarr;</a>'
-    html += '<div class="periodstats">'
-    if p['from'][1] == p['to'][1]:
-      html += f"<b>{p['label']}:</b> {p['from'][1]} {arrow} <ul>"
-    else:
-      html += f"<b>{p['label']}:</b> {p['from'][1]} - {p['to'][1]} {arrow} <ul>"
-    html += ''.join((
-                    f"<li>Total work hours: {p['metrics']['total_work_hours']}</li>",
-                    f"<li>Total project hours: {p['metrics']['total_project_hours']}</li>",
-                  ))
-    html += '</ul></div>'
-
-  return html
-
 
 def parse_filter(qfilter):
   """Parse a filter (query) string and convert it into dictionary with keys, values, & attributes"""
@@ -162,28 +143,6 @@ def parse_filter(qfilter):
     return empty_filter
 
   return filter_dicts
-
-
-def get_total_hours(df, start_date, end_date, qf=''):
-  """Get the sum of distanceMI for qf (activity) (if not empty) from start_date through end_date"""
-
-  # filter dataframe if qf is specified
-  if qf:
-    df = df_activity_filter(df, qf)
-
-  #df['startTimeLocal'] = pd.to_datetime(df['startTimeLocal'])
-
-  # case for single date (i.e. start & end are the same)
-  #if start_date == end_date:
-  #  mask = (df['startTimeLocal'].dt.date == pd.to_datetime(start_date).date())
-  # duration periods (2 or more)
-  #else:
-  #  mask = (df['startTimeLocal'].dt.date >= pd.to_datetime(start_date).date()) & (df['startTimeLocal'].dt.date <= pd.to_datetime(end_date).date())
-  
-  #filtered_df = df.loc[mask]
-
-  #return round(filtered_df['distanceMI'].sum(), 2)
-  return 0
 
 
 def df_activity_filter(odf, qf):
@@ -275,7 +234,8 @@ def html_table_from_dataframe(df, apply_filters=False):
   csv_content = csv_str.getvalue()
 
   html_table = '<table class="csv-table">\n'
-  csv_reader = csv.reader(csv_content.splitlines(), skipinitialspace=True) # added {skipinitialspace=True} to fix issue with commas inside quoted cells
+  # added {skipinitialspace=True} to fix issue with commas inside quoted cells
+  csv_reader = csv.reader(csv_content.splitlines(), skipinitialspace=True)
   headers = next(csv_reader)
 
   html_table += '<tr>'
@@ -318,7 +278,7 @@ def run_main():
 
   gen_dir       = f"{get_query('m').rstrip('/')}/gen/"
   gen_csv_file  = ''
-
+  output_html   = ''
 
   # shortcuts for quotes & new lines
 
@@ -366,72 +326,6 @@ def run_main():
     # Load the csv file as a DataFrame
     df = pd.read_csv(gen_csv_file) if os.path.isfile(gen_csv_file) else pd.DataFrame({})
 
-    # define periods
-
-    # custom calculations
-    tod_total_work_hours = '--' # get_total_hours(df, today_f[0], today_f[0], 'C1:"Work"')
-    tod_total_project_hours = '--' # get_total_hours(df, today_f[0], today_f[0], 'C1:"Projects"')
-
-    yest_total_work_hours = '--' # get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Work"')
-    yest_total_project_hours = '--' # get_total_hours(df, yest_f[0], yest_f[0], 'C1:"Projects"')
-
-    week_total_work_hours = '--' # get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Work"')
-    week_total_project_hours = '--' # get_total_hours(df, weekstart_f[0], today_f[0], 'C1:"Projects"')
-
-    month_total_work_hours = '--' # get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Work"')
-    month_total_project_hours = '--' # get_total_hours(df, monthstart_f[0], today_f[0], 'C1:"Projects"')
-
-    year_total_work_hours = '--' # get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Work"')
-    year_total_project_hours = '--' # get_total_hours(df, yearstart_f[0], today_f[0], 'C1:"Projects"')
-
-    periods = [
-      {
-        'label' : 'Today',
-        'from'  : (today_f[0], today_f[1], today_f[2]),
-        'to'    : (today_f[0], today_f[1], today_f[2]),
-        'metrics' : {
-          'total_work_hours'    : tod_total_work_hours,
-          'total_project_hours' : tod_total_project_hours,
-        }
-      },
-      {
-        'label' : 'Yesterday',
-        'from'  : (yest_f[0], yest_f[1], yest_f[2]),
-        'to'    : (yest_f[0], yest_f[1], yest_f[2]),
-        'metrics' : {
-          'total_work_hours'    : yest_total_work_hours,
-          'total_project_hours' : yest_total_project_hours,
-        }
-      },
-      {
-        'label' : 'This week',
-        'from'  : (weekstart_f[0], weekstart_f[1], weekstart_f[2]),
-        'to'    : (today_f[0], today_f[1], today_f[2]),
-        'metrics' : {
-          'total_work_hours'    : week_total_work_hours,
-          'total_project_hours' : week_total_project_hours,
-        }
-      },
-      {
-        'label' : 'This month',
-        'from'  : (monthstart_f[0], monthstart_f[1], monthstart_f[2]),
-        'to'    : (today_f[0], today_f[1], today_f[2]),
-        'metrics' : {
-          'total_work_hours'    : month_total_work_hours,
-          'total_project_hours' : month_total_project_hours,
-        }
-      },
-      {
-        'label' : 'This year',
-        'from'  : (yearstart_f[0], yearstart_f[1], yearstart_f[2]),
-        'to'    : (today_f[0], today_f[1], today_f[2]),
-        'metrics' : {
-          'total_work_hours'    : year_total_work_hours,
-          'total_project_hours' : year_total_project_hours,
-        }
-      }
-    ]
-
     frame_table = html_table_from_dataframe(df, apply_filters=True)
 
     scroll_hash = '' # set to: "#activities" to enable scroll hash
@@ -439,13 +333,6 @@ def run_main():
     output_html = ''.join((
 
       f'<h3>Metrics {year}</h3>',
-      'Summary Reports: <br>',
-      '- Projects: Subprojects: Miniprojects: Microprojects <br>',
-      '- Total Hours: Projects, Work, Study, Training, Practice <br> ',
-      '- Started, Finished, Active, Archived <br><br>',
-      '<div class="periodstats-outer">',
-      create_periods(periods),
-      '</div>',
 
       '<div class="flex vcenter search-holder">',
          # note: the CSV link below requires/assumes webcsv being installed/used & running on the machine
@@ -545,7 +432,9 @@ def run_main():
               csvContent += "\\n";
           }});
 
-          csvContent += "{',' + macros.hours_to_human(round(frame_table["total_hrs"], 2)) + ',,,,,Total Hours,' + str(round(frame_table["total_hrs"], 2))  + ','+lnl if qf else ''}";
+          csvContent += "{',' + macros.hours_to_human(round(frame_table["total_hrs"], 2)) + 
+                          ',,,,,Total Hours,' + str(round(frame_table["total_hrs"], 2))  + 
+                          ','+lnl if qf else ''}";
 
           var downloadLink = document.createElement("a");
           var blob = new Blob(["\\ufeff", csvContent]);

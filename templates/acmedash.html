@@ -28,6 +28,7 @@
     .address span { color:#777; }
     .address a:last-child { font-weight: bold; }
     .error { color: #555; font-family: monospace; padding: 4px 0; }
+    .linemid { line-height:1.5; }
     .noncsv-plain { margin: 0; padding: 4px 0; }
     .dir-list, p { padding: 12px 16px; font-family: monospace; font-size: 14px; }
     .dir-list .error { padding: 8px 0; }
@@ -45,7 +46,7 @@
     .filters { max-width:1200px; margin: 0 0 5px; }
     .periods { margin: 0 0 5px; font-size: 12px;line-height:1.75; }
     .periodstats-outer { max-width:800px; }
-    .periodstats-outer .periodstats { display:inline-block; margin-right:40px; }
+    .periodstats-outer .periodstats { margin-right:40px; }
     .mb-10 { margin-bottom: 10px; }
     .mb-5 { margin-bottom: 5px; }
     .dim { color: #777; }
@@ -84,7 +85,6 @@
     </div>
     <div class="nav-right">
       <a class="nav {{ 'cur' if view.page == 'index' }}" href="{{ view.app_path }}?{{ view.query_m }}">dashboard</a>
-      <a class="nav {{ 'cur' if view.page == 'commands' }}" href="{{ view.app_path }}commands?{{ view.query_m }}">commands</a>
       {% if view.add_nav_links %}
         {% for link in view.add_nav_links %}
       <a class="nav {{ 'cur' if view.page == link[1] }}" href="{{ view.app_path }}{{ link[1] }}?{{ view.query_m }}">{{ link[2] }}</a>
@@ -94,19 +94,7 @@
     </div>
   </div>
 
-  {% if view.page == 'commands' %}
-
-    <div class="address">
-      {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
-      <a href="{{ view.app_path }}commands?{{ view.query_m }}">commands</a> <span>/</span> 
-      <a href="{{ view.app_path }}commands?{{ view.query_m }}&cmd={{ view.command }}">{{ view.command }}</a>
-    </div>
-
-    <div class="dir-list">
-      {{ view.output_html | safe }}
-    </div>
-
-  {% elif view.page == 'custom' %}
+  {% if view.page == 'custom' %}
 
     <div class="address">
       {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
@@ -114,7 +102,7 @@
     </div>
 
     <div class="dir-list">
-      {{ view.message }}
+      {{ view.message | safe }}
       {{ view.output_html | safe }}
     </div>
 
@@ -122,7 +110,7 @@
 
     <div class="address">
       {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
-      {% if view.page %}
+      {% if view.page != 'index' %}
       <a href="{{ view.app_path }}{{ view.page }}?{{ view.query_m }}">{{ view.page }}</a> <span>/</span> 
       {% endif %}
     </div>
@@ -130,7 +118,7 @@
 
     <div class="dir-list">
       {% if view.getm %}
-        {{ view.message }}
+        {{ view.message | safe }}
         {{ view.output_html | safe }}
       {% else %}
         Please specify a metrics directory with the <i>m</i> parameter. {{ view.app_path }}?m=/Path/to/Metrics

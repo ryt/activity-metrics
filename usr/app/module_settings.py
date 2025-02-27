@@ -14,9 +14,9 @@ use_glossary = 'glossary'
 # use modules available by default in {install_dir}/activity-metrics/usr/app/
 
 use_default_modules = (
-  'module_tagblock',
-  'module_word_replace',
-  'module_health_fitness',
+  'module_tagblock',       # the default tag block module allows entries to have categories with $shortcut names
+# 'module_word_replace',   # example custom word replace module
+# 'module_health_fitness', # example custom health & fitness module
 )
 
 
@@ -24,6 +24,8 @@ use_default_modules = (
 
 run_local_modules = {
   # /<path>,      {module_script},                {module_name}
+  # 'index'     : ('dashboard_index.py',          'index'),
+  # 'commands'  : ('dashboard_commands.py',       'commands'),
   # 'athletics' : ('dashboard_athletics.py',      'athletics'),
   # 'nutrition' : ('dashboard_nutrition.py',      'nutrition'),
   # 'health'    : ('dashboard_health.py',         'health'),
