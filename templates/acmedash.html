@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="apple-mobile-web-app-title" content="acme: Activity Metrics">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <link rel="icon" type="image/png" sizes="16x16" href="/static/assets/favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/static/assets/favicon-32x32.png">
   <title>acme: Activity Metrics Web Dashboard</title>
@@ -12,12 +12,16 @@
     body { margin: 0; font: 14px sans-serif; }
     .nav-holder { margin: 0; padding: 8px 16px; background: #ddd; border-bottom: 1px solid #bbb; }
     .nav-holder a { color:#000; text-decoration: none; }
-    .nav-holder a.nav { font-size:12px;font-weight:bold;margin-left:10px;padding:4px 6px;border-radius:2px;position:relative;top:-2px; }
+    .nav-holder a.nav { 
+      font-size:12px;font-weight:bold;margin-left:10px;padding:4px 6px;
+      border-radius:2px;position:relative;top:-2px;
+    }
     .nav-holder a.nav-gear { font-size:20px; top:0px; }
     .nav-holder a.nav:hover { text-decoration: none; }
     .nav-holder a.cur { color: #fff; background: #333;  }
     .nav-holder a.logo { font-weight:bold;font-size:21px; }
     h4 { margin-bottom:10px; }
+    h3 { margin: 7px 0; }
     a { color: #000; text-decoration: none; }
     a:hover { text-decoration: underline; }
     a.dotfiles { color:#777; }
@@ -28,6 +32,7 @@
     .address span { color:#777; }
     .address a:last-child { font-weight: bold; }
     .error { color: #555; font-family: monospace; padding: 4px 0; }
+    .lineone { line-height:1; }
     .linemid { line-height:1.5; }
     .noncsv-plain { margin: 0; padding: 4px 0; }
     .dir-list, p { padding: 12px 16px; font-family: monospace; font-size: 14px; }
@@ -45,8 +50,6 @@
     .details { margin:10px 0; }
     .filters { max-width:1200px; margin: 0 0 5px; }
     .periods { margin: 0 0 5px; font-size: 12px;line-height:1.75; }
-    .periodstats-outer { max-width:800px; }
-    .periodstats-outer .periodstats { margin-right:40px; }
     .mb-10 { margin-bottom: 10px; }
     .mb-5 { margin-bottom: 5px; }
     .dim { color: #777; }
@@ -60,7 +63,10 @@
     .search-holder { flex-wrap:wrap; }
     .search-holder .flex-col { margin:0 0 10px; }
     .filter-search { margin:0;  }
-    #filter-query { border: 1px solid #999; padding: 4px 5px; margin: 0; border-radius: 4px 0 0 4px; border-right: none; width:300px; }
+    #filter-query { 
+      border: 1px solid #999; padding: 4px 5px; margin: 0; 
+      border-radius: 4px 0 0 4px; border-right: none; width:300px;
+    }
     #filter-go { padding: 5px 8px; background: #555; border: none; color: #fff; border-radius: 0px 4px 4px 0; cursor: pointer; }
     #filter-go:hover { background: #222; }
 
@@ -84,12 +90,12 @@
       <a class="logo" href="{{ view.app_path }}?{{ view.query_m }}">acme</a>
     </div>
     <div class="nav-right">
-      <a class="nav {{ 'cur' if view.page == 'index' }}" href="{{ view.app_path }}?{{ view.query_m }}">dashboard</a>
-      {% if view.add_nav_links %}
-        {% for link in view.add_nav_links %}
-      <a class="nav {{ 'cur' if view.page == link[1] }}" href="{{ view.app_path }}{{ link[1] }}?{{ view.query_m }}">{{ link[2] }}</a>
-        {% endfor %}
-      {% endif %}
+      <a class="nav {{ 'cur' if view.page == 'index' }}" href="{{ view.app_path }}?{{ view.query_m }}">dashboard</a>{% 
+      if view.add_nav_links %}{% 
+        for link in view.add_nav_links %}
+      <a class="nav {{ 'cur' if view.page == link[1] }}" href="{{ view.app_path }}{{ link[1] }}?{{ view.query_m }}">{{ link[2] }}</a>{% 
+        endfor %}{% 
+      endif %}
       <a class="nav nav-gear {{ 'cur' if view.page == 'custom' }}" href="{{ view.app_path }}custom?{{ view.query_m }}">&#9881;</a>
     </div>
   </div>
@@ -109,10 +115,10 @@
   {% else %}
 
     <div class="address">
-      {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
-      {% if view.page != 'index' %}
-      <a href="{{ view.app_path }}{{ view.page }}?{{ view.query_m }}">{{ view.page }}</a> <span>/</span> 
-      {% endif %}
+      {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span>{% 
+      if view.page != 'index' %}
+      <a href="{{ view.app_path }}{{ view.page }}?{{ view.query_m }}">{{ view.page }}</a> <span>/</span>{% 
+      endif %}
     </div>
 
 

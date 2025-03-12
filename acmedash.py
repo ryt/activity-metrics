@@ -135,51 +135,6 @@ def default_modules(module='index'):
   return render_template('acmedash.html', view=view)
 
 
-# default index router
-
-@app.route(f'{app_path}_old', methods=['GET', 'POST'])
-
-def index_old(subpath=None):
-
-  global app_path
-
-  getm        = get_query('m')
-
-  view = {
-    'app_path'      : app_path,
-    'page'          : 'index',
-    'getm'          : getm,
-    'query_m'       : f'm={getm}',
-    'app_path'      : app_path,
-    'error'         : False, 
-    'message'       : '',
-    'output_html'   : '',
-    'add_nav_links' : (),
-  }
-
-  getm = getm.rstrip('/')
-  if getm and os.path.isdir(f'{getm}/logs/'):
-    if os.path.isfile(f'usr/app/dashboard_index.py'):
-      sys.path.append(f'usr/app/')
-      import dashboard_index
-      importlib.reload(dashboard_index)
-
-      module_settings = parse_settings(getm)
-      view['add_nav_links'] = module_settings['add_nav_links']
-
-      view['message']       = ''
-      view['command']       = ''
-      view['output_html']   = dashboard_index.run_main()
-
-    else:
-      view['error']   = True
-      view['message'] = 'Sorry the dashboard metrics module could not be found in the activity metrics app directory.'
-  else:
-    view['message'] = 'Please specify a valid path for the metrics directory. ?m=/Path/to/Metrics/'
-
-  return render_template('acmedash.html', view=view)
-
-
 if __name__ == '__main__':
   sslck = sslcertkey.split(' ')
   if len(sslck) == 2:
