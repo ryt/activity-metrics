@@ -96,7 +96,9 @@ def convert_to_hours(inp):
   return round(float(num), 4)
 
 
-def hours_to_human(inp):
+def hours_to_human(inp, minimize=False):
+  """Hours to human converter."""
+  """Returns e.g: [8 hrs 45 min] or [8h 45m] <- minimize"""
   try:
     inp = float(inp)
   except Exception:
@@ -111,8 +113,12 @@ def hours_to_human(inp):
 
   # format hours as hours and minutes
 
-  hrs_str = f"{int(hrs)} hr{'s' if hrs != 1 else ''} " if hrs > 0 else ''
-  mins_str = f"{mins} min" if mins > 0 else ''
+  if minimize == True:
+    hrs_str = f"{int(hrs)}h " if hrs > 0 else ''
+    mins_str = f"{mins}m" if mins > 0 else ''
+  else:
+    hrs_str = f"{int(hrs)} hr{'s' if hrs != 1 else ''} " if hrs > 0 else ''
+    mins_str = f"{mins} min" if mins > 0 else ''
 
   return hrs_str + mins_str
 
