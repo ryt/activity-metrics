@@ -103,7 +103,7 @@
   {% if view.page == 'custom' %}
 
     <div class="address">
-      {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
+      {{ view.getm0 or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
       <a href="{{ view.app_path }}custom?{{ view.query_m }}">custom</a> <span>/</span> 
     </div>
 
@@ -115,7 +115,7 @@
   {% else %}
 
     <div class="address">
-      {{ view.getm or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span>{% 
+      {{ view.getm0 or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span>{% 
       if view.page != 'index' %}
       <a href="{{ view.app_path }}{{ view.page }}?{{ view.query_m }}">{{ view.page }}</a> <span>/</span>{% 
       endif %}
@@ -123,7 +123,7 @@
 
 
     <div class="dir-list">
-      {% if view.getm %}
+      {% if view.getm0 %}
         {{ view.message | safe }}
         {{ view.output_html | safe }}
       {% else %}

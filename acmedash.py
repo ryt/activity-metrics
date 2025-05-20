@@ -10,6 +10,7 @@ import sys
 import csv
 import time
 import html
+import config
 import itertools
 import importlib
 
@@ -25,34 +26,41 @@ app = Flask(__name__)
 os.environ['TZ'] = 'America/Los_Angeles'
 time.tzset()
 
-limitpath  = ''
-app_path   = '/'
+# default runapp config values
 sslcertkey = ''
-secret_key = ''
 
-# -- start: parse runapp.conf (if it exists) and apply settings -- #
+# -- runapp ssl settings start: parse runapp.conf (if it exists) and apply ssl settings -- #
 conf = 'runapp.conf'
 if os.path.exists(conf):
   with open(conf) as cf:
-    config = ConfigParser()
-    config.read_file(itertools.chain(['[global]'], cf), source=conf)
+    cfparser = ConfigParser()
+    cfparser.read_file(itertools.chain(['[global]'], cf), source=conf)
     try:
-      limitpath = config.get('global', 'limitpath').rstrip('/') + '/'
-    except:
-      limitpath = ''
-    try:
-      app_path = config.get('global', 'app_path')
-    except:
-      app_path = app_path
-    try:
-      sslcertkey = config.get('global', 'sslcertkey')
+      sslcertkey = cfparser.get('global', 'sslcertkey')
     except:
       sslcertkey = ''
-    try:
-      secret_key = config.get('global', 'secret_key')
-    except:
-      secret_key = secret_key
-# -- end: parse runapp config
+# -- runapp ssl settings end -- #
+
+# -- start: parse config parameters from config.py and set values -- #
+
+
+# default config.py config values
+limitpath  = ''
+app_path   = '/'
+secret_key = ''
+
+# read & modify config values
+
+if 'limitpath' in config.config:
+  limitpath = config.config['limitpath'].rstrip('/') + '/'
+
+if 'app_path' in config.config:
+  app_path = config.config['app_path']
+
+if 'secret_key' in config.config:
+  secret_key = config.config['secret_key']
+
+# -- end: parse config parameters -- #
 
 if secret_key:
   app.secret_key = secret_key
@@ -82,24 +90,31 @@ def default_modules(module='index'):
 
   module_script, module_name, module_call = '', '', ''
 
-  getm = get_query('m')
+  gqm = get_query('m')
+  lqm = limitpath.rstrip('/') + '/' + gqm.lstrip('/') if limitpath else ''
+  print(lqm)
+
+  getm = (gqm, lqm if lqm else gqm)
+  getm0 = getm[0]
+  getm1 = getm[1].rstrip('/')
+
   view = {
     'app_path'      : app_path,
     'page'          : module,
     'getm'          : getm,
-    'query_m'       : f'm={getm}',
+    'getm0'         : getm0,
+    'query_m'       : f'm={getm0}',
     'error'         : False, 
     'message'       : '',
     'output_html'   : '',
     'add_nav_links' : (),
   }
 
-  getm = getm.rstrip('/')
-  if getm and os.path.isdir(f'{getm}/logs/'):
+  if getm1 and os.path.isdir(f'{getm1}/logs/'):
 
     # default local modules import
 
-    module_settings = parse_settings(getm)
+    module_settings = parse_settings(getm1)
     module_list = module_settings['run_local_modules']
     view['add_nav_links'] = module_settings['add_nav_links']
 
@@ -109,13 +124,13 @@ def default_modules(module='index'):
       module_name   = module_list[module][1]
       module_call   = module_script.rstrip('.py')
 
-      if os.path.isfile(f'{getm}/app/{module_script}'):
-        sys.path.append(f'{getm}/app/')
+      if os.path.isfile(f'{getm1}/app/{module_script}'):
+        sys.path.append(f'{getm1}/app/')
         module_run = importlib.import_module(module_call)
         importlib.reload(module_run)
 
         view['message']       = ''
-        view['output_html']   = module_run.run_main()
+        view['output_html']   = module_run.run_main(getm)
 
       else:
         view['error']   = True

@@ -217,7 +217,7 @@ def todoist_options(args):
               print(f"Tasks matching '{date['search1']}' or '{date['search2']}' could not be found.")
             else:
               print(f'Found {len(matches)} task(s) matching the search:{nl}--')
-              # sort matches by title ascending, use (reverse=True) for descending
+              # sort multiple matches by title ascending, use (reverse=True) for descending
               matches = sorted(matches, key=lambda x: x['content'])
               i = 0
               for m in matches:
