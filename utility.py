@@ -22,6 +22,14 @@ Usage:
                           makedirs     dir/
                           makedirs     dir/      apply
 
+
+  Clean up the gen directory of generated csv logs older than 1 week.
+  -------------------------------------------------------------------
+  acme   Utility          Command 
+  --------------------------------
+  acme   (utility|util)   cleangen
+
+
   Retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
   -------------------------------------------------------------------------------
   acme   Utility          Todoist     Action      Id/Date/Keyword        Save/Filename
@@ -69,6 +77,27 @@ def make_dirs(directory, applyf):
     for i in range(1, 13):
       month = str(i).zfill(2)
       print(f'mkdir {os.path.join(directory, month)}')
+
+def cleangen():
+  """Removes gencsv files older than 1 week from gencsv directory"""
+  files  = os.listdir(gen_dir)
+  thresh = datetime.today().date() - timedelta(days=7)
+  fcount = 0
+  for name in files:
+    if name.endswith('.csv'):
+      stem = name[:-4] # remove .csv
+      try:
+        file_date = datetime.strptime(stem, "%Y-%m-%d").date()
+        if file_date <= thresh:
+          print(name)
+          os.remove(f'{gen_dir}{name}')
+          fcount += 1
+      except ValueError: # not in YYYY-MM-DD format
+        pass
+  if fcount > 0:
+    print(f'{('-'*14)}\nCleaned up {fcount} older gencsv file(s) from: {gen_dir}')
+  else:
+    print(f'Nothing to clean up.')
 
 def curl(url, headers = ''):
   curl_command = f'curl "{url}" -H "{headers}"'
@@ -290,6 +319,9 @@ def utility(params, called, meta):
 
   elif com == 'makedirs':
     make_dirs(directory, applyf)
+
+  elif com == 'cleangen':
+    cleangen()
 
   elif com == 'todoist':
     todoist_options(params)
