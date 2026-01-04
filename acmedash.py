@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-"""
-Copyright (C) 2024 Ray Mentose.
-This app uses Flask & Gunicorn with ryt/runapp for deployment.
-"""
+# activity metrics: dashboard (acmedash)
+# this app uses flask & gunicorn with ryt/runapp for deployment
+# latest source & documentation at: https://github.com/ryt/activity-metrics.git
+
 
 import os
 import sys

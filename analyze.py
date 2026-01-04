@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# Activity Metrics (acme)
-# Copyright (C) 2024 Ray Mentose. 
-# Latest source can be found at: https://github.com/ryt/activity-metrics.git
+# activity metrics (acme)
+# copyright (c) 2024 ray mentose
+# latest source & documentation at: https://github.com/ryt/activity-metrics.git
 
 import sys
 import os
@@ -204,14 +204,19 @@ def modify_csv(csv_list, add_header=True, add_footer=True, module_options=False)
     #                 0   1                                   2                     3                 4
     csv_list.append(['', macros.hours_to_human(total_hours, True), 'Total Logged Hours', str(total_hours), ''])
 
-  # module options: if used, it requires the module to have a function named 'options'
+  # module options  : if used, it requires the module to have a function named 'options'
+  # module nickname : if a nickname variable is set on a module, it can also be used to call the module
 
   if apply_modules and module_options:
     mo_list = module_options.split(',')
     for opt in mo_list:
       opt_spl = opt.split('.') # e.g. module_math.multiply -> [0] module_math, [1] multiply
       for name in apply_modules.keys():
-        if opt_spl[0] == name:
+        mod_nickname = getattr(apply_modules[name], 'nickname', None)
+        if opt_spl[0] == name or opt_spl[0] == mod_nickname:
+          if opt_spl[0] == mod_nickname:
+            module_options = module_options.replace(mod_nickname, name)
+            opt = name
           csv_list = apply_modules[name].options(csv_list, meta={
               'module_options'  : module_options,
               'option'          : opt,

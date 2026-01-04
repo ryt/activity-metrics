@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
-# Activity Metrics (acme)
-# Copyright (C) 2024 Ray Mentose. 
-# Latest source can be found at: https://github.com/ryt/activity-metrics.git
+# activity metrics (acme)
+# copyright (c) 2024 ray mentose
+# latest source & documentation at: https://github.com/ryt/activity-metrics.git
 
 
-v = '0.2.4'
-c = 'Copyright (C) 2024 Ray Mentose.'
+v = '0.2.5'
+c = 'copyright (c) 2024 ray mentose'
 man = """
-Activity Metrics: A tool to analyze & display personal activity statistics.
-Copyright (C) 2024 Ray Mentose. Latest source: https://github.com/ryt/activity-metrics
+activity metrics: a tool to analyze & display personal activity statistics.
+""" + c + """. latest source & docs: https://github.com/ryt/activity-metrics
 
 Usage:
 

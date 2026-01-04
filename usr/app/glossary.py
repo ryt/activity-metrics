@@ -3,18 +3,18 @@
 """Default glossary file."""
 
 
-# The subtag_glossary variable is used in the tagblock module.
+# The shortcut_glossary variable is used in the categorize module.
 
-subtag_glossary = [
+shortcut_glossary = [
 
-  # Examples from tagblock module:
+  # Examples from categorize module:
 
   # ('$zoom',       'Work, Meeting, Zoom'),
   # ('$pdwork',     'Work, Tech, Product Design'),
 
   # ((
-  #   '$fit24',
-  #   '$fc'),       '#fitness-challenge-2024'),
+  #   '$fit26',
+  #   '$fc'),       '#fitness-challenge-2026'),
 
 
 ]
