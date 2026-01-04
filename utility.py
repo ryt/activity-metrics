@@ -350,6 +350,7 @@ def garmin_options(args):
 
       converted_garmin_data = []
       gf = pd.read_csv(StringIO(valid_garmin_csv))
+      gf = gf.fillna('') # empty: NaN -> ''
       for _, row in gf.iterrows():
         # --metrics cols--
         # Date Duration C1 C2 C3 C4 ... Description Hours Splits
@@ -360,13 +361,13 @@ def garmin_options(args):
         d_ddt = pd.to_datetime(row['startTimeLocal']).strftime('%m/%d/%Y')
         d_dhr = pd.to_datetime(row['startTimeLocal']).strftime('%-I%p').lower().replace('am','a').replace('pm','p')
         d_hrs = round(pd.to_timedelta(row['duration']).total_seconds() / 3600, 2)
-        d_dts = ' '.join([f'{d}: {row[d]};' for d in ''.join((
+        d_dts = ' '.join([(f'{d}: {row[d]};' if row[d] else '') for d in ''.join((
           'startTimeLocal activityId activityTypeId distanceMI duration avgSpeedMPH maxSpeedMPH ',
-          'avgPaceMinSecMI maxPaceMinSecMI averageHR maxHR')).split(' ')])
+          'avgPaceMinSecMI maxPaceMinSecMI averageHR maxHR description')).split(' ')])
         data = {
           'Date'        : d_ddt,
           'Duration'    : macros.hours_to_human(d_hrs, True),
-          'Description' : f"{d_dhr} {row['activityName']}, Details: [{d_dts}]",
+          'Description' : f"{d_dhr} {row['activityName']}, Details: [{d_dts.strip()}]",
           'Hours'       : d_hrs,
         }
         data_c2 = row['activityTypeName'].replace('_', ' ').title()
