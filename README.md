@@ -133,5 +133,4 @@ Some of the inspirations for this project:
 2. <i id="n2"></i> <https://xkcd.com/1179/>
 
 
-<h2><small>License</small></h2>
-<sub>Copyright &copy; 2024 Ray Mentose.</sub>
+
