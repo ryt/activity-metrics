@@ -9,7 +9,7 @@ Retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
 
 > acme, Utility, Todoist, Action, Id/Date/Keyword, Save/Filename
 
-```
+```console
 acme (utility|util) todoist get-task (12345|{date_input})
                     todoist get-task (12345|{date_input})   save=2024/01/01.txt
                     todoist get-task (12345|{date_input})   (saveauto|autosave)
