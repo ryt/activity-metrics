@@ -39,8 +39,8 @@ Usage:
                           todoist     get-task    (12345|{date_input})   (saveauto|autosave)
 
 
-  If Garmin csv logs exist, merge them into gencsv logs of given year and today.
-  ------------------------------------------------------------------------------
+  If Garmin csv logs exist, merge them into gencsv logs of given year (plus today and yesterday if applicable).
+  -------------------------------------------------------------------------------------------------------------
   acme   Utility          Garmin      Action          Year
   ----------------------------------------------------------
   acme   (utility|util)   garmin      merge-gencsv    {year}

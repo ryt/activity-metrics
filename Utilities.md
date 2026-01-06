@@ -1,20 +1,27 @@
 ## Utilities
-Common utilities & workflows for various applications.
+Common utilities & workflows for various applications. API access is required if applicable.
 
-#### Converting notes from Todoist app
-Use **Find & Replace** on your text editor, and search with the following regex:
+### Todoist
 
-```
-(^|\n)([a-zA-Z0-9])
-```
+**Todoist Commands**
 
-Replace it with:
+Retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
 
-```
-$1- $2
-```
-Equivalent `sed` command, use **`-i ''`** to apply changes in the file:
+> acme, Utility, Todoist, Action, Id/Date/Keyword, Save/Filename
 
 ```
-sed -E "s/(^|\n)([a-zA-Z0-9])/\1- \2/g" file.txt
+acme (utility|util) todoist get-task (12345|{date_input})
+                    todoist get-task (12345|{date_input})   save=2024/01/01.txt
+                    todoist get-task (12345|{date_input})   (saveauto|autosave)
+```
+
+
+### Garmin
+
+**Garmin Commands**
+
+If Garmin csv logs exist, merge them into gencsv logs of given year (plus today and yesterday if applicable).
+  
+```console
+acme (utility|util) garmin merge-gencsv {year}
 ```

@@ -4,3 +4,8 @@
 
 # General
 *.DS_Store
+
+# Log Files
+*.log
+*.2.py
+*.2.conf
