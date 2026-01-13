@@ -158,7 +158,7 @@ def http_options(args):
     exit(f'Please specify an http json file path.')
 
   # http json file should be stored in "{app_dir}/"
-  httpjson_file = f'{app_dir}{cmdfile}';
+  httpjson_file = f'{app_dir}{httpfile}';
 
   try:
     with open(httpjson_file) as f: command = f.read().strip()
