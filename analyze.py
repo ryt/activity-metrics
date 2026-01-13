@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
 # activity metrics (acme)
-# copyright (c) 2024 ray mentose
 # latest source & documentation at: https://github.com/ryt/activity-metrics.git
 
 import sys
 import os
 import re
-import subprocess
 import pydoc
+import subprocess
 import itertools
 import importlib
 
@@ -325,7 +324,7 @@ def analyze(params, called, meta):
   app_dir  = meta['app_dir']
 
   nl = '\n'
-  hr = '-' * 50
+  hr = '-' * 4
 
   sys.path.append(app_dir)
   sys.path.append(f'{install_dir}usr/app/')
@@ -370,9 +369,20 @@ def analyze(params, called, meta):
     if params[0]:
       arg1 = params[0]
 
-      # -- start: acme {date_input}
+      # -- stats & utils -- #
 
-      if macros.is_date_input(arg1):
+      if arg1 in ('stats','-s'):
+        analyze_files(logs_dir)
+
+      elif arg1 in ('list-files','-l'):
+        analyze_files(logs_dir, True)
+
+      elif arg1 in ('utility','util'):
+        utility.utility(params[1:], arg1, meta)
+
+      # -- main app start: acme {date_input} -- #
+
+      elif macros.is_date_input(arg1):
 
         parsed       = macros.parse_date_input(arg1)
         parsed_slash = parsed['res_ymd_slash']
@@ -607,41 +617,13 @@ def analyze(params, called, meta):
         else:
           output += [f'Please specify a valid date (Y-m-d), month (Y-m), or year (Y).']
 
-      # -- end: acme gencsv {date_input}
-
-      elif arg1 in ('stats','-s'):
-        analyze_files(logs_dir)
-
-      elif arg1 in ('list-files','-l'):
-        analyze_files(logs_dir, True)
-
-      elif arg1 in ('utility','util'):
-        utility.utility(params[1:], arg1, meta)
-
-
-      # help & manual
-
-      elif arg1 in ('--version','-v'):
-        output += [f"Activity Metrics, Version {meta['version']}"]
-
-      # prints the help manual
-
-      elif arg1 in ('--help','-h','help'):
-        output += [meta['manual'].strip() + f'{nl}']
-
-      # pages the help manual instead of printing
-
-      elif arg1 == 'man':
-        output += [meta['manual'].strip() + f'{nl}']
-        pydoc.pager(nl.join(output))
-        return
-
+      # -- end: acme gencsv {date_input} -- #
 
       else:
         output += [f"Invalid command '{arg1}'. Use 'man' or 'help' for proper usage."]
 
   
-  # -- end: parsing arguments
+  # -- end: parsing arguments -- #
 
   print(nl.join(output)) if output else None
 

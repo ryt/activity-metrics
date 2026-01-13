@@ -5,7 +5,7 @@
 # latest source & documentation at: https://github.com/ryt/activity-metrics.git
 
 __author__  = 'Ray (github.com/ryt)'
-__version__ = '0.2.6'
+__version__ = '0.2.7.dev1'
 __manual__  = """
 activity metrics: a tool to analyze & display personal activity statistics.
 copyright (c) 2024 """ + __author__ + """
@@ -103,6 +103,7 @@ Usage Help:
 
 import os
 import sys
+import pydoc
 import analyze
 
 logs_name = 'logs'
@@ -128,11 +129,28 @@ def find_path(name, curr=os.path.abspath(os.curdir)):
 
 def main():
 
-  if len(sys.argv) == 1:
-    sys.exit("Please enter a command or use 'man' or 'help'.")
-
   analyze_params = sys.argv[1:]
   analyze_caller = sys.argv[0]
+
+  # -- help & docs -- #
+
+  arg1 = analyze_params[0] if len(analyze_params) > 0 else ''
+
+  if arg1 in ('--version','-v'):
+    return print(f"Activity Metrics, Version {__version__}")
+
+  # prints the help manual
+
+  elif arg1 in ('--help','-h','help'):
+    return print(__manual__.strip() + '\n')
+
+  # pages the help manual instead of printing
+
+  elif arg1 == 'man':
+    output = __manual__.strip() + '\n\n'
+    return pydoc.pager(output)
+
+  # -- end help & docs -- #
 
   # Allows path/to/dir/ to be specified explicitly in the first argument of 'acme'.
   # If path/to/dir/ is set, acme will look for the logs directory inside of it or in one of it's parents.
@@ -144,11 +162,6 @@ def main():
   else:
     find_logs = find_path(logs_name)
 
-  # -- start: option to allow help, manual, and version to be seen without requiring a 'logs' directory
-  if not find_logs and sys.argv[1] in ('--help','-h','help','man','--version','-v'):
-    find_logs = 'usr/logs/'
-  # -- end: option allow-help
-
   if find_logs:
 
     parent    = os.path.dirname(find_logs)
@@ -157,8 +170,7 @@ def main():
     app_dir   = f'{parent}/{app_name}/'
 
     analyze.analyze(analyze_params, analyze_caller, { 
-      'version'   : __version__, 
-      'copyright' : f'Copyright (c) {__author__}', 
+      'version'   : __version__,
       'manual'    : __manual__,
       'logs_dir'  : logs_dir,
       'gen_dir'   : gen_dir,
@@ -167,7 +179,13 @@ def main():
 
   else:
 
-    print(f'Logs directory `{logs_name}` not found.')
+    print('\n'.join((
+      f'Logs directory `{logs_name}` not found.',
+      'You have two options:',
+      ' - Run this command from within the metrics directory.',
+      ' - Explicitly set the metrics directory as the second argument. (e.g. acme ~/metrics/ ...)',
+      ))
+    )
 
 
 if __name__ == '__main__':
