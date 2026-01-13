@@ -17,23 +17,30 @@ acme (utility|util)   makefiles    dir/
 acme (utility|util)   cleangen
 ```
 
-**Curl Options:** retrieve and save the output from a curl command (from a file) as a log file.
+**HTTP Options:** retrieve and save the output from an http(s) request (via json file) as a log file.
 
 ```console
-acme (utility|util)   curl     .curl_cmd       {date_input} 
-                      curl     .curl_cmd       {date_input}    save=2026/01/01.txt
-                      curl     .curl_cmd       {date_input}    (saveauto|autosave)
+acme (utility|util)   http     .http_json       {date_input} 
+                      http     .http_json       {date_input}     save=2026/01/01.txt
+                      http     .http_json       {date_input}     (saveauto|autosave)
 
 ```
-> - Options: In the curl command file, "{date_input}" can be used to insert the entered date input
-> in a "YYYY-MM-DD" format anywhere in the command. (e.g. curl "http://api.url/{date_input}")
-> - `{date_input}` can be any valid date input listed in the main manual ("acme --help").
+> - The default name of the http json file is (`.http_json`). It can be changed to any name.
+> - Options: In the http json file, `{date_input}` can be used to insert the entered date input
+> in a `YYYY-MM-DD` format anywhere in the keys or values. (e.g. `{"url":"http://api.url/{date_input}"}`)
+> - `{date_input}` can be any valid date input listed in the main manual (`acme --help`).
 
-Example `.curl_cmd` file (located in `Metrics/app/.curl_cmd`):
+Example `.http_json` file (located in `Metrics/app/.http_json`):
 
-```
-curl "https://api.app.url/log?date={date_input}" \
--d "Auth=0f3x83ndja0dk3Dx03co28id983h3"
+```json
+{
+  "url"     : "https://api.app.url/log?date={date_input}",
+  "method"  : "POST",
+  "data"    : {
+    "Auth": "0f3x83ndja0dk3Dx03co28id983h3"
+  }
+}
+
 ```
 
 ### (API) Todoist

@@ -3,9 +3,6 @@
 # activity metrics utility, (acme util)
 # latest source & docs at: https://github.com/ryt/activity-metrics.git
 
-# notes:
-# - as of acme version 0.2.0, the version number tracks the main project.
-
 man = """
 This script provides helper tools and utilities for API connections. Commands can also be run using 'acme util'!
 Read "Utilities.md" for related documentation. API tokens are required for connecting to external services.
@@ -29,17 +26,17 @@ Usage:
   acme    (utility|util)   cleangen
 
 
-  Curl Options: retrieve and save the output from a curl command (from a file) as a log file.
-  -------------------------------------------------------------------------------------------
-  <acme>  <Utility>        <curl>   <Command File>  <Date Input>     <Save/Filename>
+  HTTP Options: retrieve and save the output from an http(s) request (via json file) as a log file.
+  -------------------------------------------------------------------------------------------------
+  <acme>  <Utility>        <http>   <Command File>   <Date Input>     <Save/Filename>
 
-  acme    (utility|util)   curl     .curl_cmd       {date_input} 
-                           curl     .curl_cmd       {date_input}    save=2026/01/01.txt
-                           curl     .curl_cmd       {date_input}    (saveauto|autosave)
+  acme    (utility|util)   http     .http_json       {date_input} 
+                           http     .http_json       {date_input}     save=2026/01/01.txt
+                           http     .http_json       {date_input}     (saveauto|autosave)
 
-  - Options: In the curl command file, "{date_input}" can be used to insert the entered date input
-  - in a "YYYY-MM-DD" format anywhere in the command. (e.g. curl "http://api.url/{date_input}")
-
+  - The default name of the http json file is ".http_json". It can be changed to any name.
+  - Options: In the http json file, "{date_input}" can be used to insert the entered date input
+    in a "YYYY-MM-DD" format anywhere in the keys or values. (e.g. {"url":"http://api.url/{date_input}"})
   - {date_input} can be any valid date input listed in the main manual ("acme --help").
 
   (API) Todoist Options: retrieve and save tasks that have valid log file names (e.g. 01/01.txt)
@@ -63,10 +60,13 @@ Usage:
 import sys
 import os
 import re
+import time
 import json
-import subprocess
 import pydoc
+import subprocess
+import http.client
 import pandas as pd
+import urllib.parse
 
 from datetime import datetime
 from datetime import timedelta
@@ -145,26 +145,26 @@ def escape_for_csv(input):
     return input
 
 
-def curl_options(args):
+def http_options(args):
 
-  cmdfile    = args[1] if len(args) >= 2 else ''
+  httpfile   = args[1] if len(args) >= 2 else ''
   dateinput  = args[2] if len(args) >= 3 else ''
   savef      = args[3] if len(args) >= 4 else ''
 
   date_today = datetime.today()
 
 
-  if not cmdfile:
-    exit(f'Please specify a curl command file path.')
+  if not httpfile:
+    exit(f'Please specify an http json file path.')
 
-  # curl command file should be stored in "{app_dir}/"
-  curlcmd_file = f'{app_dir}{cmdfile}';
+  # http json file should be stored in "{app_dir}/"
+  httpjson_file = f'{app_dir}{cmdfile}';
 
   try:
-    with open(curlcmd_file) as f: command = f.read().strip()
+    with open(httpjson_file) as f: command = f.read().strip()
 
   except FileNotFoundError as e:
-    print(f"Curl command file '{curlcmd_file}' not found.")
+    print(f"HTTP json file `'{httpjson_file}'` not found.")
     exit()
 
   if command:
@@ -187,32 +187,54 @@ def curl_options(args):
       name_dict = { 'name1': name1, 'name2': name2}
 
       command = command.replace('{date_input}', parsed_dash)
+      httpobj = json.loads(command)
 
-      print('Running curl command -> ', end='')
+      print('Running http request -> ', end='')
 
       try:
-        process = subprocess.run(
-          command, 
-          shell=True, 
-          check=True, 
-          stdout=subprocess.PIPE, 
-          stderr=subprocess.PIPE
-        )
-        output = process.stdout.decode('utf-8')
-        error = process.stderr.decode('utf-8')
+        start = time.perf_counter()
+        # -- http.client connection -- #
+        parsed      = urllib.parse.urlparse(httpobj['url'])
+        domain      = parsed.netloc
+        path        = parsed.path + ('?' + parsed.query if parsed.query else '')
+        body        = urllib.parse.urlencode(httpobj['data'])
+        method      = httpobj['method'].upper() if 'method' in httpobj else 'POST'
+        contenttype = 'application/x-www-form-urlencoded'
 
-        print(f'successful.{nl}--')
+        if 'headers' in httpobj and 'Content-Type' in httpobj['headers']:
+          contenttype = httpobj['headers']['Content-Type']
+
+        headers = {
+          'Content-Type'    : contenttype,
+          'Content-Length'  : str(len(body)),
+        }
+
+        connection=http.client.HTTPSConnection(domain, timeout=5); 
+        connection.request(method, path, body=body, headers=headers)
+        response = connection.getresponse(); 
+        output = response.read().decode('utf-8')
+        status = response.status
+        connection.close()
+        # -- end http.client connection -- #
+        elapsed = time.perf_counter() - start
+
+        print(f'successful.') #{nl}--')
+        print(f'Total time: {elapsed} sec{nl}--')
 
         if 'save' in savef:
           if not output:
             print('Nothing to save. The content of the output is empty.')
-          else:
+          elif status == 200:
             save_content_to_log(output, parsed_dash, name_dict, savef, False)
+          else:
+            print(f'Nothing to save. The server returned status: {status}.')
         else:
           if not output:
             print('Nothing to display. The content of the output is empty.')
-          else:
+          elif status == 200:
             print(output)
+          else:
+            print(f'Nothing to display. The server returned status: {status}.')
 
       except Exception as e:
         print(f'failed.{nl}--')
@@ -221,11 +243,11 @@ def curl_options(args):
       print('--')
     
     else:
-      print("Please enter a valid date input for curl options. Use 'man' for list of commands.")
+      print("Please enter a valid date input for http options. Use 'man' for list of commands.")
 
   else:
 
-    print(f'A command could not be found in {curlcmd_file}.')
+    print(f'A valid json could not be found in {httpjson_file}.')
 
 
 
@@ -611,8 +633,8 @@ def utility(params, called, meta):
   elif com == 'cleangen':
     cleangen()
 
-  elif com == 'curl':
-    curl_options(params)
+  elif com == 'http':
+    http_options(params)
 
   elif com == 'todoist':
     todoist_options(params)
