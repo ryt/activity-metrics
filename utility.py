@@ -118,7 +118,7 @@ def cleangen():
       except ValueError: # not in YYYY-MM-DD format
         pass
   if fcount > 0:
-    print(f'{('-'*14)}\nCleaned up {fcount} older gencsv file(s) from: {gen_dir}')
+    print(f"{('-'*14)}\nCleaned up {fcount} older gencsv file(s) from: {gen_dir}")
   else:
     print(f'Nothing to clean up.')
 
@@ -200,7 +200,7 @@ def curl_options(args):
         )
         output = process.stdout.decode('utf-8')
         error = process.stderr.decode('utf-8')
-        
+
         print(f'successful.{nl}--')
 
         if 'save' in savef:
