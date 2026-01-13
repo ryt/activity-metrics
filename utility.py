@@ -188,8 +188,7 @@ def curl_options(args):
 
       command = command.replace('{date_input}', parsed_dash)
 
-      print('Running curl command.')
-      print('--')
+      print('Running curl command -> ', end='')
 
       try:
         process = subprocess.run(
@@ -201,6 +200,9 @@ def curl_options(args):
         )
         output = process.stdout.decode('utf-8')
         error = process.stderr.decode('utf-8')
+        
+        print(f'successful.{nl}--')
+
         if 'save' in savef:
           if not output:
             print('Nothing to save. The content of the output is empty.')
@@ -211,7 +213,9 @@ def curl_options(args):
             print('Nothing to display. The content of the output is empty.')
           else:
             print(output)
+
       except Exception as e:
+        print(f'failed.{nl}--')
         print(f'Error: {e}')
       
       print('--')
