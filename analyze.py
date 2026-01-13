@@ -623,7 +623,6 @@ def analyze(params, called, meta):
 
       elif arg1 in ('--version','-v'):
         output += [f"Activity Metrics, Version {meta['version']}"]
-        output += [meta['copyright']]
 
       # prints the help manual
 

@@ -127,7 +127,7 @@ Some of the inspirations for this project:
 * <https://todoist.com/inspiration/deep-work>
 * <https://en.wikipedia.org/wiki/Blue-green_deployment>
 
-<h2><small>Refrences</small></h2>
+<h2><small>References</small></h2>
 
 1. <i id="n1"></i> <https://en.wikipedia.org/wiki/ISO_8601>
 2. <i id="n2"></i> <https://xkcd.com/1179/>

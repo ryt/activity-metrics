@@ -14,25 +14,6 @@ from datetime import timedelta
 def cap_exclude_word(word):
   """Exclude list for cap_description()"""
 
-  # TODO: add the following options (via Google sheets original javascript)
-  """
-  var clist = [
-    'Iphone,iPhone',
-    'Ipad,iPad',
-    'Imac,iMac',
-    'Chatgpt,ChatGPT',
-    'Garageband,GarageBand'
-  ];
-
-  // capitalize word immediately after slash i.e. movie/[f]ilm
-
-  // Certain minor words should be left lowercase unless they are the first or last words in the string
-  lowers = ['A', 'An', 'The', 'And', 'But', 'Or', 'For', 'Nor', 'As', 'At','By', 'For', 'From', 'In', 'Into', 'Near', 'Of', 'On', 'Onto', 'To', 'With'];
-
-  // Certain words such as initialisms or custom acronyms should be left uppercase
-  uppers = 'Atm,Id,Tv,Usa,Fsl,Csl,Js,Daw,Usd,Midi,Fl,Yt,Fb,Ig,Aci,Acifna,Sdsu,Ucsd,Usc,Mit,Sdge,Vpn,Hrm,Mpk,Sqj,Rli,Hdmi,Sd,Ca,Ups,Usps,Apx';
-  """
-
   excl_samp = ('.', 'etc.')
   url_pat = re.compile(r'https?://\S+|www\.\S+')
   return (word.startswith('@') or 

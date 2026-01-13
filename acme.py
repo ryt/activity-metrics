@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
 # activity metrics (acme)
-# copyright (c) 2024 ray mentose
+# copyright (c) 2024 ray, https://github.com/ryt
 # latest source & documentation at: https://github.com/ryt/activity-metrics.git
 
-
-v = '0.2.5'
-c = 'copyright (c) 2024 ray mentose'
-man = """
+__author__  = 'Ray (github.com/ryt)'
+__version__ = '0.2.6'
+__manual__  = """
 activity metrics: a tool to analyze & display personal activity statistics.
-""" + c + """. latest source & docs: https://github.com/ryt/activity-metrics
+copyright (c) 2024 """ + __author__ + """
+latest source & docs: https://github.com/ryt/activity-metrics
 
 Usage:
 
@@ -157,9 +157,9 @@ def main():
     app_dir   = f'{parent}/{app_name}/'
 
     analyze.analyze(analyze_params, analyze_caller, { 
-      'version'   : v, 
-      'copyright' : c, 
-      'manual'    : man,
+      'version'   : __version__, 
+      'copyright' : f'Copyright (c) {__author__}', 
+      'manual'    : __manual__,
       'logs_dir'  : logs_dir,
       'gen_dir'   : gen_dir,
       'app_dir'   : app_dir,

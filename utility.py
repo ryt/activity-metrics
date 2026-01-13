@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
 # activity metrics utility, (acme util)
-# copyright (C) 2024 ray mentose
 # latest source & docs at: https://github.com/ryt/activity-metrics.git
 
-# Notes:
-# - As of acme version 0.2.0, the version number tracks the main project.
+# notes:
+# - as of acme version 0.2.0, the version number tracks the main project.
 
 man = """
 This script provides helper tools and utilities for API connections. Commands can also be run using 'acme util'!
@@ -13,37 +12,51 @@ Read "Utilities.md" for related documentation. API tokens are required for conne
 
 Usage:
 
-  Create default date files (01-31.txt) and default month directories (01-12/)
-  ----------------------------------------------------------------------------
-  acme   Utility          Command      Parent    Apply
-  ----------------------------------------------------
-  acme   (utility|util)   makefiles    dir/
-                          makefiles    dir/      apply
-                          makedirs     dir/
-                          makedirs     dir/      apply
+  Make Files: create default date files (01-31.txt) and default month directories (01-12/)
+  ----------------------------------------------------------------------------------------
+  <acme>  <Utility>        <Command>    <Parent>  <Apply>
+
+  acme    (utility|util)   makefiles    dir/
+                           makefiles    dir/      apply
+                           makedirs     dir/
+                           makedirs     dir/      apply
 
 
-  Clean up the gen directory of generated csv logs older than 1 week.
-  -------------------------------------------------------------------
-  acme   Utility          Command 
-  --------------------------------
-  acme   (utility|util)   cleangen
-
-
-  Retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
+  Clean Logs: clean up the gen directory of generated csv logs older than 1 week.
   -------------------------------------------------------------------------------
-  acme   Utility          Todoist     Action      Id/Date/Keyword        Save/Filename
-  ------------------------------------------------------------------------------------------
-  acme   (utility|util)   todoist     get-task    (12345|{date_input})
-                          todoist     get-task    (12345|{date_input})   save=2024/01/01.txt
-                          todoist     get-task    (12345|{date_input})   (saveauto|autosave)
+  <acme>  <Utility>        <Command>
+
+  acme    (utility|util)   cleangen
 
 
-  If Garmin csv logs exist, merge them into gencsv logs of given year (plus today and yesterday if applicable).
-  -------------------------------------------------------------------------------------------------------------
-  acme   Utility          Garmin      Action          Year
-  ----------------------------------------------------------
-  acme   (utility|util)   garmin      merge-gencsv    {year}
+  Curl Options: retrieve and save the output from a curl command (from a file) as a log file.
+  -------------------------------------------------------------------------------------------
+  <acme>  <Utility>        <curl>   <Command File>  <Date Input>     <Save/Filename>
+
+  acme    (utility|util)   curl     .curl_cmd       {date_input} 
+                           curl     .curl_cmd       {date_input}    save=2026/01/01.txt
+                           curl     .curl_cmd       {date_input}    (saveauto|autosave)
+
+  - Options: In the curl command file, "{date_input}" can be used to insert the entered date input
+  - in a "YYYY-MM-DD" format anywhere in the command. (e.g. curl "http://api.url/{date_input}")
+
+  - {date_input} can be any valid date input listed in the main manual ("acme --help").
+
+  (API) Todoist Options: retrieve and save tasks that have valid log file names (e.g. 01/01.txt)
+  ----------------------------------------------------------------------------------------------
+  <acme>  <Utility>        <Todoist>   <Action>    <Id/Date/Keyword>      <Save/Filename>
+
+  acme    (utility|util)   todoist     get-task    (12345|{date_input})
+                           todoist     get-task    (12345|{date_input})   save=2024/01/01.txt
+                           todoist     get-task    (12345|{date_input})   (saveauto|autosave)
+
+  - {date_input} can be any valid date input listed in the main manual ("acme --help").
+
+  (API) Garmin Options: merge garmin csv logs into gencsv logs of given year (plus today and yesterday if applicable).
+  --------------------------------------------------------------------------------------------------------------------
+  <acme>  <Utility>        <Garmin>    <Action>        <Year>
+
+  acme    (utility|util)   garmin      merge-gencsv    {year}
 
 """
 
@@ -130,6 +143,129 @@ def escape_for_csv(input):
     return value
   else:
     return input
+
+
+def curl_options(args):
+
+  cmdfile    = args[1] if len(args) >= 2 else ''
+  dateinput  = args[2] if len(args) >= 3 else ''
+  savef      = args[3] if len(args) >= 4 else ''
+
+  date_today = datetime.today()
+
+
+  if not cmdfile:
+    exit(f'Please specify a curl command file path.')
+
+  # curl command file should be stored in "{app_dir}/"
+  curlcmd_file = f'{app_dir}{cmdfile}';
+
+  try:
+    with open(curlcmd_file) as f: command = f.read().strip()
+
+  except FileNotFoundError as e:
+    print(f"Curl command file '{curlcmd_file}' not found.")
+    exit()
+
+  if command:
+
+    if macros.is_date_input(dateinput):
+
+      parsed       = macros.parse_date_input(dateinput)
+      parsed_dash  = parsed['res_ymd_dash']
+      parsed_each  = parsed['res_each']
+
+      opd = parsed_each['D']
+      opm = parsed_each['M']
+      opy = parsed_each['Y']
+
+      name_dict = {}
+
+      print(f'Retrieving content for date, {parsed_dash}:')
+      name1 = f'{str(int(opm))}/{str(int(opd))}.txt' # M/D.txt
+      name2 = f'{opm}/{opd}.txt' # MM/DD.txt
+      name_dict = { 'name1': name1, 'name2': name2}
+
+      command = command.replace('{date_input}', parsed_dash)
+
+      print('Running curl command.')
+      print('--')
+
+      try:
+        process = subprocess.run(
+          command, 
+          shell=True, 
+          check=True, 
+          stdout=subprocess.PIPE, 
+          stderr=subprocess.PIPE
+        )
+        output = process.stdout.decode('utf-8')
+        error = process.stderr.decode('utf-8')
+        if 'save' in savef:
+          if not output:
+            print('Nothing to save. The content of the output is empty.')
+          else:
+            save_content_to_log(output, parsed_dash, name_dict, savef, False)
+        else:
+          if not output:
+            print('Nothing to display. The content of the output is empty.')
+          else:
+            print(output)
+      except Exception as e:
+        print(f'Error: {e}')
+      
+      print('--')
+    
+    else:
+      print("Please enter a valid date input for curl options. Use 'man' for list of commands.")
+
+  else:
+
+    print(f'A command could not be found in {curlcmd_file}.')
+
+
+
+def save_content_to_log(content, date, name_dict, saveopt, append=False):
+  """Operation to save given text content to log."""
+  entries = content
+
+  if saveopt in ('saveauto','autosave'):
+    get_year       = date[0:4]
+    save_log_file  = f"{logs_dir}{get_year}/{name_dict['name2']}" # name2 = MM/DD.txt
+    # create the month directory if it doesn't already exist
+    os.makedirs(os.path.dirname(save_log_file), exist_ok=True)
+    with open(save_log_file, 'a' if append else 'w') as file:
+      entries = nl + entries if append else entries
+      file.write(entries)
+    if append:
+      print(f'Additional entries successfully appended to: {save_log_file}')
+    else:
+      print(f'Log file successfully saved at: {save_log_file}')
+
+  elif saveopt[0:5] == 'save=':
+    save_log_file = f'{logs_dir}{saveopt[5:]}'
+    if save_log_file == logs_dir:
+      print('Please enter a valid file name & path.')
+    else:
+      # create the month directory if it doesn't already exist
+      os.makedirs(os.path.dirname(save_log_file), exist_ok=True)
+      with open(save_log_file, 'a' if append else 'w') as file:
+        entries = nl + entries if append else entries
+        file.write(entries)
+      if append:
+        print(f'Additional entries successfully appended to: {save_log_file}')
+      else:
+        print(f'Log file successfully saved at: {save_log_file}')
+
+  elif saveopt == 'save':
+    opts = ['To save as a log, please use one of the following options:',
+            "- saveauto:  to automatically save the log using it's name & date",
+            "- save=YYYY/MM/DD.txt:  to manually specify the name & location."]
+    print(nl.join(opts))
+
+  else:
+    print(entries)
+
 
 
 def todoist_task_operate(task_json, saveopt, append=False):
@@ -470,6 +606,9 @@ def utility(params, called, meta):
 
   elif com == 'cleangen':
     cleangen()
+
+  elif com == 'curl':
+    curl_options(params)
 
   elif com == 'todoist':
     todoist_options(params)
