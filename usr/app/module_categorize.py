@@ -177,9 +177,18 @@ def replace_shortcuts(entry, glossary):
 
     shortcut_glossary = glossary.shortcut_glossary
 
-    for line in shortcut_glossary:
-      key = line[0]
-      val = line[1]
+    # -- expand alias tuples: [ (key,val), ((a,b), c) ... -> [ (key,val), (a,c), (b,c) ... -- #
+    expanded = [
+      (alias, v)
+      for k, v in shortcut_glossary
+      for alias in (k if isinstance(k, tuple) else (k,))
+    ]
+    subs = dict(expanded)
+
+    # -- substitute longest keys first to prevent collision -- #
+    for key in sorted(subs, key=len, reverse=True):
+      val = subs[key]
+      # -- test via: print(f'{key} => {val}') -- #
       if isinstance(key, tuple):
         for k in key:
           parenblock_inside = parenblock_inside.replace(k, val)

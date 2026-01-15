@@ -5,7 +5,7 @@
 # latest source & documentation at: https://github.com/ryt/activity-metrics.git
 
 __author__  = 'Ray (github.com/ryt)'
-__version__ = '0.2.7.dev3'
+__version__ = '0.2.7.dev4'
 __manual__  = """
 activity metrics: a tool to analyze & display personal activity statistics.
 copyright (c) 2024 """ + __author__ + """
