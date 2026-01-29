@@ -166,6 +166,11 @@ def printx(text, meta = {}):
   exit()
 
 
+def write_to_file(file, contents):
+  # -- write contents to file -- #
+  with open(file, 'w') as f:
+    f.write(contents)
+
 def cap_macro(input):
   return macros.cap_description(input)
 
@@ -174,7 +179,7 @@ def time_macro(input):
 
 def escape_for_csv(input):
   """Prepares the given input for csv output"""
-  # escape a double quote (") with additional double quote ("")
+  # -- escape a double quote (") with additional double quote ("") -- #
   value = input.replace('"', '""')
   value = '"' + value + '"'
   return value
@@ -277,6 +282,117 @@ def convert_to_csv(entries, ymd_date):
   # endfor
 
   return parsed_lines
+
+def generate_collections(period='year', output=[], logs_dir=None, parsed_slash=None, parsed_dash=None, module_options=None):
+  # -- generate collection csvs for periods: year, month -- #
+
+  if not logs_dir or not parsed_slash or not parsed_dash:
+    output += ['One of the following values is invalid: logs_dir, parsed_slash, parsed_dash.']
+    return output
+
+  # -- start process -- #
+
+  is_month = True if period == 'month' else False
+
+  period_collection = []
+  collcount = 0
+
+  range_end = 13
+
+  if is_month:
+    range_end = 2 # <- if month: range(1,2) <- runs once
+
+  for m in range(1, range_end):
+    m = str(m).zfill(2)
+    for d in range(1,32):
+      d = str(d).zfill(2)
+      if is_month:
+        filename = f'{logs_dir}{parsed_slash}/{d}.txt'
+      else:
+        filename = f'{logs_dir}{parsed_slash}/{m}/{d}.txt'
+      if os.path.exists(filename):
+
+        # convert each individual log txt file
+        with open(filename, 'r') as file:
+          entries = file.read()
+          # print(f'{parsed_dash}-{m}-{d}')
+        if is_month:
+          entries = convert_to_csv(entries, f'{parsed_dash}-{d}')
+        else:
+          entries = convert_to_csv(entries, f'{parsed_dash}-{m}-{d}')
+        period_collection.append(entries)
+        collcount += 1
+
+  output += [f'Found {collcount} daily log file(s) for ({parsed_slash}) {period} collection.']
+
+  # combine all the lists into one list
+  period_collection = list(itertools.chain(*period_collection))
+
+  # add modifications: header & footer calculations, categorize
+  period_collection = modify_csv(
+    period_collection,
+    add_header=True,
+    add_footer=True,
+    module_options=module_options,
+  )
+
+  # write collection csv file
+  genfile = f'{gen_dir}{parsed_dash}.csv'
+  write_to_file(genfile, csvtext(period_collection))
+
+  output += [f'Generated {period} collection CSV file {genfile} successfully.']
+  # pydoc.pager(period_collection)
+
+  return output
+
+
+def check_is_valid_interval(inp):
+  """
+  Parse intervals (if they're present):
+    gencsv {interval_from},{interval_to},{interval_seperator}
+
+  """
+
+  if ',' in inp:
+
+    interval_parts  = inp.split(',')
+    interval_length = len(interval_parts)
+
+    interval_from       = ''
+    interval_to         = ''
+    interval_seperator  = '_'
+
+    invalid_interval_code = { 'error_code' : 'analyze.gencsv.invalid_interval' }
+    invalid_interval_text = '\n'.join([
+      'Please enter valid intervals in the following formats: {from},{to} or {from},{to},{separator}.',
+      'Valid examples:  1/1,1/7   1/1,1/7,-to-   1-15,1-30   2024-01-15,01-30,_   01/01,01/07,_through_'
+    ])
+
+    if interval_length > 1:
+      interval_from = interval_parts[0]
+      interval_to   = interval_parts[1]
+
+    if interval_length == 3:
+      interval_seperator = ''.join(i for i in interval_parts[2] if i not in '/:*?<>|#') # 12/26/24 note: potential syntax warning/error in '\/:*?<>|#'
+
+    if interval_length == 0 or interval_length > 3:
+      printx(invalid_interval_text, invalid_interval_code)
+      return False
+
+    parsed_interval_from = macros.parse_date_input(interval_from)
+    parsed_interval_to   = macros.parse_date_input(interval_to)
+
+    if not parsed_interval_from['res_ymd_dash'] or not parsed_interval_to['res_ymd_dash']:
+      printx(invalid_interval_text, invalid_interval_code)
+      return False
+
+    return {
+      'parsed_interval_from': parsed_interval_from,
+      'parsed_interval_to': parsed_interval_to,
+      'interval_seperator': interval_seperator,
+    }
+
+  return False
 
 
 """
@@ -418,8 +534,9 @@ def analyze(params, called, meta):
 
           module_options = params[2] if len(params) > 2 else False
 
-          # Section: Intervals
-          #   Commas can be used in the {date_input} to specify interval 'from' and 'to' dates, along with an additional 'separator' text for the filename.
+          # Section: Intervals (TODO as of 1/29/2026)
+          #   Commas can be used in the {date_input} to specify interval 'from' and 'to' dates,
+          #   along with an additional 'separator' text for the filename.
           #   Intervals can be used as follows:
           #
           #       gencsv   {interval_from},{interval_to}
@@ -427,44 +544,7 @@ def analyze(params, called, meta):
           #
           #   If commas are detected, the interval parameters will be parsed before everything else.
 
-          valid_interval_input = False
-
-          # -- start: parse intervals (if they're present)
-
-          if ',' in arg2:
-
-            interval_parts  = arg2.split(',')
-            interval_length = len(interval_parts)
-
-            interval_from       = ''
-            interval_to         = ''
-            interval_seperator  = '_'
-
-            invalid_interval_code = { 'error_code' : 'analyze.gencsv.invalid_interval' }
-            invalid_interval_text = nl.join([
-              'Please enter valid intervals in the following formats: {from},{to} or {from},{to},{separator}.',
-              'Valid examples:  1/1,1/7   1/1,1/7,-to-   1-15,1-30   2024-01-15,01-30,_   01/01,01/07,_through_'
-            ])
-
-            if interval_length > 1:
-              interval_from = interval_parts[0]
-              interval_to   = interval_parts[1]
-
-            if interval_length == 3:
-              interval_seperator = ''.join(i for i in interval_parts[2] if i not in '/:*?<>|#') # 12/26/24 note: potential syntax warning/error in '\/:*?<>|#'
-
-            if interval_length == 0 or interval_length > 3:
-              printx(invalid_interval_text, invalid_interval_code)
-
-            parsed_interval_from = macros.parse_date_input(interval_from)
-            parsed_interval_to   = macros.parse_date_input(interval_to)
-
-            if not parsed_interval_from['res_ymd_dash'] or not parsed_interval_to['res_ymd_dash']:
-              printx(invalid_interval_text, invalid_interval_code)
-
-            valid_interval_input = True
-
-          # -- end: parse intervals
+          valid_interval_input = check_is_valid_interval(arg2)
 
 
           parsed = macros.parse_date_input(arg2)
@@ -491,104 +571,32 @@ def analyze(params, called, meta):
 
             # generate individual log csv file
             genfile = f'{gen_dir}{parsed_dash}.csv'
-            with open(genfile, 'w') as file:
-              file.write(entries)
+            write_to_file(genfile, entries)
             output += [f'Generated CSV file {genfile} successfully.']
 
 
-          # -- start: look for collections of log files (month, year)
+          # -- start: look for collections of log files (month, year) -- #
 
           elif not valid_interval_input and re.search(r'^\d{4}(?:\/\d{2})?$', parsed_slash):
 
             lenfn = len(parsed_slash)
 
             # -- generate year collections -- #
-
             if lenfn == 4:
-              year_collection = []
-              collcount = 0
-
-              for m in range(1, 13):
-                m = str(m).zfill(2)
-                for d in range(1,32):
-                  d = str(d).zfill(2)
-                  filename = f'{logs_dir}{parsed_slash}/{m}/{d}.txt'
-                  if os.path.exists(filename):
-
-                    # convert each individual log txt file
-                    with open(filename, 'r') as file:
-                      entries = file.read()
-                      # print(f'{parsed_dash}-{m}-{d}')
-                    entries = convert_to_csv(entries, f'{parsed_dash}-{m}-{d}')
-                    year_collection.append(entries)
-                    collcount += 1
-
-              output += [f'Found {collcount} daily log file(s) for ({parsed_slash}) year collection.']
-
-              # combine all the lists into one list
-              year_collection = list(itertools.chain(*year_collection))
-
-              # add modifications: header & footer calculations, categorize
-              year_collection = modify_csv(
-                year_collection, 
-                add_header=True, 
-                add_footer=True,
-                module_options=module_options,
-              )
-
-              # generate collection log csv file
-              genfile = f'{gen_dir}{parsed_dash}.csv'
-              with open(genfile, 'w') as file:
-                file.write(csvtext(year_collection))
-              output += [f'Generated year collection CSV file {genfile} successfully.']
-              # pydoc.pager(year_collection)
-
+              output = generate_collections('year',output,logs_dir, parsed_slash, parsed_dash, module_options)
 
             # -- generate month collections -- #
-
             elif lenfn == 7:
-              month_collection = []
-              collcount = 0
-              for d in range(1,32):
-                d = str(d).zfill(2)
-                filename = f'{logs_dir}{parsed_slash}/{d}.txt'
-                if os.path.exists(filename):
+              output = generate_collections('month',output,logs_dir,parsed_slash,parsed_dash,module_options)
 
-                  # convert each individual log txt file
-                  with open(filename, 'r') as file:
-                    entries = file.read()
-                  entries = convert_to_csv(entries, f'{parsed_dash}-{d}')
-                  month_collection.append(entries)
-                  collcount += 1
+          # -- end: look for collections -- #
 
-              output += [f'Found {collcount} daily log file(s) for ({parsed_slash}) month collection.']
-
-              # combine all the lists into one list
-              month_collection = list(itertools.chain(*month_collection))
-
-              # add modifications: header & footer calculations, categorize
-              month_collection = modify_csv(
-                month_collection, 
-                add_header=True, 
-                add_footer=True,
-                module_options=module_options,
-              )
-
-              # generate collection log csv file
-              genfile = f'{gen_dir}{parsed_dash}.csv'
-              with open(genfile, 'w') as file:
-                file.write(csvtext(month_collection))
-              output += [f'Generated month collection CSV file {genfile} successfully.']
-              # pydoc.pager(month_collection)
-
-          # -- end: look for collections
-
-          # -- start: process intervals
+          # -- start: process intervals -- #
 
           elif valid_interval_input:
 
-            pif = parsed_interval_from
-            pit = parsed_interval_to
+            pif = valid_interval_input['parsed_interval_from']
+            pit = valid_interval_input['parsed_interval_to']
 
             pif_ymd_dash = pif['res_ymd_dash']
             pit_ymd_dash = pit['res_ymd_dash']
@@ -599,7 +607,7 @@ def analyze(params, called, meta):
             pit_D = pit['res_each']['D']
 
             to_format = f'{pit_M}-{pit_D}' if pif_Y == pit_Y else pit_ymd_dash # option for: _01-01 instead of _2024-01-01
-            genfile   = f'{pif_ymd_dash}{interval_seperator}{to_format}.csv'
+            genfile   = f'{pif_ymd_dash}{valid_interval_input["interval_seperator"]}{to_format}.csv'
 
             output += [f'Creating a collection for intervals from {pif_ymd_dash} to {pit_ymd_dash}:']
             output += ['...']
@@ -609,7 +617,7 @@ def analyze(params, called, meta):
 
             output += [f'Mock-generated CSV file {genfile} successfully.']
 
-          # -- end: process intervals
+          # -- end: process intervals -- #
 
           else:
             output += [f'Log file {filename} does not exist.']
