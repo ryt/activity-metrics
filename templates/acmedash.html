@@ -27,23 +27,29 @@
     a.dotfiles { color:#777; }
     a.arrow { font-size: 20px; }
     .bold { font-weight: bold; }
-    .address { font-family: monospace; padding: 8px 16px; border-bottom: 1px solid #aaa; background: #eee; }
+
+    .address { font-family: courier, monospace; padding: 8px 16px; border-bottom: 1px solid #aaa; background: #eee; }
     .address a { text-decoration: underline; }
     .address span { color:#777; }
     .address a:last-child { font-weight: bold; }
-    .error { color: #555; font-family: monospace; padding: 4px 0; }
+
+    .error { color: #555; font-family: courier, monospace; padding: 4px 0; }
     .lineone { line-height:1; }
     .linemid { line-height:1.5; }
     .noncsv-plain { margin: 0; padding: 4px 0; }
-    .dir-list, p { padding: 12px 16px; font-family: monospace; font-size: 14px; }
+    .dir-list, p { padding: 12px 16px; font-family: courier, monospace; font-size: 14px; }
     .dir-list .error { padding: 8px 0; }
     .dir-item { padding: 4px 0; }
     .file-show { padding:16px; }
     .file-show .error { margin-top: -4px; }
+    .about ul { margin:5px 0;padding-left:20px; }
+    .about ul li { margin-bottom:5px; }
+
     .csv-table { border-collapse: collapse; font-size: 13px; min-width: 100%; }
     .csv-table th, .csv-table td { border: 1px solid #ccc; padding: 8px; font-weight: normal; }
     .csv-table th { background: linear-gradient(#f9f9f9 0% 50%, #f2f2f2 50% 100%); }
     .csv-table td { }
+
     .plain, .plain td { margin: 0; padding: 0; border-collapse: collapse; }
     .table-outer { max-height:600px;overflow:scroll; }
     .table-outer, .details { max-width:1400px; }
@@ -54,11 +60,13 @@
     .mb-5 { margin-bottom: 5px; }
     .dim { color: #777; }
     .cmd-result { margin: 5px 0 0; }
+
     .left { float:left; }
     .right { float:right; }
     .clear { clear:both; }
     .flex { display:flex; }
     .vcenter { align-items: center; }
+
     #activities { margin:0 20px 0 0; }
     .search-holder { flex-wrap:wrap; }
     .search-holder .flex-col { margin:0 0 10px; }
@@ -100,16 +108,24 @@
     </div>
   </div>
 
-  {% if view.page == 'custom' %}
+  {% if view.page in ('custom','about') %}
 
     <div class="address">
       {{ view.getm0 or 'Empty' }} &rarr; <a href="{{ view.app_path }}?{{ view.query_m }}">Dashboard</a> <span>/</span> 
-      <a href="{{ view.app_path }}custom?{{ view.query_m }}">custom</a> <span>/</span> 
+      <a href="{{ view.app_path }}{{ view.page }}?{{ view.query_m }}">{{ view.page }}</a> <span>/</span> 
     </div>
 
-    <div class="dir-list">
-      {{ view.message | safe }}
-      {{ view.output_html | safe }}
+    <div class="dir-list about">
+      {% if view.page == 'about' %}
+        <div><b>About</b></div>
+        <ul>
+          <li>Activity Metrics (acme) version: <b>{{ view.version.acme }}</b></li>
+          <li>Local {{ view.getm0 }}app version: <b>{{ view.version.local }}</b></li>
+        </ul>
+      {% else %}
+        {{ view.message | safe }}
+        {{ view.output_html | safe }}
+      {% endif %}
     </div>
 
   {% else %}

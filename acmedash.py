@@ -20,6 +20,8 @@ from urllib.parse import quote
 from flask import render_template
 from configparser import ConfigParser
 
+from __version__ import __version__
+
 app = Flask(__name__)
 
 # -- set timezone to america/los_angeles -- #
@@ -99,15 +101,19 @@ def default_modules(module='index'):
   getm1 = getm[1].rstrip('/')
 
   view = {
-    'app_path'      : app_path,
-    'page'          : module,
-    'getm'          : getm,
-    'getm0'         : getm0,
-    'query_m'       : f'm={getm0}',
-    'error'         : False, 
-    'message'       : '',
-    'output_html'   : '',
-    'add_nav_links' : (),
+    'app_path': app_path,
+    'version': {
+      'acme': __version__,
+      'local': '',
+    },
+    'page': module,
+    'getm': getm,
+    'getm0': getm0,
+    'query_m': f'm={getm0}',
+    'error': False,
+    'message': '',
+    'output_html': '',
+    'add_nav_links': (),
   }
 
   if getm1 and os.path.isdir(f'{getm1}/logs/'):
@@ -118,7 +124,13 @@ def default_modules(module='index'):
     module_list = module_settings['run_local_modules']
     view['add_nav_links'] = module_settings['add_nav_links']
 
-    if module in module_list:
+    if module == 'about':
+      sys.path.append(f'{getm1}/')
+      module_local_version = importlib.import_module(f'app.__version__')
+      importlib.reload(module_local_version)
+      view['version']['local'] = module_local_version.__version__
+
+    elif module in module_list:
 
       module_script = module_list[module][0]
       module_name   = module_list[module][1]
