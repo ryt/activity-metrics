@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 
-# activity metrics (acme)
-# copyright (c) 2024 ray, https://github.com/ryt
-# latest source & documentation at: https://github.com/ryt/activity-metrics.git
-
 __author__  = 'Ray (github.com/ryt)'
 __manual__  = """
 activity metrics: a tool to analyze & display personal activity statistics.
-copyright (c) 2024 """ + __author__ + """
+Copyright (C) 2024 """ + __author__ + """
 latest source & docs: https://github.com/ryt/activity-metrics
 
 Usage:
