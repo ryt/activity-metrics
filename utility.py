@@ -30,11 +30,11 @@ Usage:
   -------------------------------------------------------------------------------------------------
   <acme>  <Utility>        <http>   <Command File>   <Date Input>     <Save/Filename>
 
-  acme    (utility|util)   http     .http_json       {date_input} 
-                           http     .http_json       {date_input}     save=2026/01/01.txt
-                           http     .http_json       {date_input}     (saveauto|autosave)
+  acme    (utility|util)   http     .acme_http.json       {date_input}
+                           http     .acme_http.json       {date_input}     save=2026/01/01.txt
+                           http     .acme_http.json       {date_input}     (saveauto|autosave)
 
-  - The default name of the http json file is ".http_json". It can be changed to any name.
+  - The default name of the http json file is ".acme_http.json". It can be changed to any name.
   - Options: In the http json file, "{date_input}" can be used to insert the entered date input
     in a "YYYY-MM-DD" format anywhere in the keys or values. (e.g. {"url":"http://api.url/{date_input}"})
   - {date_input} can be any valid date input listed in the main manual ("acme --help").
