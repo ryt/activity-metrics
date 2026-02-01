@@ -18,6 +18,7 @@ from flask import Flask
 from flask import request
 from urllib.parse import quote
 from flask import render_template
+from flask import jsonify, send_file
 from configparser import ConfigParser
 
 from __version__ import __version__
@@ -141,8 +142,18 @@ def default_modules(module='index'):
         module_run = importlib.import_module(module_call)
         importlib.reload(module_run)
 
+        received_output = module_run.run_main(getm)
+
+        # check if received output is send_file_object or jsonify_object
+        # if so serve either one appropriately, if not carry on
+        if isinstance(received_output, dict):
+          if 'send_file_object' in received_output:
+            return send_file(received_output['send_file_object']['buf'], mimetype=received_output['send_file_object']['mimetype'])
+          elif 'jsonify_object' in received_output:
+            return jsonify(received_output['jsonify_object'])
+
         view['message']       = ''
-        view['output_html']   = module_run.run_main(getm)
+        view['output_html']   = received_output
 
       else:
         view['error']   = True
