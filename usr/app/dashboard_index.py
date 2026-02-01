@@ -71,7 +71,7 @@ def query_link(params = {}):
   if params:
     mod_params = {}
     for p in params:
-      if params[p] == ':default:':
+      if params[p] == ':current:':
         val = get_query(p)
         if val:
           add += f'{p}={val}&'
@@ -350,26 +350,26 @@ def run_main():
       '<div class="filters">',
          '<div class="filter-lists">',
            '<span class="dim">Filters:</span> ',
-          f'<a href="{ query_link({ "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"","bold") }">Default</a>, ',
-          f'<a href="{ query_link({ "filter" : "C1:Work", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Work","bold") }">Work</a>, ',
-          f'<a href="{ query_link({ "filter" : "C1:Projects", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Projects","bold") }">Projects</a>, ',
-          f'<a href="{ query_link({ "filter" : "C1:Study", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Study","bold") }">Study</a>, ',
-          f'<a href="{ query_link({ "filter" : "C1:Practice", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Practice","bold") }">Practice</a>',
+          f'<a href="{ query_link({ "periods" : ":current:" }) }{ scroll_hash }" class="{ ifxyz(qf,"","bold") }">Default</a>, ',
+          f'<a href="{ query_link({ "filter" : "C1:Work", "periods" : ":current:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Work","bold") }">Work</a>, ',
+          f'<a href="{ query_link({ "filter" : "C1:Projects", "periods" : ":current:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Projects","bold") }">Projects</a>, ',
+          f'<a href="{ query_link({ "filter" : "C1:Study", "periods" : ":current:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Study","bold") }">Study</a>, ',
+          f'<a href="{ query_link({ "filter" : "C1:Practice", "periods" : ":current:" }) }{ scroll_hash }" class="{ ifxyz(qf,"C1:Practice","bold") }">Practice</a>',
          '</div>',
       '</div>',
 
       '<div class="periods"> <span class="dim">Periods:</span> ',
-      f'<a href="{ query_link({ "filter" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qp,"","bold") }">Default</a>, ',
-      f'<a href="{ query_link({ "filter" : ":default:", "periods" : "today" }) }{ scroll_hash }" class="{ ifxyz(qp,"today","bold") }">Today</a>, ',
-      f'<a href="{ query_link({ "filter" : ":default:", "periods" : "yesterday" }) }{ scroll_hash }" class="{ ifxyz(qp,"yesterday","bold") }">Yesterday</a>, ',
-      f'<a href="{ query_link({ "filter" : ":default:", "periods" : "week" }) }{ scroll_hash }" class="{ ifxyz(qp,"week","bold") }">This Week</a>, ',
-      f'<a href="{ query_link({ "filter" : ":default:", "periods" : "month" }) }{ scroll_hash }" class="{ ifxyz(qp,"month","bold") }">This Month</a>, ',
-      f'<a href="{ query_link({ "filter" : ":default:", "periods" : "year" }) }{ scroll_hash }" class="{ ifxyz(qp,"year","bold") }">This Year</a>, ',
-      f'<a href="{ query_link({ "filter" : ":default:", "periods" : last_year }) }{ scroll_hash }" class="{ ifxyz(qp,last_year,"bold") }">{last_year}</a> ',
+      f'<a href="{ query_link({ "filter" : ":current:" }) }{ scroll_hash }" class="{ ifxyz(qp,"","bold") }">Default</a>, ',
+      f'<a href="{ query_link({ "filter" : ":current:", "periods" : "today" }) }{ scroll_hash }" class="{ ifxyz(qp,"today","bold") }">Today</a>, ',
+      f'<a href="{ query_link({ "filter" : ":current:", "periods" : "yesterday" }) }{ scroll_hash }" class="{ ifxyz(qp,"yesterday","bold") }">Yesterday</a>, ',
+      f'<a href="{ query_link({ "filter" : ":current:", "periods" : "week" }) }{ scroll_hash }" class="{ ifxyz(qp,"week","bold") }">This Week</a>, ',
+      f'<a href="{ query_link({ "filter" : ":current:", "periods" : "month" }) }{ scroll_hash }" class="{ ifxyz(qp,"month","bold") }">This Month</a>, ',
+      f'<a href="{ query_link({ "filter" : ":current:", "periods" : "year" }) }{ scroll_hash }" class="{ ifxyz(qp,"year","bold") }">This Year</a>, ',
+      f'<a href="{ query_link({ "filter" : ":current:", "periods" : last_year }) }{ scroll_hash }" class="{ ifxyz(qp,last_year,"bold") }">{last_year}</a> ',
       ' &middot; ',
       ' <span class="dim">Sort:</span> ',
-        f'<a href="{ query_link({ "filter" : ":default:", "periods" : ":default:" }) }{ scroll_hash }" class="{ ifxyz(qs,"","bold") }">A-Z</a> ',
-        f'<a href="{ query_link({ "filter" : ":default:", "periods" : ":default:", "sort": "za" }) }{ scroll_hash }" class="{ ifxyz(qs,"za","bold") }">Z-A</a> ',
+        f'<a href="{ query_link({ "filter" : ":current:", "periods" : ":current:" }) }{ scroll_hash }" class="{ ifxyz(qs,"","bold") }">A-Z</a> ',
+        f'<a href="{ query_link({ "filter" : ":current:", "periods" : ":current:", "sort": "za" }) }{ scroll_hash }" class="{ ifxyz(qs,"za","bold") }">Z-A</a> ',
       '</div>',
 
       f'<div class="table-outer" id="data-scroller">{ frame_table["html"] }</div>',
@@ -396,7 +396,7 @@ def run_main():
         var fgo = document.getElementById('filter-go');
 
         function filterGo(){{
-          var link = "{ query_link({ "filter": f"{ q } + urlPrep(fquery.value) + { q }", "periods" : "year" if not qp else ":default:" }) }{ scroll_hash }";
+          var link = "{ query_link({ "filter": f"{ q } + urlPrep(fquery.value) + { q }", "periods" : "year" if not qp else ":current:" }) }{ scroll_hash }";
           window.location.href = link;
         }}
 
