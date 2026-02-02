@@ -96,7 +96,7 @@ Usage Help:
 #
 # Note: By default, acme will look for `./logs/` in the current working directory and parent directories.
 
-from __version__ import __version__
+from __init__ import __version__
 
 import os
 import sys

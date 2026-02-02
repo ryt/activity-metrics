@@ -21,7 +21,7 @@ from flask import render_template
 from flask import jsonify, send_file
 from configparser import ConfigParser
 
-from __version__ import __version__
+from __init__ import __version__
 
 app = Flask(__name__)
 
@@ -95,7 +95,6 @@ def default_modules(module='index'):
 
   gqm = get_query('m')
   lqm = limitpath.rstrip('/') + '/' + gqm.lstrip('/') if limitpath else ''
-  print(lqm)
 
   getm = (gqm, lqm if lqm else gqm)
   getm0 = getm[0]
@@ -127,9 +126,9 @@ def default_modules(module='index'):
 
     if module == 'about':
       sys.path.append(f'{getm1}/')
-      module_local_version = importlib.import_module(f'app.__version__')
-      importlib.reload(module_local_version)
-      view['version']['local'] = module_local_version.__version__
+      module_local_init = importlib.import_module(f'app.__init__')
+      importlib.reload(module_local_init)
+      view['version']['local'] = module_local_init.__version__
 
     elif module in module_list:
 
