@@ -3,19 +3,14 @@
 import sys
 import os
 import re
-import time
 import json
-import pydoc
-import subprocess
-import http.client
-import pandas as pd
-import urllib.parse
 
 from datetime import datetime
 from datetime import timedelta
 
 from io import StringIO
 
+from acme.cli  import cmd
 from acme.core import macros
 
 
@@ -137,7 +132,7 @@ def todoist_options(args):
           search_list.append({ 'search1': search1, 'search2': search2})
 
 
-        api_get_tasks = curl(f'https://api.todoist.com/rest/v2/tasks', f'Authorization: Bearer {api_token}')
+        api_get_tasks = cmd.curl(f'https://api.todoist.com/rest/v2/tasks', f'Authorization: Bearer {api_token}')
 
         if api_get_tasks.startswith('Error:') or not api_get_tasks.startswith(('{','[')):
           print(api_get_tasks)
@@ -173,7 +168,7 @@ def todoist_options(args):
 
       elif optid.isnumeric() and int(optid) > 1000:
 
-        api_get_task = curl(f'https://api.todoist.com/rest/v2/tasks/{optid}', f'Authorization: Bearer {api_token}')
+        api_get_task = cmd.curl(f'https://api.todoist.com/rest/v2/tasks/{optid}', f'Authorization: Bearer {api_token}')
 
         if api_get_task.startswith('Error:') or not api_get_task.startswith(('{','[')):
           print(api_get_task)

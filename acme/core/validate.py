@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import re
+import pydoc
 
 from acme.core import utils
 

@@ -20,10 +20,7 @@ from io import StringIO
 from acme.core import macros
 
 
-def http_options(args, called, meta):
-
-  app_dir   = meta['app_dir']
-  logs_dir  = meta['logs_dir']
+def http_options(args, callname, meta):
 
   httpfile   = args[1] if len(args) >= 2 else ''
   dateinput  = args[2] if len(args) >= 3 else ''
@@ -35,8 +32,8 @@ def http_options(args, called, meta):
   if not httpfile:
     exit(f'Please specify an http json file path.')
 
-  # http json file should be stored in "{app_dir}/"
-  httpjson_file = f'{app_dir}{httpfile}';
+  # http json file should be stored in "{meta.app_dir}/"
+  httpjson_file = f'{meta.app_dir}{httpfile}';
 
   try:
     with open(httpjson_file) as f: command = f.read().strip()
@@ -103,7 +100,7 @@ def http_options(args, called, meta):
           if not output:
             print('Nothing to save. The content of the output is empty.')
           elif status == 200:
-            save_content_to_log(logs_dir, output, parsed_dash, name_dict, savef, False)
+            save_content_to_log(meta.logs_dir, output, parsed_dash, name_dict, savef, False)
           else:
             print(f'Nothing to save. The server returned status: {status}.')
         else:

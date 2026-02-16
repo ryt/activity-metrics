@@ -10,7 +10,6 @@ import sys
 import csv
 import time
 import html
-import config
 import itertools
 import importlib
 
@@ -29,11 +28,19 @@ app = Flask(__name__)
 os.environ['TZ'] = 'America/Los_Angeles'
 time.tzset()
 
+
+# -- start: set config.py & runapp.conf paths -- #
+ACMERYT='~/.acmeryt/' # main acme config dir
+ACMERYT=os.path.expanduser(ACMERYT)
+sys.path.append(ACMERYT)
+import config
+# -- end: set config.py & runapp.conf paths-- #
+
 # default runapp config values
 sslcertkey = ''
 
 # -- runapp ssl settings start: parse runapp.conf (if it exists) and apply ssl settings -- #
-conf = 'runapp.conf'
+conf = f'{ACMERYT}runapp.conf'
 if os.path.exists(conf):
   with open(conf) as cf:
     cfparser = ConfigParser()
@@ -45,7 +52,6 @@ if os.path.exists(conf):
 # -- runapp ssl settings end -- #
 
 # -- start: parse config parameters from config.py and set values -- #
-
 
 # default config.py config values
 limitpath  = ''
@@ -172,10 +178,12 @@ def default_modules(module='index'):
   return render_template('acmedash.html', view=view)
 
 
-if __name__ == '__main__':
+def main():
   sslck = sslcertkey.split(' ')
   if len(sslck) == 2:
     app.run(ssl_context=(sslck[0], sslck[1]), debug=True)
   else:
     app.run(debug=True)
 
+if __name__ == '__main__':
+  main()

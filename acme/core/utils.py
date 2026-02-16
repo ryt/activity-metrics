@@ -9,7 +9,7 @@ import re
 import time
 import json
 import pydoc
-import subprocess
+
 import http.client
 import pandas as pd
 import urllib.parse
@@ -86,17 +86,6 @@ def cleangen():
     print(f"{('-'*14)}\nCleaned up {fcount} older gencsv file(s) from: {gen_dir}")
   else:
     print(f'Nothing to clean up.')
-
-
-def curl(url, headers = ''):
-  curl_command = f'curl "{url}" -H "{headers}"'
-  process = subprocess.run(curl_command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  output = process.stdout.decode('utf-8')
-  error = process.stderr.decode('utf-8')
-  if process.returncode == 0:
-    return output
-  else:
-    return f'Error: {error}'
 
 
 def escape_for_csv(input):

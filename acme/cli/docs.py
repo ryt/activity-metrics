@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
-__author__  = 'Ray (github.com/ryt)'
+__author__    = 'Ray (github.com/ryt)'
+__github__    = 'https://github.com/ryt/activity-metrics'
+__copyright__ = f'Copyright (C) 2024-2026 {__author__}'
 
 # main docs
 
 __manual__  = """
 activity metrics: a tool to analyze & display personal activity statistics.
-Copyright (C) 2024 Ray (github.com/ryt)
-latest source & docs: https://github.com/ryt/activity-metrics
+""" + __copyright__ + """
+latest source & docs: """ + __github__ + """
 
 Usage:
 
