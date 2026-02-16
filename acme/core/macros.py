@@ -11,6 +11,7 @@ from functools import reduce
 from datetime import datetime
 from datetime import timedelta
 
+
 def cap_exclude_word(word):
   """Exclude list for cap_description()"""
 
@@ -102,10 +103,13 @@ def check_is_valid_interval(inp):
 
 def escape_for_csv(input):
   """Prepares the given input for csv output"""
-  # -- escape a double quote (") with additional double quote ("") -- #
-  value = input.replace('"', '""')
-  value = '"' + value + '"'
-  return value
+  if isinstance(input, str):
+    # escape a double quote (") with additional double quote ("")
+    value = input.replace('"', '""')
+    value = '"' + value + '"'
+    return value
+  else:
+    return input
 
 
 def try_float(v, defval=None):
@@ -346,7 +350,5 @@ def parse_date_input(inp):
   }
 
   return result
-
-
 
 

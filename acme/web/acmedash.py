@@ -4,23 +4,20 @@
 # this app uses flask & gunicorn with ryt/runapp for deployment
 # latest source & documentation at: https://github.com/ryt/activity-metrics.git
 
-
 import os
 import sys
-import csv
 import time
-import html
 import itertools
 import importlib
 
 from flask import Flask
 from flask import request
-from urllib.parse import quote
 from flask import render_template
 from flask import jsonify, send_file
 from configparser import ConfigParser
 
 from __init__ import __version__
+from acme.core import options
 
 app = Flask(__name__)
 
@@ -28,19 +25,15 @@ app = Flask(__name__)
 os.environ['TZ'] = 'America/Los_Angeles'
 time.tzset()
 
-
-# -- start: set config.py & runapp.conf paths -- #
-ACMERYT='~/.acmeryt/' # main acme config dir
-ACMERYT=os.path.expanduser(ACMERYT)
-sys.path.append(ACMERYT)
+# -- set config.py & runapp.conf paths -- #
+sys.path.append(options.CONFIGDIRFULL)
 import config
-# -- end: set config.py & runapp.conf paths-- #
 
 # default runapp config values
 sslcertkey = ''
 
 # -- runapp ssl settings start: parse runapp.conf (if it exists) and apply ssl settings -- #
-conf = f'{ACMERYT}runapp.conf'
+conf = f'{options.CONFIGDIRFULL}runapp.conf'
 if os.path.exists(conf):
   with open(conf) as cf:
     cfparser = ConfigParser()

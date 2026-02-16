@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 
 # activity metrics (acme) utils
-# latest source & docs at: https://github.com/ryt/activity-metrics.git
 
-import sys
 import os
-import re
-import time
-import json
-import pydoc
-
-import http.client
-import pandas as pd
-import urllib.parse
 
 from datetime import datetime
 from datetime import timedelta
 
-from io import StringIO
 
-from acme.core import macros
+def find_path(name, curr=os.path.abspath(os.curdir)):
+  """Checks if directory (name) exists in specified (curr) or parents"""
+
+  while True:
+    search_path = os.path.join(curr, name)
+    if os.path.isdir(search_path):
+      return search_path
+    
+    par = os.path.dirname(curr)
+    
+    if curr == par:
+      return None
+    
+    curr = par
 
 
 def get_all_files(dir):
@@ -86,15 +88,4 @@ def cleangen():
     print(f"{('-'*14)}\nCleaned up {fcount} older gencsv file(s) from: {gen_dir}")
   else:
     print(f'Nothing to clean up.')
-
-
-def escape_for_csv(input):
-  """Prepares the given input for csv output"""
-  if isinstance(input, str):
-    # escape a double quote (") with additional double quote ("")
-    value = input.replace('"', '""')
-    value = '"' + value + '"'
-    return value
-  else:
-    return input
 

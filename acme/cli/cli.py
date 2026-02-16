@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 from __init__ import __version__
 
 import os
@@ -16,30 +15,9 @@ from acme.cli  import docs
 
 from acme.core import utils
 from acme.core import macros
+from acme.core import options
 from acme.core import process
 from acme.core import validate
-
-# default directory names
-
-LOGS_NAME = 'logs'
-GEN_NAME  = 'gen'
-APP_NAME  = 'app'
-
-
-def find_path(name, curr=os.path.abspath(os.curdir)):
-  """Checks if directory (name) exists in specified (curr) or parents"""
-
-  while True:
-    search_path = os.path.join(curr, name)
-    if os.path.isdir(search_path):
-      return search_path
-    
-    par = os.path.dirname(curr)
-    
-    if curr == par:
-      return None
-    
-    curr = par
 
 # acme cli usage
 #
@@ -451,16 +429,16 @@ def main():
   if len(sys.argv) > 1 and sys.argv[1].endswith('/'):
     params = sys.argv[2:]
     specified_path = sys.argv[1]
-    find_logs = find_path(LOGS_NAME, specified_path)
+    find_logs = utils.find_path(options.LOGS_NAME, specified_path)
   else:
-    find_logs = find_path(LOGS_NAME)
+    find_logs = utils.find_path(options.LOGS_NAME)
 
   if find_logs:
 
     parent    = os.path.dirname(find_logs)
-    logs_dir  = f'{parent}/{LOGS_NAME}/'
-    gen_dir   = f'{parent}/{GEN_NAME}/'
-    app_dir   = f'{parent}/{APP_NAME}/'
+    logs_dir  = f'{parent}/{options.LOGS_NAME}/'
+    gen_dir   = f'{parent}/{options.GEN_NAME}/'
+    app_dir   = f'{parent}/{options.APP_NAME}/'
 
     cli_main(
       params,
@@ -479,7 +457,7 @@ def main():
   else:
 
     print('\n'.join((
-      f'Logs directory `{LOGS_NAME}` not found.',
+      f'Logs directory `{options.LOGS_NAME}` not found.',
       'You have two options:',
       ' - Run this command from within the metrics directory.',
       ' - Explicitly set the metrics directory as the second argument. (e.g. acme ~/metrics/ ...)',
