@@ -76,7 +76,6 @@ List of parameters handled by acme cli:
 
 
 def cli_main(params, callname, meta):
-
   # ---- cli options: main ---- #
 
   output = []
@@ -283,7 +282,6 @@ def cli_main(params, callname, meta):
 
 
 def cli_utils(params, callname, meta):
-
   # ---- cli options: utils ----  #
 
   uname = 'util' if callname  == 'util' else 'utility'
@@ -334,7 +332,6 @@ def cli_utils(params, callname, meta):
 
 
 def cli_dash(params, callname, meta):
-
   # ---- cli options: dash ----  #
 
   use_help = '\n'.join((
@@ -342,7 +339,7 @@ def cli_dash(params, callname, meta):
     '  - acme dash dev',
     '  - acme dash prod',
     'Options:',
-    '  - acme dash (dev|prod) (reload|start|stop|restart|debug)',
+    '  - acme dash (dev|prod) (reload|start|stop|restart|list|debug)',
   ))
 
 
@@ -351,18 +348,25 @@ def cli_dash(params, callname, meta):
     return
   
   type    = params[0]
-  action  = params[1] if len(params) >= 2 else 'reload'
+  action  = params[1] if len(params) >= 2 else 'list' # default action: list
 
   if type == 'dev':
     web = f'{meta.acme_dir}web/'
     sys.path.append(web)
-    print(f'Action: {action}. Running acme dash development server at port 5000.')
+    print(f'Action: {action}. Running acme dash development server at port {options.PORT_DEV}.')
     # import & start flask app: acmedash
     import acmedash
     acmedash.main()
 
   elif type == 'prod':
-    print(f'Action: {action}. Running acme dash production server at port 8100.')
+    print(f'Action: {action}. Running acme dash via gunicorn/runapp at port {options.PORT_PROD}.')
+    # the prod option currently uses the gunicorn wrapper runapp
+    # from: https://github.com/ryt/runapp (requires version 1.4+)
+    cmd.runapp(
+      action,
+      options.CONFIG_DIR_FULL,
+      os.path.dirname(os.path.dirname(meta.acme_dir)),
+    )
 
   elif type in ('--help', '-h', 'help'):
     print(use_help)
@@ -379,7 +383,6 @@ def cli_dash(params, callname, meta):
 
 
 def main():
-
   # -- main cli app gateway -- #
 
   params   = sys.argv[1:]

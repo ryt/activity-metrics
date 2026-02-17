@@ -16,6 +16,9 @@ from flask import render_template
 from flask import jsonify, send_file
 from configparser import ConfigParser
 
+# -- add main acme dir to path -- #
+#sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
 from __init__ import __version__
 from acme.core import options
 
@@ -26,14 +29,14 @@ os.environ['TZ'] = 'America/Los_Angeles'
 time.tzset()
 
 # -- set config.py & runapp.conf paths -- #
-sys.path.append(options.CONFIGDIRFULL)
+sys.path.append(options.CONFIG_DIR_FULL)
 import config
 
 # default runapp config values
 sslcertkey = ''
 
 # -- runapp ssl settings start: parse runapp.conf (if it exists) and apply ssl settings -- #
-conf = f'{options.CONFIGDIRFULL}runapp.conf'
+conf = f'{options.CONFIG_DIR_FULL}runapp.conf'
 if os.path.exists(conf):
   with open(conf) as cf:
     cfparser = ConfigParser()
@@ -178,5 +181,7 @@ def main():
   else:
     app.run(debug=True)
 
+
 if __name__ == '__main__':
   main()
+
