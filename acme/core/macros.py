@@ -10,7 +10,7 @@ import re
 from functools import reduce
 from datetime import datetime
 from datetime import timedelta
-
+from types import SimpleNamespace
 
 def cap_exclude_word(word):
   """Exclude list for cap_description()"""
@@ -52,53 +52,15 @@ def cap_description(inp):
   return inp
 
 
-def check_is_valid_interval(inp):
-  """
-  Parse intervals (if they're present):
-    gencsv {interval_from},{interval_to},{interval_seperator}
+def printx(text, meta = {}):
 
-  """
+  if 'error_code' not in meta:
+    print("Please specify the following for arument 2 for printx: { 'error_code' : 'error_code_name' } ")
 
-  if ',' in inp:
+  else:
+    print(text)
 
-    interval_parts  = inp.split(',')
-    interval_length = len(interval_parts)
-
-    interval_from       = ''
-    interval_to         = ''
-    interval_seperator  = '_'
-
-    invalid_interval_code = { 'error_code' : 'analyze.gencsv.invalid_interval' }
-    invalid_interval_text = '\n'.join([
-      'Please enter valid intervals in the following formats: {from},{to} or {from},{to},{separator}.',
-      'Valid examples:  1/1,1/7   1/1,1/7,-to-   1-15,1-30   2024-01-15,01-30,_   01/01,01/07,_through_'
-    ])
-
-    if interval_length > 1:
-      interval_from = interval_parts[0]
-      interval_to   = interval_parts[1]
-
-    if interval_length == 3:
-      interval_seperator = ''.join(i for i in interval_parts[2] if i not in '/:*?<>|#') # 12/26/24 note: potential syntax warning/error in '\/:*?<>|#'
-
-    if interval_length == 0 or interval_length > 3:
-      printx(invalid_interval_text, invalid_interval_code)
-      return False
-
-    parsed_interval_from = macros.parse_date_input(interval_from)
-    parsed_interval_to   = macros.parse_date_input(interval_to)
-
-    if not parsed_interval_from['res_ymd_dash'] or not parsed_interval_to['res_ymd_dash']:
-      printx(invalid_interval_text, invalid_interval_code)
-      return False
-
-    return {
-      'parsed_interval_from': parsed_interval_from,
-      'parsed_interval_to': parsed_interval_to,
-      'interval_seperator': interval_seperator,
-    }
-
-  return False
+  exit()
 
 
 def escape_for_csv(input):
@@ -213,6 +175,55 @@ def raw_time_to_excel_sum(inp):
 def is_date_input(inp):
   """Checks to see if given input is a valid date input or keyword"""
   return re.match(r'^(\d{4}|(\d{1,4}[-\/]\d{1,4}([-\/]\d{1,4})?)|tod(ay)?|-t|yest(erday)?|-y)$', inp)
+
+
+def check_is_valid_interval(inp):
+  """
+  Parse intervals (if they're present):
+    gencsv {interval_from},{interval_to},{interval_seperator}
+
+  """
+
+  if ',' in inp:
+
+    interval_parts  = inp.split(',')
+    interval_length = len(interval_parts)
+
+    interval_from       = ''
+    interval_to         = ''
+    interval_seperator  = '_'
+
+    invalid_interval_code = { 'error_code' : 'analyze.gencsv.invalid_interval' }
+    invalid_interval_text = '\n'.join([
+      'Please enter valid intervals in the following formats: {from},{to} or {from},{to},{separator}.',
+      'Valid examples:  1/1,1/7   1/1,1/7,-to-   1-15,1-30   2024-01-15,01-30,_   01/01,01/07,_through_'
+    ])
+
+    if interval_length > 1:
+      interval_from = interval_parts[0]
+      interval_to   = interval_parts[1]
+
+    if interval_length == 3:
+      interval_seperator = ''.join(i for i in interval_parts[2] if i not in '/:*?<>|#') # 12/26/24 note: potential syntax warning/error in '\/:*?<>|#'
+
+    if interval_length == 0 or interval_length > 3:
+      printx(invalid_interval_text, invalid_interval_code)
+      return False
+
+    parsed_interval_from = macros.parse_date_input(interval_from)
+    parsed_interval_to   = macros.parse_date_input(interval_to)
+
+    if not parsed_interval_from.res_ymd_dash or not parsed_interval_to.res_ymd_dash:
+      printx(invalid_interval_text, invalid_interval_code)
+      return False
+
+    return SimpleNamespace(
+      parsed_interval_from=parsed_interval_from,
+      parsed_interval_to=parsed_interval_to,
+      interval_seperator=interval_seperator,
+    )
+
+  return False
 
 
 def parse_date_input(inp):
@@ -339,15 +350,15 @@ def parse_date_input(inp):
         
 
 
-  result = {
-    'input' : inp,
-    'input_format'    : input_format,
-    'res_ymd_dash'    : res_ymd_dash,
-    'res_ymd_slash'   : res_ymd_slash,
-    'res_ymd_log'     : res_ymd_log,
-    'res_key_name'    : res_key_name,
-    'res_each'        : res_each,
-  }
+  result = SimpleNamespace(
+    input=inp,
+    input_format=input_format,
+    ymd_dash=res_ymd_dash,
+    ymd_slash=res_ymd_slash,
+    ymd_log=res_ymd_log,
+    key_name=res_key_name,
+    each=res_each,
+  )
 
   return result
 

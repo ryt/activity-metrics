@@ -103,8 +103,8 @@ def todoist_options(args):
       if macros.is_date_input(optid):
 
         parsed       = macros.parse_date_input(optid)
-        parsed_dash  = parsed['res_ymd_dash']
-        parsed_each  = parsed['res_each']
+        parsed_dash  = parsed.ymd_dash
+        parsed_each  = parsed.each
 
         opd = parsed_each['D']
         opm = parsed_each['M']

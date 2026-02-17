@@ -38,8 +38,8 @@ def http_options(args, callname, meta):
     if macros.is_date_input(dateinput):
 
       parsed       = macros.parse_date_input(dateinput)
-      parsed_dash  = parsed['res_ymd_dash']
-      parsed_each  = parsed['res_each']
+      parsed_dash  = parsed.ymd_dash
+      parsed_each  = parsed.each
 
       opd = parsed_each['D']
       opm = parsed_each['M']

@@ -68,9 +68,9 @@ def make_dirs(directory, applyf):
       print(f'mkdir {os.path.join(directory, month)}')
 
 
-def cleangen():
+def cleangen(meta):
   """Removes gencsv files older than 1 week from gencsv directory"""
-  files  = os.listdir(gen_dir)
+  files  = os.listdir(meta.gen_dir)
   thresh = datetime.today().date() - timedelta(days=7)
   fcount = 0
   for name in files:
@@ -80,12 +80,12 @@ def cleangen():
         file_date = datetime.strptime(stem, "%Y-%m-%d").date()
         if file_date <= thresh:
           print(name)
-          os.remove(f'{gen_dir}{name}')
+          os.remove(f'{meta.gen_dir}{name}')
           fcount += 1
       except ValueError: # not in YYYY-MM-DD format
         pass
   if fcount > 0:
-    print(f"{('-'*14)}\nCleaned up {fcount} older gencsv file(s) from: {gen_dir}")
+    print(f"{('-'*14)}\nCleaned up {fcount} older gencsv file(s) from: {meta.gen_dir}")
   else:
     print(f'Nothing to clean up.')
 
