@@ -7,8 +7,9 @@ import json
 from datetime import datetime
 
 from acme.cli  import cmd
+from acme.core import utils
 from acme.core import macros
-
+from acme.core import options
 
 def todoist_task_operate(task_json, saveopt, append=False):
   """Operation for a single task from Todoist"""
@@ -62,7 +63,7 @@ def todoist_task_operate(task_json, saveopt, append=False):
   print('==')
 
 
-def todoist_options(args):
+def todoist_options(args, callname, meta):
 
   action = args[1] if len(args) >= 2 else ''
   optid  = args[2] if len(args) >= 3 else ''
@@ -70,16 +71,20 @@ def todoist_options(args):
 
   date_today = datetime.today()
 
+  # -- get user config values -- #
+  USERCONFIG = utils.get_user_config(options)
 
-  # Todoist API token should be stored in "{app_dir}.api_todoist" file.
-  todoist_file = f'{app_dir}.api_todoist';
+  # Todoist API token should be available in todoist_api_file
+  if not 'todoist_api_file' in USERCONFIG:
+    exit(f'Please enable "todoist_api_file" in `{options.CONFIG_DIR_FULL}config.py`')
+
+  todoist_file = USERCONFIG['todoist_api_file']
 
   try:
     with open(todoist_file) as f: api_token = f.read().strip()
 
   except FileNotFoundError as e:
-    print(f"Todoist api file '{todoist_file}' not found.")
-    exit()
+    exit(f"Todoist api file '{todoist_file}' not found.")
 
   if api_token:
 
@@ -182,7 +187,7 @@ def todoist_options(args):
       # print('-' * 50)
     
     else:
-      print("Please enter a valid command for Todoist. Use 'man' for list of commands.")
+      print("Please enter a valid command for Todoist. Use 'acme util man' for list of commands.")
 
   else:
 

@@ -148,11 +148,11 @@ def cli_utils(params, callname, meta):
 
   elif com == 'todoist':
     from acme.integrations import todoist
-    todoist.todoist_options(params)
+    todoist.todoist_options(params, callname, meta)
 
   elif com == 'garmin':
     from acme.integrations import garmin
-    garmin.garmin_options(params)
+    garmin.garmin_options(params, callname, meta)
 
   elif com in ('--help', '-h', 'help'):
     print(f'{docs.__utils__.strip()}\n\n')

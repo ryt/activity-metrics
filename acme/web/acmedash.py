@@ -16,10 +16,8 @@ from flask import render_template
 from flask import jsonify, send_file
 from configparser import ConfigParser
 
-# -- add main acme dir to path -- #
-#sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-
 from __init__ import __version__
+from acme.core import utils
 from acme.core import options
 
 app = Flask(__name__)
@@ -28,15 +26,9 @@ app = Flask(__name__)
 os.environ['TZ'] = 'America/Los_Angeles'
 time.tzset()
 
-# -- set config.py & runapp.conf paths -- #
-sys.path.append(options.CONFIG_DIR_FULL)
-import config
-
-# default runapp config values
-sslcertkey = ''
-
 # -- runapp ssl settings start: parse runapp.conf (if it exists) and apply ssl settings -- #
 conf = f'{options.CONFIG_DIR_FULL}runapp.conf'
+sslcertkey = ''
 if os.path.exists(conf):
   with open(conf) as cf:
     cfparser = ConfigParser()
@@ -44,31 +36,31 @@ if os.path.exists(conf):
     try:
       sslcertkey = cfparser.get('global', 'sslcertkey')
     except:
-      sslcertkey = ''
+      pass
 # -- runapp ssl settings end -- #
 
-# -- start: parse config parameters from config.py and set values -- #
+# -- get user config values -- #
+USERCONFIG = utils.get_user_config(options)
 
-# default config.py config values
+# set default values for acmedash configs
 limitpath  = ''
 app_path   = '/'
 secret_key = ''
 
-# read & modify config values
+# read & update config values
+if 'limitpath' in USERCONFIG:
+  limitpath = USERCONFIG['limitpath'].rstrip('/') + '/'
 
-if 'limitpath' in config.config:
-  limitpath = config.config['limitpath'].rstrip('/') + '/'
+if 'app_path' in USERCONFIG:
+  app_path = USERCONFIG['app_path']
 
-if 'app_path' in config.config:
-  app_path = config.config['app_path']
+if 'secret_key' in USERCONFIG:
+  secret_key = USERCONFIG['secret_key']
 
-if 'secret_key' in config.config:
-  secret_key = config.config['secret_key']
-
-# -- end: parse config parameters -- #
 
 if secret_key:
-  app.secret_key = secret_key
+  app.secret_key = secret_key # set flask secret key
+
 
 def get_query(param):
   """Get query string param (if exists & has value) or empty string"""

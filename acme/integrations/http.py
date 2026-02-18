@@ -8,8 +8,9 @@ import urllib.parse
 
 from datetime import datetime
 
+from acme.core import utils
 from acme.core import macros
-
+from acme.core import options
 
 def http_options(args, callname, meta):
 
@@ -19,19 +20,23 @@ def http_options(args, callname, meta):
 
   date_today = datetime.today()
 
-
   if not httpfile:
     exit(f'Please specify an http json file path.')
 
-  # http json file should be stored in "{meta.app_dir}/"
-  httpjson_file = f'{meta.app_dir}{httpfile}';
+  # -- get user config values -- #
+  USERCONFIG = utils.get_user_config(options)
+
+  # To use http_json_file, the http_json_file_dir option should be enabled in the user config dir
+  if not 'http_json_file_dir' in USERCONFIG:
+    exit(f'Please enable "http_json_file_dir" in `{options.CONFIG_DIR_FULL}config.py`')
+
+  httpjson_file = f"{USERCONFIG['http_json_file_dir']}{httpfile}";
 
   try:
     with open(httpjson_file) as f: command = f.read().strip()
 
   except FileNotFoundError as e:
-    print(f"HTTP json file `'{httpjson_file}'` not found.")
-    exit()
+    exit(f"HTTP json file `'{httpjson_file}'` not found.")
 
   if command:
 

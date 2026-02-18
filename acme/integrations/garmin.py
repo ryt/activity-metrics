@@ -9,8 +9,7 @@ from datetime import timedelta
 
 from acme.core import macros
 
-
-def garmin_options(args):
+def garmin_options(args, callname, meta):
 
   now = datetime.now()
   yst = now - timedelta(days=1)
@@ -20,9 +19,8 @@ def garmin_options(args):
 
   cat_name = 'Garmin Athletics'
 
-  gen_dir  = f'{os.path.abspath(os.curdir)}/gen'
-  gen_csv_metrics = f'{gen_dir}/{year}.csv'
-  gen_csv_garmin  = f'{gen_dir}/services/garmin/{year}-garmin-activities.csv'
+  gen_csv_metrics = f'{meta.gen_dir}{year}.csv'
+  gen_csv_garmin  = f'{meta.gen_dir}services/garmin/{year}-garmin-activities.csv'
 
   if action == 'merge-gencsv':
     try:
@@ -99,8 +97,8 @@ def garmin_options(args):
       if str(year) == str(now.year):
         ymd_tod = (now.strftime('%Y-%m-%d'), now.strftime('%m/%d/%Y'))
         ymd_yst = (yst.strftime('%Y-%m-%d'), yst.strftime('%m/%d/%Y'))
-        tod_csv = f'{gen_dir}/{ymd_tod[0]}.csv'
-        yst_csv = f'{gen_dir}/{ymd_yst[0]}.csv'
+        tod_csv = f'{meta.gen_dir}{ymd_tod[0]}.csv'
+        yst_csv = f'{meta.gen_dir}{ymd_yst[0]}.csv'
         garmin_merge_daycsv(cgd_df, yst_csv, ymd_yst, cat_name)
         garmin_merge_daycsv(cgd_df, tod_csv, ymd_tod, cat_name)
       # -- end: additional day csv files -- #

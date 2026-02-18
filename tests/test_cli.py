@@ -6,6 +6,11 @@
 List of commands to test:
 
 acme
+acme /path/to/metrics
+
+acme ...
+acme /path/to/metrics ...
+
 acme stats
 acme -s
 acme list-files
@@ -18,11 +23,8 @@ acme yesterday
 acme 2025-08-29
 acme 8/29/25
 acme 2/3
-
-acme /path/to/metrics
-acme /path/to/metrics tod
-acme /path/to/metrics yest
-acme /path/to/metrics util
+acme -t
+acme -y
 
 acme gencsv
 acme gencsv today
@@ -36,7 +38,6 @@ acme gencsv 2024 cat
 acme utility
 acme util
 acme -u
-acme /path/to/metrics util
 
 acme util makefiles dir/
 acme util makefiles dir/ apply

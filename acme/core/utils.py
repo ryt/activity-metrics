@@ -3,9 +3,29 @@
 # activity metrics (acme) utils
 
 import os
+import re
+import sys
 
+from string import Template
 from datetime import datetime
 from datetime import timedelta
+
+def get_user_config(options):
+  """Get user config values from CONFIG_DIR_FULL/config.py & prepare for use"""
+  """Requires the options module from acme.core.options to be passed in"""
+  
+  sys.path.append(options.CONFIG_DIR_FULL)
+  import config
+
+  if not config.config:
+    return
+
+  output = {}
+  for key, val in config.config.items():
+    val = re.sub('{options.','${', val) # prep for str.Template: {options. -> ${
+    output[key] = Template(val).substitute(vars(options))
+
+  return output
 
 
 def find_path(name, curr=os.path.abspath(os.curdir)):
