@@ -28,9 +28,17 @@
     a.arrow { font-size: 20px; }
     .bold { font-weight: bold; }
 
-    .address, .error, .dir-list, p { font-family: courier, monospace; }
-    .win-device .address, .win-device .error,
-    .win-device .dir-list, .win-device p { font-family:monospace, "Lucida Console", courier; }
+    /* monofonts */
+    .monofont,
+    .address,
+    .error,
+    .dir-list,
+    p { font-family: courier, monospace; }
+    .win-device .monofont,
+    .win-device .address,
+    .win-device .error,
+    .win-device .dir-list,
+    .win-device p { font-family:monospace, "Lucida Console", courier; }
 
     .address { padding: 8px 16px; border-bottom: 1px solid #aaa; background: #eee; }
     .address a { text-decoration: underline; }
@@ -102,7 +110,7 @@
       <a class="logo" href="{{ view.app_path }}?{{ view.query_m }}">acme</a>
     </div>
     <div class="nav-right">
-      <a class="nav {{ 'cur' if view.page == 'index' }}" href="{{ view.app_path }}?{{ view.query_m }}">dashboard</a>{% 
+      <a class="nav {{ 'cur' if view.page == 'index' }}" href="{{ view.app_path }}?{{ view.query_m }}">dash</a>{% 
       if view.add_nav_links %}{% 
         for link in view.add_nav_links %}
       <a class="nav {{ 'cur' if view.page == link[1] }}" href="{{ view.app_path }}{{ link[1] }}?{{ view.query_m }}">{{ link[2] }}</a>{% 

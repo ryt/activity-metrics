@@ -2,13 +2,15 @@
 
 Overview
 --------
-Activity Metrics is a tool for tracking personal activity stats. It creates CSV files from daily logs in a simple format. These files can be used in Google Sheets, Excel, or other spreadsheet apps and work with data visualization tools for custom charts and reports.
+Activity Metrics is a text-based tracking and analysis tool for personal logs. It creates CSV files from daily logs in a simple format. These files can be used in Google Sheets, Excel, or other spreadsheet apps and work with data visualization tools for custom charts and reports.
 
 For installation & usage, you can navigate to the [installation](#Installation) section at the bottom. Here's a simple overview of the system.
 
-### Basics
+The most basic activity log types that are supported are timesheet logs. Below is an overview of the file and folder structures for timesheet logs. 
 
-- A log is a  **.txt** file that holds the entries for a particular day.
+### Basics: Timesheets
+
+- A timesheet log is a  **.txt** file that holds timesheet entries for a particular day.
 - An example entry could be `- 15m 8a guitar practice: minor chords`.
 - An entry is a line that starts with a hyphen `-` or dot `.`.
 - Everything else in the file gets ignored.
@@ -23,12 +25,12 @@ In the above example, let's assume the date for the entry was **Jan 1, 2024**. H
 - The log would be inside the proper `YYYY/MM/` directory, in this case: `2024/01/01.txt`.
 - And finally, the full path for the log would be: `../logs/2024/01/01.txt`.
 
-#### Additional Options: Full Date Log Files
-- For utility reasons, log files are also allowed to be named in the `YYYY-MM-DD` format<sup>[1](#n1) [2](#n2)</sup>.
-- For example: `2024-01-01.txt` or `2024-01-01custom-text.txt` would be valid full date logs.
-- Since their name already includes the year & month, full date logs can be stored anywhere within `logs/`.
+#### Additional Options: Full Date Timesheet Logs
+- For utility reasons, timesheet files are also allowed to be named in the `YYYY-MM-DD` format<sup>[1](#n1) [2](#n2)</sup>.
+- For example: `2024-01-01.txt` or `2024-01-01custom-text.txt` would be valid full date timesheet logs.
+- Since their name already includes the year & month, full date timesheet logs can be stored anywhere within `logs/`.
 
-Valid location structure example:
+Example: valid directory structure for timesheet logs:
 
 ```
 ../logs/
