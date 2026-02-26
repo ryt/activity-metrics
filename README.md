@@ -119,6 +119,11 @@ Additionally data can also be imported from other tracking services such as Todo
 ## Utilities
 Common utilities & commands for various applications. API access is required if applicable.
 
+**Config Files:**
+
+Configuration files are stored inside the directory: `~/.acmeryt/`  
+If the directory doesn't exist, please create it in order to use the web dashboard (via `acme dash`) or [API](#api) integrations.
+
 **Make Files:** create default date files (01-31.txt) and default month directories (01-12/)
 
 ```console
@@ -135,20 +140,21 @@ acme (utility|util)   makefiles    dir/
 acme (utility|util)   cleangen
 ```
 
-**HTTP Options:** retrieve and save the output from an http(s) request (via json file) as a log file.
+<b id="api">HTTP Options:</b> retrieve and save the output from an http(s) request as a log file.
 
 ```console
-acme (utility|util)   http     .acme_http.json       {date_input}
-                      http     .acme_http.json       {date_input}     save=2026/01/01.txt
-                      http     .acme_http.json       {date_input}     (saveauto|autosave)
+acme (utility|util)   http     .api_http       {date_input}
+                      http     .api_http       {date_input}     save=2026/01/01.txt
+                      http     .api_http       {date_input}     (saveauto|autosave)
 
 ```
-> - The default name of the http json file is (`.acme_http.json`). It can be changed to any name.
-> - Options: In the http json file, `{date_input}` can be used to insert the entered date input
+> - The default name of the http api file is (`.api_http`). It can be changed to any name.
+> - The file contains a json dictionary of the http request data.
+> - Options: In the http api file, `{date_input}` can be used to insert the entered date input
 > in a `YYYY-MM-DD` format anywhere in the keys or values. (e.g. `{"url":"http://api.url/{date_input}"}`)
 > - `{date_input}` can be any valid date input listed in the main manual (`acme --help`).
 
-Example `.acme_http.json` file (located in `Metrics/app/.acme_http.json`):
+Example `.api_http` file (located in `~/.acmeryt/.api_http`):
 
 ```json
 {
@@ -175,6 +181,7 @@ acme (utility|util) todoist get-task (12345|{date_input})
                     todoist get-task (12345|{date_input})   (saveauto|autosave)
 ```
 
+The Todoist api token is required and shoud be stored in `~/.acmeryt/.api_todoist`.
 
 ### (API) Garmin
 

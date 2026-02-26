@@ -102,16 +102,16 @@ Usage:
   acme    (utility|util)   cleangen
 
 
-  HTTP Options: retrieve and save the output from an http(s) request (via json file) as a log file.
-  -------------------------------------------------------------------------------------------------
+  HTTP Options: retrieve and save the output from an http(s) request as a log file.
+  ---------------------------------------------------------------------------------
   <acme>  <Utility>        <http>   <Command File>   <Date Input>     <Save/Filename>
 
-  acme    (utility|util)   http     .acme_http.json       {date_input}
-                           http     .acme_http.json       {date_input}     save=2026/01/01.txt
-                           http     .acme_http.json       {date_input}     (saveauto|autosave)
+  acme    (utility|util)   http     .api_http       {date_input}
+                           http     .api_http       {date_input}     save=2026/01/01.txt
+                           http     .api_http       {date_input}     (saveauto|autosave)
 
-  - The default name of the http json file is ".acme_http.json". It can be changed to any name.
-  - Options: In the http json file, "{date_input}" can be used to insert the entered date input
+  - The default name of the http api file is ".api_http". It can be changed to any name.
+  - Options: In the http api file, "{date_input}" can be used to insert the entered date input
     in a "YYYY-MM-DD" format anywhere in the keys or values. (e.g. {"url":"http://api.url/{date_input}"})
   - {date_input} can be any valid date input listed in the main manual ("acme --help").
 

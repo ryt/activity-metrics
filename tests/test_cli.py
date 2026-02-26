@@ -46,12 +46,12 @@ acme util makedirs  dir/ apply
 
 acme util cleangen
 
-acme util http /path/to/.acme_http.json today autosave
-acme util http /path/to/.acme_http.json yest autosave
-acme util http /path/to/.acme_http.json 02/17 autosave
-acme util http /path/to/.acme_http.json {date_input}
-acme util http /path/to/.acme_http.json {date_input} save=2026/01/01.txt
-acme util http /path/to/.acme_http.json {date_input} (saveauto|autosave)
+acme util http /path/to/.api_http today autosave
+acme util http /path/to/.api_http yest autosave
+acme util http /path/to/.api_http 02/17 autosave
+acme util http /path/to/.api_http {date_input}
+acme util http /path/to/.api_http {date_input} save=2026/01/01.txt
+acme util http /path/to/.api_http {date_input} (saveauto|autosave)
 
 acme util todoist get-task (12345|{date_input})
 acme util todoist get-task (12345|{date_input}) save=2024/01/01.txt
