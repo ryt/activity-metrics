@@ -2,8 +2,9 @@
 
 """Categorize Module"""
 
-name      = 'Categorize Module'
-nickname  = 'cat'
+NAME      = 'Categorize Module'
+NICKNAME  = 'cat'
+NAMESPACE = 'acme.web.modules.module_categorize'
 
 """
 Module Options:
@@ -77,7 +78,7 @@ def options(csv_list, meta={}):
 
   # -- start: module_categorize -- #
 
-  if meta['option'] == 'module_categorize':
+  if meta['option'] == NAMESPACE:
 
     csv_header_row_index     = 0
     csv_desc_column_index    = 2

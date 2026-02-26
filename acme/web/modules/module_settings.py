@@ -9,12 +9,12 @@ The '.py' extension is automatically added to the definitions on import.
 
 # use glossary
 
-use_glossary = 'glossary'
+use_glossary = 'acme.web.modules.glossary'
 
 # use modules available by default in {install_dir}/activity-metrics/usr/app/
 
 use_default_modules = (
-  'module_categorize',     # the default categorize module allows entries to have (categories) and $shortcut names
+  'acme.web.modules.module_categorize',     # the default categorize module allows entries to have (categories) and $shortcut names
 # 'module_word_replace',   # example custom word replace module
 # 'module_fitness',        # example custom fitness tracking module
 # 'module_nutrition',      # example custom nutrition tracking module

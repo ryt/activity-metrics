@@ -2,13 +2,15 @@
 
 Overview
 --------
-Activity Metrics is a tool for tracking personal activity stats. It creates CSV files from daily logs in a simple format. These files can be used in Google Sheets, Excel, or other spreadsheet apps and work with data visualization tools for custom charts and reports.
+Activity Metrics is a text-based tracking and analysis tool for personal logs. It creates CSV files from daily logs in a simple format. These files can be used in Google Sheets, Excel, or other spreadsheet apps and work with data visualization tools for custom charts and reports.
 
 For installation & usage, you can navigate to the [installation](#Installation) section at the bottom. Here's a simple overview of the system.
 
-### Basics
+The most basic activity log types that are supported are timesheet logs. Below is an overview of the file and folder structures for timesheet logs. 
 
-- A log is a  **.txt** file that holds the entries for a particular day.
+### Basics: Timesheets
+
+- A timesheet log is a  **.txt** file that holds timesheet entries for a particular day.
 - An example entry could be `- 15m 8a guitar practice: minor chords`.
 - An entry is a line that starts with a hyphen `-` or dot `.`.
 - Everything else in the file gets ignored.
@@ -23,12 +25,12 @@ In the above example, let's assume the date for the entry was **Jan 1, 2024**. H
 - The log would be inside the proper `YYYY/MM/` directory, in this case: `2024/01/01.txt`.
 - And finally, the full path for the log would be: `../logs/2024/01/01.txt`.
 
-#### Additional Options: Full Date Log Files
-- For utility reasons, log files are also allowed to be named in the `YYYY-MM-DD` format<sup>[1](#n1) [2](#n2)</sup>.
-- For example: `2024-01-01.txt` or `2024-01-01custom-text.txt` would be valid full date logs.
-- Since their name already includes the year & month, full date logs can be stored anywhere within `logs/`.
+#### Additional Options: Full Date Timesheet Logs
+- For utility reasons, timesheet files are also allowed to be named in the `YYYY-MM-DD` format<sup>[1](#n1) [2](#n2)</sup>.
+- For example: `2024-01-01.txt` or `2024-01-01custom-text.txt` would be valid full date timesheet logs.
+- Since their name already includes the year & month, full date timesheet logs can be stored anywhere within `logs/`.
 
-Valid location structure example:
+Example: valid directory structure for timesheet logs:
 
 ```
 ../logs/
@@ -112,6 +114,85 @@ Additionally data can also be imported from other tracking services such as Todo
 2. Now you can run the command `acme` from inside the `Metrics/` directory. Generated files will be stored inside `gen/` and your logs will be read and parsed from the `logs/`. Use `acme help` for the help manual.
 
     The utility script can be run as `acme util`. Use `acme util help` for the utility help manual.
+
+
+## Utilities
+Common utilities & commands for various applications. API access is required if applicable.
+
+**Config Files:**
+
+Configuration files are stored inside the directory: `~/.acmeryt/`  
+If the directory doesn't exist, please create it in order to use the web dashboard (via `acme dash`) or [API](#api) integrations.
+
+**Make Files:** create default date files (01-31.txt) and default month directories (01-12/)
+
+```console
+acme (utility|util)   makefiles    dir/
+                      makefiles    dir/      apply
+                      makedirs     dir/
+                      makedirs     dir/      apply
+
+```
+
+**Clean Logs:** clean up the gen directory of generated csv logs older than 1 week.
+
+```console
+acme (utility|util)   cleangen
+```
+
+<b id="api">HTTP Options:</b> retrieve and save the output from an http(s) request as a log file.
+
+```console
+acme (utility|util)   http     .api_http       {date_input}
+                      http     .api_http       {date_input}     save=2026/01/01.txt
+                      http     .api_http       {date_input}     (saveauto|autosave)
+
+```
+> - The default name of the http api file is (`.api_http`). It can be changed to any name.
+> - The file contains a json dictionary of the http request data.
+> - Options: In the http api file, `{date_input}` can be used to insert the entered date input
+> in a `YYYY-MM-DD` format anywhere in the keys or values. (e.g. `{"url":"http://api.url/{date_input}"}`)
+> - `{date_input}` can be any valid date input listed in the main manual (`acme --help`).
+
+Example `.api_http` file (located in `~/.acmeryt/.api_http`):
+
+```json
+{
+  "url"     : "https://api.app.url/log?date={date_input}",
+  "method"  : "POST",
+  "data"    : {
+    "Auth": "0f3x83ndja0dk3Dx03co28id983h3"
+  }
+}
+
+```
+
+### (API) Todoist
+
+**Todoist Commands**
+
+Retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
+
+> acme, Utility, Todoist, Action, Id/Date/Keyword, Save/Filename
+
+```console
+acme (utility|util) todoist get-task (12345|{date_input})
+                    todoist get-task (12345|{date_input})   save=2024/01/01.txt
+                    todoist get-task (12345|{date_input})   (saveauto|autosave)
+```
+
+The Todoist api token is required and shoud be stored in `~/.acmeryt/.api_todoist`.
+
+### (API) Garmin
+
+**Garmin Commands**
+
+If Garmin csv logs exist, merge them into gencsv logs of given year (plus today and yesterday if applicable).
+  
+```console
+acme (utility|util) garmin merge-gencsv {year}
+```
+
 
 
 <h2><small>Notes</small></h2>
