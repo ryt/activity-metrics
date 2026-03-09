@@ -6,6 +6,8 @@ NAME      = 'Categorize Module'
 NICKNAME  = 'cat'
 NAMESPACE = 'acme.web.modules.module_categorize'
 
+KEEPRAWSHORTCUTS = True  # option to keep raw ($shortcuts) at end of entries
+
 """
 Module Options:
 ---------------
@@ -155,7 +157,7 @@ def split_entry_at_parenblock(entry):
 
   if match:
     result = {
-      'rest_of_entry'   : match.group(1),
+      'rest_of_entry'     : match.group(1),
       'parenblock'        : match.group(2),
       'parenblock_inside' : match.group(3),
     }
@@ -196,7 +198,11 @@ def replace_shortcuts(entry, glossary):
       else:
         parenblock_inside = parenblock_inside.replace(key, val)
 
-    modif_entry = f'{rest_of_entry}({parenblock_inside})'
+    rawcat_parenblock = ''
+    if KEEPRAWSHORTCUTS:
+      rawcat_parenblock = parenblock
+
+    modif_entry = f'{rest_of_entry}{rawcat_parenblock}({parenblock_inside})'
 
   else:
     modif_entry = entry

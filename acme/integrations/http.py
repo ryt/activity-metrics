@@ -33,10 +33,11 @@ def http_options(args, callname, meta):
   httpjson_file = f"{USERCONFIG['http_json_file_dir']}{httpfile}";
 
   try:
-    with open(httpjson_file) as f: command = f.read().strip()
+    with open(httpjson_file) as f:
+      command = f.read().strip()
 
   except FileNotFoundError as e:
-    exit(f"HTTP json file `'{httpjson_file}'` not found.")
+    exit(f"The http api json file `'{httpjson_file}'` could not be found.")
 
   if command:
 

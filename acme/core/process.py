@@ -6,8 +6,6 @@
 import sys
 import os
 import re
-import pydoc
-import subprocess
 import itertools
 import importlib
 
@@ -335,31 +333,12 @@ def generate_collections(period='year', meta=None, parsed=None, module_options=N
     module_options=module_options,
     customize=customize,
   )
-  '''
-  entries = macros.csvtext(
-    modify_csv(
-      convert_to_csv(
-        entries, 
-        parsed.ymd_dash, 
-        SimpleNamespace(
-          apply_modules=apply_modules,
-          apply_glossary=apply_glossary,
-          glossary=glossary,
-        )
-      ), 
-      add_header=True, 
-      add_footer=True,
-      module_options=module_options,
-      apply_modules=apply_modules,
-    )
-  )
-  '''
+
   # write collection csv file
   genfile = f'{meta.gen_dir}{parsed.ymd_dash}.csv'
   utils.write_to_file(genfile, macros.csvtext(period_collection))
 
   output += [f'Generated {period} collection CSV file {genfile} successfully.']
-  # pydoc.pager(period_collection)
 
   return output
 

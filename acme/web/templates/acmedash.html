@@ -24,11 +24,11 @@
     h3 { margin: 7px 0; }
     a { color: #000; text-decoration: none; }
     a:hover { text-decoration: underline; }
-    a.dotfiles { color:#777; }
     a.arrow { font-size: 20px; }
+    .light, .dim, a.dotfiles, .light a, .dim a { color:#777; }
     .bold { font-weight: bold; }
 
-    /* monofonts */
+    /* monofonts + windows specific */
     .monofont,
     .address,
     .error,
@@ -39,6 +39,7 @@
     .win-device .error,
     .win-device .dir-list,
     .win-device p { font-family:monospace, "Lucida Console", courier; }
+    /* end: monofonts */
 
     .address { padding: 8px 16px; border-bottom: 1px solid #aaa; background: #eee; }
     .address a { text-decoration: underline; }
@@ -60,7 +61,6 @@
     .csv-table { border-collapse: collapse; font-size: 13px; min-width: 100%; }
     .csv-table th, .csv-table td { border: 1px solid #ccc; padding: 8px; font-weight: normal; }
     .csv-table th { background: linear-gradient(#f9f9f9 0% 50%, #f2f2f2 50% 100%); }
-    .csv-table td { }
 
     .plain, .plain td { margin: 0; padding: 0; border-collapse: collapse; }
     .table-outer { max-height:600px;overflow:scroll; }
@@ -68,10 +68,9 @@
     .details { margin:10px 0; }
     .filters { max-width:1200px; margin: 0 0 5px; }
     .periods { margin: 0 0 5px; font-size: 12px;line-height:1.75; }
-    .mb-10 { margin-bottom: 10px; }
-    .mb-5 { margin-bottom: 5px; }
-    .dim { color: #777; }
+
     .cmd-result { margin: 5px 0 0; }
+    .cmd-res-cont { margin:5px 0;max-width:95%;background:#333;padding:15px 20px 18px;line-height:1.25;color:#eee; }
 
     .left { float:left; }
     .right { float:right; }
@@ -79,10 +78,19 @@
     .flex { display:flex; }
     .vcenter { align-items: center; }
 
-    #activities { margin:0 20px 0 0; }
+    .margin-top-20, .mt-20 { margin-top:20px; }
+    .margin-bot-20, .mb-20 { margin-bottom:20px; }
+    .mb-10 { margin-bottom: 10px; }
+    .mb-5 { margin-bottom: 5px; }
+
+    .max-width { max-width:1025px; }
+    .max-800 { max-width:800px; }
+
     .search-holder { flex-wrap:wrap; }
     .search-holder .flex-col { margin:0 0 10px; }
     .filter-search { margin:0;  }
+
+    #activities { margin:0 20px 0 0; }
     #filter-query { 
       border: 1px solid #999; padding: 4px 5px; margin: 0; 
       border-radius: 4px 0 0 4px; border-right: none; width:300px;
@@ -90,13 +98,11 @@
     #filter-go { padding: 5px 8px; background: #555; border: none; color: #fff; border-radius: 0px 4px 4px 0; cursor: pointer; }
     #filter-go:hover { background: #222; }
 
-    @media (max-width: 568px) { 
+    @media ( max-width: 568px ) {
       .address { font-size: 12px; line-height: 1.25; }
-      .filters { }
-      .filter-search { }
     }
 
-    @media (max-width:468px) {
+    @media ( max-width:468px ) {
       .nav-holder { padding-bottom:2px; }
       .nav-right { line-height:2; }
     }
