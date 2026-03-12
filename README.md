@@ -2,86 +2,41 @@
 
 Overview
 --------
-Activity Metrics is a text-based tracking and analysis tool for personal logs. It creates CSV files from daily logs in a simple format. These files can be used in Google Sheets, Excel, or other spreadsheet apps and work with data visualization tools for custom charts and reports.
+Activity Metrics is a text-based tracking and analysis tool for personal activity logs.
 
-For installation & usage, you can navigate to the [installation](#Installation) section at the bottom. Here's a simple overview of the system.
+Logs can be formatted with custom grammar and be defined as schemas to be processed as data sources.
 
-The most basic activity log types that are supported are timesheet logs. Below is an overview of the file and folder structures for timesheet logs. 
+The data can then be converted to CSV and other formats. They can be used in Google Sheets, Excel, or other spreadsheet apps and work with data visualization tools for custom charts and reports.
 
-### Basics: Timesheets
+**Basic Log Types:**
 
-- A timesheet log is a  **.txt** file that holds timesheet entries for a particular day.
-- An example entry could be `- 15m 8a guitar practice: minor chords`.
-- An entry is a line that starts with a hyphen `-` or dot `.`.
-- Everything else in the file gets ignored.
-- There are no limits for the number of entries or files for a day.
-- All logs (including their parent directories) are stored in the main `logs/` directory.
-
-#### File Names & Location
-In the above example, let's assume the date for the entry was **Jan 1, 2024**. Here are the basic rules:
-
-- The log file would be named with the two-digit date number and a .txt extension: i.e. `01.txt`.
-- Optional custom text after the date number is allowed (e.g. `01custom-text.txt`).
-- The log would be inside the proper `YYYY/MM/` directory, in this case: `2024/01/01.txt`.
-- And finally, the full path for the log would be: `../logs/2024/01/01.txt`.
-
-#### Additional Options: Full Date Timesheet Logs
-- For utility reasons, timesheet files are also allowed to be named in the `YYYY-MM-DD` format<sup>[1](#n1) [2](#n2)</sup>.
-- For example: `2024-01-01.txt` or `2024-01-01custom-text.txt` would be valid full date timesheet logs.
-- Since their name already includes the year & month, full date timesheet logs can be stored anywhere within `logs/`.
-
-Example: valid directory structure for timesheet logs:
-
-```
-../logs/
-  - 2024/
-    - 01/
-      - 01.txt
-      - 02.txt
-      - 02-finance.txt
-    - 02/
-  - 2023/
-    - 2023-12-31-fitness.txt
-    - 08/
-    - 12/
-      - 16ExamStudy.txt 
-```
-
-Additionally data can also be imported from other tracking services such as Todoist, Garmin, Apple Health, Samsung Health, Financial Services, and more. Data can also be read directly from the API's of those tracking services.
-
-**Common Categories for Activity Metrics:**
-
-* Work
-* Finances
-* Academics
-* Assignments
-* Projects
-* Fitness
-* Nutrition
-* Lifestyle
+* Timesheets: (Work, Projects, Academics, Assignments)
+* Fitness: (Workouts, Weight, Body Metrics)
+* Nutrition: (Macros, Supplements)
+* Finance: (Balance Sheets, Investments)
 
 <h2 id="Installation"><small>Installation</small></h2>
 
-### Application Installation
+### Manual Installation
 
 1. Clone `activity-metrics/` into your local installation directory.
 
     ```console
     git clone https://github.com/ryt/activity-metrics.git
     ```
-3. Create an alias or symbolic link to `acme.py` to access it directly in your terminal. There are multiple ways of doing this. Replace *{install}* with your local installation directory.
+3. Create an alias or symbolic link to `acme.py` to access it directly in your terminal. There are multiple ways of doing this.
 
     **Option 1:** Symbolic Link
     
     ```console
-    ln -s {install}/activity-metrics/acme.py  /usr/bin/acme
+    ln -s /path/to/activity-metrics/acme.py  /usr/bin/acme
     ```
     Depending on your system you may need to use `/usr/bin/`, `/opt/local/bin`, `/usr/share/bin/`, etc. You can also use your documents folder or a custom location as long as you use a symbolic link to the `acme.py` executable.
     
     **Option 2:** Creating an alias in `~/.bashrc`, `~/.bash_aliases` or `~/.bash_profile`:
     
     ```bash
-    alias acme='{install}/activity-metrics/acme'
+    alias acme='/path/to/activity-metrics/acme.py'
     ```
     After editing the file make sure you restart your terminal or use the `source` command to reload the configuration.
     
@@ -193,25 +148,6 @@ If Garmin csv logs exist, merge them into gencsv logs of given year (plus today 
 acme (utility|util) garmin merge-gencsv {year}
 ```
 
-
-
-<h2><small>Notes</small></h2>
-
-Some of the inspirations for this project:
-
-* <https://en.wikipedia.org/wiki/Help:Page_history>
-* <https://en.wikipedia.org/wiki/Version_control>
-* <https://calnewport.com/deep-habits-should-you-track-hours-or-milestones/>
-* <https://archive.is/h3dz5>
-* <https://gyrosco.pe/about/mission/>
-* <https://jeffhuang.com/productivity_text_file/>
-* <https://todoist.com/inspiration/deep-work>
-* <https://en.wikipedia.org/wiki/Blue-green_deployment>
-
-<h2><small>References</small></h2>
-
-1. <i id="n1"></i> <https://en.wikipedia.org/wiki/ISO_8601>
-2. <i id="n2"></i> <https://xkcd.com/1179/>
 
 
 
