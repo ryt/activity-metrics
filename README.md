@@ -76,7 +76,8 @@ Common utilities & commands for various applications. API access is required if 
 
 **Config Files:**
 
-- The main application config files is stored in: `~/.acmeconf/acme_config.yaml`  
+- The main application config file is stored in: `~/.acmeconf/acme_config.yaml`  
+- The `~/.acmeconf/` directory is also used for API & integration config files.
 - Workspace config files are stored inside the workspace as: `/path/to/workspace/workspace_config.yaml`
 
 You can copy the default `.acmeconf/` template into your home directory from the tests directory found in `/path/to/activity-metrics/tests/.acmeconf/`.
@@ -85,7 +86,7 @@ You can copy the default `.acmeconf/` template into your home directory from the
 cp -r /path/to/activity-metrics/tests/.acmeconf/ ~/.acmeconf/
 ```
 
-You can update settings for the web dashboard (`acme dash`) or [API](#api) integrations in `~/.acmeconf/acme_config.py`.
+You can update settings for the web dashboard (`acme dash`) or [API](#api) integrations in `~/.acmeconf/acme_config.yaml`.
 
 **Timesheet Util Helpers**
 
