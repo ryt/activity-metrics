@@ -13,7 +13,7 @@ The data can then be converted to CSV and other formats. They can be used in Goo
 * Timesheets: (Work, Projects, Academics, Assignments)
 * Fitness: (Workouts, Weight, Body Metrics)
 * Nutrition: (Macros, Supplements)
-* Finance: (Balance Sheets, Investments)
+* Finance: (Accounting, Balance Sheets, Investments)
 
 <h2 id="Installation"><small>Installation</small></h2>
 
