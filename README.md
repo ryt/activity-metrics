@@ -44,27 +44,27 @@ The data can then be converted to CSV and other formats. They can be used in Goo
     source ~/.bashrc
     ```
 
-### Setting up Log Files & Customization
+### Setting up Workspace & Customization
 
-1. To store your logs, create a directory named `Metrics` or something similar in your Documents and create the following 3 directories in it: `app`, `gen`, and `logs`.
+A workspace is any folder that contains logs and data for analysis.
 
-    You can choose whatever name you want for the main folder but we'll use "Metrics" for this example. `app` will be used for application modules, API, & configuration files, `gen` will be used for generated files, and `logs` will be used to store log files.
+1. For a basic workspace, create a directory named `Metrics` or something similar in your Documents and create the following 3 directories in it: `apps`, `gen`, and `logs`.
+
+    You can choose whatever name you want for the workspace but we'll use "Metrics" for this example. `apps` will be used for app modules, scripts, and extensions to the application, `gen` will be used for generated files (csv, etc.), and `logs` will be used to store log files.
 
     ```console
     mkdir Metrics && cd Metrics
-    ```
-
-    ```console
-    mkdir app gen logs
+    mkdir apps gen logs
     ```
     
-    The structure of the link and directories should look something like this:
+    The structure of the basic workspace should look something like this:
     
     ```
     Metrics/
-      - app/
+      - apps/
       - gen/
       - logs/
+      - workspace_config.yaml
     ```
 2. Now you can run the command `acme` from inside the `Metrics/` directory. Generated files will be stored inside `gen/` and your logs will be read and parsed from the `logs/`. Use `acme help` for the help manual.
 
