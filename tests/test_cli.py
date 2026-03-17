@@ -6,10 +6,16 @@
 List of commands to test:
 
 acme
-acme /path/to/metrics
+acme /path/to/workspace
 
 acme ...
-acme /path/to/metrics ...
+acme /path/to/workspace ...
+
+acme init
+acme /path/to/workspace init
+
+acme workspace init
+acme /path/to/workspace workspace init
 
 acme stats
 acme -s
@@ -26,6 +32,9 @@ acme 2/3
 acme -t
 acme -y
 
+# -- timesheets -- #
+# acme gen timesheet
+# acme gen timesheet today
 acme gencsv
 acme gencsv today
 acme gencsv yesterday
@@ -38,6 +47,9 @@ acme gencsv 2024 cat
 acme utility
 acme util
 acme -u
+
+acme util settings
+acme /path/to/workspace util settings
 
 acme util makefiles dir/
 acme util makefiles dir/ apply

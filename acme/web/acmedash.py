@@ -17,8 +17,10 @@ from flask import jsonify, send_file
 from configparser import ConfigParser
 
 from __init__ import __version__
-from acme.core import utils
-from acme.core import options
+from acme.core.settings import Settings
+
+configDir   = Settings.settings('acme.configDir')
+appsDirName = Settings.settings('workspace.appsDirName')
 
 app = Flask(__name__)
 
@@ -27,7 +29,7 @@ os.environ['TZ'] = 'America/Los_Angeles'
 time.tzset()
 
 # -- runapp ssl settings start: parse runapp.conf (if it exists) and apply ssl settings -- #
-conf = f'{options.CONFIG_DIR_FULL}runapp.conf'
+conf = f'{configDir}runapp.conf'
 sslcertkey = ''
 if os.path.exists(conf):
   with open(conf) as cf:
@@ -39,24 +41,15 @@ if os.path.exists(conf):
       pass
 # -- runapp ssl settings end -- #
 
-# -- get user config values -- #
-USERCONFIG = utils.get_user_config(options)
+# -- get web config values -- #
+web_limitpath = Settings.settings('web.limitpath')
+web_app_path = Settings.settings('web.app_path')
+web_secret_key = Settings.settings('web.secret_key')
 
-# set default values for acmedash configs
-limitpath  = ''
-app_path   = '/'
-secret_key = ''
-
-# read & update config values
-if 'limitpath' in USERCONFIG:
-  limitpath = USERCONFIG['limitpath'].rstrip('/') + '/'
-
-if 'app_path' in USERCONFIG:
-  app_path = USERCONFIG['app_path']
-
-if 'secret_key' in USERCONFIG:
-  secret_key = USERCONFIG['secret_key']
-
+# set & update default values for acmedash web configs
+limitpath  = web_limitpath.rstrip('/') + '/' if web_limitpath else ''
+app_path   = web_app_path if web_app_path else '/'
+secret_key = web_secret_key if web_secret_key else ''
 
 if secret_key:
   app.secret_key = secret_key # set flask secret key
@@ -85,7 +78,9 @@ def parse_settings(getm):
 @app.route(f'{app_path}<module>',  methods=['GET', 'POST'])
 def default_modules(module='index'):
 
-  module_script, module_name, module_call = '', '', ''
+  module_script = ''
+  module_name = ''
+  module_call = ''
 
   gqm = get_query('m')
   lqm = limitpath.rstrip('/') + '/' + gqm.lstrip('/') if limitpath else ''
@@ -112,26 +107,33 @@ def default_modules(module='index'):
 
   if getm1 and os.path.isdir(f'{getm1}/logs/'):
 
-    # default local modules import
+    # default local app modules import
 
-    module_settings = parse_settings(getm1)
-    module_list = module_settings['run_local_modules']
-    view['add_nav_links'] = module_settings['add_nav_links']
+    Settings.setWorkspaceDir(getm1)
+
+    addNavLinks   = Settings.settings('web.addNavLinks')
+    runLocalApps  = Settings.settings('web.runLocalApps')
+
+    view['add_nav_links'] = addNavLinks
+
+    module_list = {}
+    for r in runLocalApps:
+      module_list[r[2]] = (r[0], r[1])
 
     if module == 'about':
       sys.path.append(f'{getm1}/')
-      module_local_init = importlib.import_module(f'app.__init__')
+      module_local_init = importlib.import_module(f'{appsDirName}.__init__')
       importlib.reload(module_local_init)
       view['version']['local'] = module_local_init.__version__
 
     elif module in module_list:
 
-      module_script = module_list[module][0]
-      module_name   = module_list[module][1]
+      module_name   = module_list[module][0]
+      module_script = module_list[module][1]
       module_call   = module_script.rstrip('.py')
 
-      if os.path.isfile(f'{getm1}/app/{module_script}'):
-        sys.path.append(f'{getm1}/app/')
+      if os.path.isfile(f'{getm1}/{appsDirName}/{module_script}'):
+        sys.path.append(f'{getm1}/{appsDirName}/')
         module_run = importlib.import_module(module_call)
         importlib.reload(module_run)
 
@@ -141,7 +143,10 @@ def default_modules(module='index'):
         # if so serve either one appropriately, if not carry on
         if isinstance(received_output, dict):
           if 'send_file_object' in received_output:
-            return send_file(received_output['send_file_object']['buf'], mimetype=received_output['send_file_object']['mimetype'])
+            return send_file(
+              received_output['send_file_object']['buf'], 
+              mimetype=received_output['send_file_object']['mimetype']
+            )
           elif 'jsonify_object' in received_output:
             return jsonify(received_output['jsonify_object'])
 
@@ -176,4 +181,3 @@ def main():
 
 if __name__ == '__main__':
   main()
-

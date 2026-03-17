@@ -1,27 +1,8 @@
-#!/usr/bin/env python3
-
-from __init__ import __version__
-
-import os
-import re
-import sys
-import pydoc
-import importlib
-
-from types import SimpleNamespace
-
-from acme.cli  import cmd
-from acme.cli  import docs
-
-from acme.core import utils
-from acme.core import macros
-from acme.core import options
-from acme.core import process
-from acme.core import validate
+"""Activity Metrics CLI"""
 
 # acme cli usage
 #
-# 1. Navigate to the parent of your `logs` directory. For example:
+# 1. Navigate to your workspace directory. For example:
 #
 #      cd  ~/Documents/Metrics/
 #
@@ -36,12 +17,13 @@ from acme.core import validate
 #      acme  gencsv today
 #      acme  util makefiles
 #
-# 2a. The second argument can also be used to explicitly set the logs directory or it's parent.
+# 2a. The second argument can also be used to explicitly set the workspace directory.
 #
 #      acme ~/Documents/Metrics/ stats
 #      acme ~/Documents/Metrics/ today
 #
-# Note: By default, acme will look for `./logs/` in the current working directory and parent directories.
+# By default, acme will also look for `./logs/` in the specified workspace directory, 
+# current working directory, or parents of the current working directory.
 
 
 """
@@ -74,9 +56,36 @@ List of parameters handled by acme cli:
 
 """
 
+from __init__ import __version__
+
+import os
+import sys
+import pydoc
+
+from types import SimpleNamespace
+
+from acme.cli  import cmd
+from acme.cli  import docs
+
+from acme.core import utils
+from acme.core import macros
+from acme.core import process
+from acme.core import validate
+
+from acme.core.settings import Settings
+
+settings = Settings.settings
+
+configDir   = settings('acme.configDir')
+logsDirName = settings('workspace.logsDirName')
+genDirName  = settings('workspace.genDirName')
+appsDirName = settings('workspace.appsDirName')
+devPort     = settings('web.devPort')
+prodPort    = settings('web.prodPort')
+
 
 def cli_main(params, callname, meta):
-  # ---- cli options: main ---- #
+  """Cli options: main"""
   output = []
 
   # -- default: no parameters -> run 'stats' -- #
@@ -102,10 +111,10 @@ def cli_main(params, callname, meta):
   elif macros.is_date_input(arg1):
     output += process.handle_date_input(parsed=macros.parse_date_input(arg1), meta=meta)
 
-  # -- acme gencsv {date_input} -- #
+  # -- acme gencsv {date_input}: timesheets module <- csv generate -- #
 
   elif arg1 in ('gencsv','-g'):
-    output += process.handle_gencsv(params, callname, meta)
+    output += process.handle_timesheets(params, callname, meta)
 
   # -- invalid command default message -- #
 
@@ -119,7 +128,7 @@ def cli_main(params, callname, meta):
 
 
 def cli_utils(params, callname, meta):
-  # ---- cli options: utils ----  #
+  """Cli options: utils"""
 
   uname = 'util' if callname  == 'util' else 'utility'
   use_help = f"Use 'acme {uname} man' or 'acme {uname} help' for proper usage."
@@ -138,6 +147,9 @@ def cli_utils(params, callname, meta):
 
   elif com == 'makedirs':
     utils.make_dirs(directory, applyf)
+
+  elif com == 'settings':
+    print(utils.settings_json())
 
   elif com == 'cleangen':
     utils.cleangen(meta)
@@ -169,7 +181,7 @@ def cli_utils(params, callname, meta):
 
 
 def cli_dash(params, callname, meta):
-  # ---- cli options: dash ----  #
+  """ ---- cli options: dash ----  """
 
   use_help = '\n'.join((
     'To run acme dash, please choose one of two metods:',
@@ -190,18 +202,18 @@ def cli_dash(params, callname, meta):
   if type == 'dev':
     web = f'{meta.acme_dir}web/'
     sys.path.append(web)
-    print(f'Action: {action}. Running acme dash development server at port {options.PORT_DEV}.')
+    print(f'Action: {action}. Running acme dash development server at port {devPort}.')
     # import & start flask app: acmedash
     import acmedash
     acmedash.main()
 
   elif type == 'prod':
-    print(f'Action: {action}. Running acme dash via gunicorn/runapp at port {options.PORT_PROD}.')
+    print(f'Action: {action}. Running acme dash via gunicorn/runapp at port {prodPort}.')
     # the prod option currently uses the gunicorn wrapper runapp
     # from: https://github.com/ryt/runapp (requires version 1.4+)
     cmd.runapp(
       action,
-      options.CONFIG_DIR_FULL,
+      configDir,
       os.path.dirname(os.path.dirname(meta.acme_dir)),
     )
 
@@ -220,7 +232,7 @@ def cli_dash(params, callname, meta):
 
 
 def main():
-  # -- main cli app gateway -- #
+  """Main cli app gateway."""
 
   params   = sys.argv[1:]
   callname = sys.argv[0]
@@ -261,24 +273,24 @@ def main():
     )
 
 
-  # -- section: cli options that require logs_dir -- #
+  # -- section: cli options that require a workspace dir -- #
 
-  # Allows path/to/dir/ to be specified explicitly in the first argument of 'acme'.
-  # If path/to/dir/ is set, acme will look for the logs directory inside of it or in one of it's parents.
+  # Allows /path/to/workspace to be specified explicitly in the first argument of 'acme'.
+  # If /path/to/workspace is set, acme will look for a 'logs' directory inside of it or in one of it's parents.
 
   if len(sys.argv) > 1 and sys.argv[1].endswith('/'):
     params = sys.argv[2:]
     specified_path = sys.argv[1]
-    find_logs = utils.find_path(options.LOGS_NAME, specified_path)
+    find_logs = utils.find_path(logsDirName, specified_path)
   else:
-    find_logs = utils.find_path(options.LOGS_NAME)
+    find_logs = utils.find_path(logsDirName)
 
   if find_logs:
 
-    parent    = os.path.dirname(find_logs)
-    logs_dir  = f'{parent}/{options.LOGS_NAME}/'
-    gen_dir   = f'{parent}/{options.GEN_NAME}/'
-    app_dir   = f'{parent}/{options.APP_NAME}/'
+    workspace_dir = f'{os.path.dirname(find_logs)}/'
+    logs_dir      = f'{workspace_dir}{logsDirName}/'
+    gen_dir       = f'{workspace_dir}{genDirName}/'
+    apps_dir      = f'{workspace_dir}{appsDirName}/'
 
     cli_main(
       params,
@@ -288,19 +300,20 @@ def main():
         copyright=docs.__copyright__,
         manual=docs.__manual__,
         acme_dir=acme_dir,
+        workspace_dir=workspace_dir,
         logs_dir=logs_dir,
         gen_dir=gen_dir,
-        app_dir=app_dir,
+        apps_dir=apps_dir,
       )
     )
 
   else:
 
     print('\n'.join((
-      f'Logs directory `{options.LOGS_NAME}` not found.',
+      f'Workspace directory not specified or logs directory `{logsDirName}` not found.',
       'You have two options:',
-      ' - Run this command from within the metrics directory.',
-      ' - Explicitly set the metrics directory as the second argument. (e.g. acme ~/metrics/ ...)',
+      ' - Run this command from within the workspace directory.',
+      ' - Explicitly set the workspace directory as the second argument. (e.g. acme ~/metrics/ ...)',
       ))
     )
 

@@ -76,40 +76,52 @@ Common utilities & commands for various applications. API access is required if 
 
 **Config Files:**
 
-Configuration files are stored inside the directory: `~/.acmeryt/`  
-If the directory doesn't exist, please create it in order to use the web dashboard (via `acme dash`) or [API](#api) integrations.
+- The main application config files is stored in: `~/.acmeconf/acme_config.yaml`  
+- Workspace config files are stored inside the workspace as: `/path/to/workspace/workspace_config.yaml`
+
+You can copy the default `.acmeconf/` template into your home directory from the tests directory found in `/path/to/activity-metrics/tests/.acmeconf/`.
+
+```console
+cp -r /path/to/activity-metrics/tests/.acmeconf/ ~/.acmeconf/
+```
+
+You can update settings for the web dashboard (`acme dash`) or [API](#api) integrations in `~/.acmeconf/acme_config.py`.
+
+**Timesheet Util Helpers**
 
 **Make Files:** create default date files (01-31.txt) and default month directories (01-12/)
 
 ```console
-acme (utility|util)   makefiles    dir/
-                      makefiles    dir/      apply
-                      makedirs     dir/
-                      makedirs     dir/      apply
+acme  util  makefiles    dir/
+            makefiles    dir/      apply
+            makedirs     dir/
+            makedirs     dir/      apply
 
 ```
 
 **Clean Logs:** clean up the gen directory of generated csv logs older than 1 week.
 
 ```console
-acme (utility|util)   cleangen
+acme  util  cleangen
 ```
 
-<b id="api">HTTP Options:</b> retrieve and save the output from an http(s) request as a log file.
+<h3 id="api">API Options & Integrations</h3>
+
+**HTTP Options:** retrieve and save the output from an http(s) request as a log file.
 
 ```console
-acme (utility|util)   http     .api_http       {date_input}
-                      http     .api_http       {date_input}     save=2026/01/01.txt
-                      http     .api_http       {date_input}     (saveauto|autosave)
+acme  util  http    .api_json    {date_input}
+            http    .api_json    {date_input}    save=2026/01/01.txt
+            http    .api_json    {date_input}    (saveauto|autosave)
 
 ```
-> - The default name of the http api file is (`.api_http`). It can be changed to any name.
+> - The default name of the http api file is (`.api_json`). It can be changed to any name.
 > - The file contains a json dictionary of the http request data.
 > - Options: In the http api file, `{date_input}` can be used to insert the entered date input
 > in a `YYYY-MM-DD` format anywhere in the keys or values. (e.g. `{"url":"http://api.url/{date_input}"}`)
 > - `{date_input}` can be any valid date input listed in the main manual (`acme --help`).
 
-Example `.api_http` file (located in `~/.acmeryt/.api_http`):
+Example `.api_json` file (located in `~/.acmeconf/.api_json`):
 
 ```json
 {
@@ -122,7 +134,7 @@ Example `.api_http` file (located in `~/.acmeryt/.api_http`):
 
 ```
 
-### (API) Todoist
+### Todoist
 
 **Todoist Commands**
 
@@ -131,21 +143,21 @@ Retrieve and save Todoist tasks that have valid log file names (e.g. 01/01.txt)
 > acme, Utility, Todoist, Action, Id/Date/Keyword, Save/Filename
 
 ```console
-acme (utility|util) todoist get-task (12345|{date_input})
-                    todoist get-task (12345|{date_input})   save=2024/01/01.txt
-                    todoist get-task (12345|{date_input})   (saveauto|autosave)
+acme  util  todoist get-task (12345|{date_input})
+            todoist get-task (12345|{date_input})   save=2024/01/01.txt
+            todoist get-task (12345|{date_input})   (saveauto|autosave)
 ```
 
-The Todoist api token is required and shoud be stored in `~/.acmeryt/.api_todoist`.
+The Todoist api token is required and shoud be stored in `~/.acmeconf/.api_todoist`.
 
-### (API) Garmin
+### Garmin
 
 **Garmin Commands**
 
 If Garmin csv logs exist, merge them into gencsv logs of given year (plus today and yesterday if applicable).
   
 ```console
-acme (utility|util) garmin merge-gencsv {year}
+acme  util  garmin merge-gencsv {year}
 ```
 
 

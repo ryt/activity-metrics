@@ -10,13 +10,14 @@
   <title>acme: Activity Metrics Web Dashboard</title>
   <style>
     body { margin: 0; font: 14px sans-serif; }
-    .nav-holder { margin: 0; padding: 8px 16px; background: #ddd; border-bottom: 1px solid #bbb; }
+    .nav-holder { margin:0;padding:5px 16px;background:#ddd;border-bottom:1px solid #bbb; }
+    .nav-holder .nav-left { padding-top:.2em; }
     .nav-holder a { color:#000; text-decoration: none; }
     .nav-holder a.nav { 
-      font-size:12px;font-weight:bold;margin-left:10px;padding:4px 6px;
-      border-radius:2px;position:relative;top:-2px;
+      font-size:12px;font-weight:bold;display:inline-block;position:relative;
+      margin:5px 0 5px 10px;padding:4px 6px;border-radius:2px;
     }
-    .nav-holder a.nav-gear { font-size:20px; top:0px; }
+    .nav-holder a.nav-gear span { font-size:20px;font-family:monospace;position:absolute;top:-.08em;left:25%; }
     .nav-holder a.nav:hover { text-decoration: none; }
     .nav-holder a.cur { color: #fff; background: #333;  }
     .nav-holder a.logo { font-weight:bold;font-size:21px; }
@@ -98,13 +99,8 @@
     #filter-go { padding: 5px 8px; background: #555; border: none; color: #fff; border-radius: 0px 4px 4px 0; cursor: pointer; }
     #filter-go:hover { background: #222; }
 
-    @media ( max-width: 568px ) {
+    @media ( max-width: 468px ) {
       .address { font-size: 12px; line-height: 1.25; }
-    }
-
-    @media ( max-width:468px ) {
-      .nav-holder { padding-bottom:2px; }
-      .nav-right { line-height:2; }
     }
 
   </style>
@@ -119,10 +115,13 @@
       <a class="nav {{ 'cur' if view.page == 'index' }}" href="{{ view.app_path }}?{{ view.query_m }}">dash</a>{% 
       if view.add_nav_links %}{% 
         for link in view.add_nav_links %}
-      <a class="nav {{ 'cur' if view.page == link[1] }}" href="{{ view.app_path }}{{ link[1] }}?{{ view.query_m }}">{{ link[2] }}</a>{% 
+      <a class="nav {{ 'cur' if view.page == link[2] }}" href="{{ view.app_path }}{{ link[1] }}?{{ view.query_m }}">{{ link[0] }}</a>{% 
         endfor %}{% 
       endif %}
-      <a class="nav nav-gear {{ 'cur' if view.page == 'custom' }}" href="{{ view.app_path }}custom?{{ view.query_m }}">&#9881;</a>
+      <a class="nav nav-gear {{ 'cur' if view.page == 'custom' }}" href="{{ view.app_path }}custom?{{ view.query_m }}">
+        <span>&#9881;</span>
+        &nbsp; &nbsp; 
+      </a>
     </div>
   </div>
 
@@ -138,7 +137,7 @@
         <div><b>About</b></div>
         <ul>
           <li>Activity Metrics (acme) version: <b>{{ view.version.acme }}</b></li>
-          <li>Local {{ view.getm0 }}app version: <b>{{ view.version.local }}</b></li>
+          <li>Workspace {{ view.getm0 }}app version: <b>{{ view.version.local }}</b></li>
         </ul>
       {% else %}
         {{ view.message | safe }}
@@ -159,9 +158,9 @@
     <div class="dir-list">
       {% if view.getm0 %}
         {{ view.message | safe }}
-        {{ view.output_html | safe }}
+        {{- view.output_html | safe -}}
       {% else %}
-        Please specify a metrics directory with the <i>m</i> parameter. {{ view.app_path }}?m=/Path/to/Metrics
+        Please specify a workspace directory with the <i>m</i> parameter. {{ view.app_path }}?m=/path/to/workspace
       {% endif %}
     </div>
 

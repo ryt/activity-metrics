@@ -1,51 +1,47 @@
-#!/usr/bin/env python3
-
-# activity metrics (acme) utils
+"""
+Utils
+"""
 
 import os
 import re
-import sys
+import json
 
-from string import Template
 from datetime import datetime
 from datetime import timedelta
 
-def get_user_config(options):
-  """Get user config values from CONFIG_DIR_FULL/config.py & prepare for use"""
-  """Requires the options module from acme.core.options to be passed in"""
-  
-  sys.path.append(options.CONFIG_DIR_FULL)
-  import config
+from acme.core.settings import Settings
 
-  if not config.config:
-    return
-
-  output = {}
-  for key, val in config.config.items():
-    val = re.sub('{options.','${', val) # prep for str.Template: {options. -> ${
-    output[key] = Template(val).substitute(vars(options))
-
-  return output
+def settings_json():
+  """Returns all available merged settings as formatted json."""
+  merged_settings = Settings.merged_settings
+  merged_settings['web']['secret_key'] = '*****'
+  indented_json = json.dumps(merged_settings, indent=2)
+  compact_json  = re.sub(
+    r'\[\s*([^\[\]]+?)\s*\]',
+    lambda match: f"[{' '.join(match.group(1).split())}]",
+    indented_json,
+    flags=re.DOTALL,
+  )
+  return compact_json
 
 
 def find_path(name, curr=os.path.abspath(os.curdir)):
-  """Checks if directory (name) exists in specified (curr) or parents"""
+  """Checks if directory (name) exists in specified (curr) or parents."""
 
   while True:
     search_path = os.path.join(curr, name)
     if os.path.isdir(search_path):
       return search_path
-    
+
     par = os.path.dirname(curr)
-    
     if curr == par:
       return None
-    
+
     curr = par
 
 
 def get_all_files(dir):
-  """Returns a list of all files in given directory (dir)"""
+  """Returns a list of all files in given directory (dir)."""
   flist = []
   for root, dirs, files in os.walk(dir):
     for filename in files:
@@ -55,7 +51,6 @@ def get_all_files(dir):
 
 
 def write_to_file(file, contents):
-  # -- write contents to file -- #
   with open(file, 'w') as f:
     f.write(contents)
 
@@ -89,7 +84,7 @@ def make_dirs(directory, applyf):
 
 
 def cleangen(meta):
-  """Removes gencsv files older than 1 week from gencsv directory"""
+  """Removes gencsv files older than 1 week from gencsv directory."""
   files  = os.listdir(meta.gen_dir)
   thresh = datetime.today().date() - timedelta(days=7)
   fcount = 0

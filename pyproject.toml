@@ -1,0 +1,12 @@
+[project]
+name = "activity-metrics"
+version = "0.2.8-dev0"
+description = "Activity Metrics"
+authors = [
+  { name = "Ray M", email = "ray@redment.com" },
+]
+dependencies = [
+  "python>=3.8",
+]
+readme = "README.md"
+license = { text = "MIT" }

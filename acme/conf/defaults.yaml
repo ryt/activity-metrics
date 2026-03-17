@@ -1,0 +1,19 @@
+# Global Settings for Activity Metrics
+
+acme:
+  # main acme config dir (located in the user home directory)
+  configDir: '~/.acmeconf/' # os.path.expanduser(acme.configDir)
+  configFileName: 'acme_config.yaml'
+
+workspace:
+  currentWorkspaceDir: '' # this value gets automatically updated via settings.py
+  configFileName: 'workspace_config.yaml'
+  # default subdirectory names to use inside a given workspace directory
+  logsDirName:    'logs'  # - {workspace}/logs  : storage for log files
+  genDirName:     'gen'   # - {workspace}/gen   : storage for generated files
+  appsDirName:    'apps'  # - {workspace}/apps  : storage for custom apps and scripts
+
+web:
+  # acmedash default ports
+  devPort:   '5000' # dev server default port
+  prodPort:  '8100' # prod server default port

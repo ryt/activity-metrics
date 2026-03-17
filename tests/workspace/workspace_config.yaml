@@ -1,0 +1,29 @@
+# Workspace Config
+#
+# Settings and customization options for for workspace, modules, and web apps.
+# Copy this file to a workspace directory to customize module and web dashboard settings.
+
+# custom settings for default modules
+modules:
+  timesheets_categorize:
+    glossaryFile: 'tests.workspace.apps.example_glossary'
+
+# enable custom local apps and scripts from {workspace}/apps directory
+web:
+  runLocalApps:
+    # [/<url-path>, module_script, module_name]
+    # - [index, dashboard_index.py, index]
+    # - [commands, dashboard_commands.py, commands]
+    # - [athletics, dashboard_athletics.py, athletics]
+    # - [nutrition, dashboard_nutrition.py, nutrition]
+    # - [fitness, dashboard_fitness.py, fitness]
+    # - [custom, dashboard_custom.py, custom]
+    # - [template, dashboard_template.py, template]
+
+  # additional top bar navigation links
+  addNavLinks:
+    # [link_text, /<url-path>, module_name]
+    # - [cmds, commands, commands]
+    # - [athletics, athletics, athletics]
+    # - [nutrition, nutrition, nutrition]
+    # - [fitness, fitness, fitness]

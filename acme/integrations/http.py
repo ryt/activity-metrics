@@ -10,7 +10,13 @@ from datetime import datetime
 
 from acme.core import utils
 from acme.core import macros
-from acme.core import options
+
+from acme.core.settings import Settings
+
+settings = Settings.settings
+
+configDir = settings('acme.configDir')
+configFile = settings('acme.configFileName')
 
 def http_options(args, callname, meta):
 
@@ -24,13 +30,14 @@ def http_options(args, callname, meta):
     exit(f'Please specify an http json file path.')
 
   # -- get user config values -- #
-  USERCONFIG = utils.get_user_config(options)
+  http_json_files = settings('integrations.http_json_files')
 
-  # To use http_json_file, the http_json_file_dir option should be enabled in the user config dir
-  if not 'http_json_file_dir' in USERCONFIG:
-    exit(f'Please enable "http_json_file_dir" in `{options.CONFIG_DIR_FULL}config.py`')
+  # To use http_json_files, add json file paths to the option 
+  # found in ~/.acmeconf/acme_config.yaml integrations section
+  if not http_json_files:
+    exit(f'The `http_json_files` option in `{configDir}{configFile}` is empty. Add at least one file path.')
 
-  httpjson_file = f"{USERCONFIG['http_json_file_dir']}{httpfile}";
+  httpjson_file = f"{configDir}{httpfile}";
 
   try:
     with open(httpjson_file) as f:

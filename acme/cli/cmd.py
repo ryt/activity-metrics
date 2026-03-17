@@ -7,8 +7,9 @@ import subprocess
 
 from configparser import ConfigParser
 
-from acme.core import options
+from acme.core.settings import Settings
 
+settings = Settings.settings
 
 def curl(url, headers = ''):
   # -- run curl via subprocess -- #
@@ -37,7 +38,7 @@ def runapp(action, config, appdir):
   """
   # runapp action ~/.acmeryt/runapp.conf /path/to/appdir
 
-  conf = f'{options.CONFIG_DIR_FULL}runapp.conf'
+  conf = f'{settings("acme.configDir")}runapp.conf'
   if not os.path.exists(conf):
     return
 
