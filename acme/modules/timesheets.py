@@ -39,8 +39,6 @@ class Customize:
 def convert_to_csv(entries: str, ymd_date=None, customize: Customize=Customize()) -> list:
   """Receives formatted timesheet entries with optional date and converts them to a csv list."""
 
-  # apply_modules  = customize.apply_modules if hasattr(customize, 'apply_modules') else None
-
   if not ymd_date:
     datefrm = ''
   else:
@@ -104,7 +102,6 @@ def convert_to_csv(entries: str, ymd_date=None, customize: Customize=Customize()
 
 def modify_csv(csv_list, customize: Customize=Customize()):
   """Modifies csv content by adding headers, footers, & columns"""
-  #apply_modules  = customize.apply_modules if hasattr(customize, 'apply_modules') else None
 
   # headers & footers
 
@@ -128,7 +125,7 @@ def modify_csv(csv_list, customize: Customize=Customize()):
 
 if __name__ == '__main__':
   """Tests"""
-  
+
   import pprint
 
   print('---test1---')

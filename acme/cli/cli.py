@@ -181,14 +181,15 @@ def cli_utils(params, callname, meta):
 
 
 def cli_dash(params, callname, meta):
-  """ ---- cli options: dash ----  """
+  """Cli options: dash"""
 
   use_help = '\n'.join((
     'To run acme dash, please choose one of two metods:',
     '  - acme dash dev',
     '  - acme dash prod',
     'Options:',
-    '  - acme dash (dev|prod) (reload|start|stop|restart|list|debug)',
+    '  - acme dash dev  {portNum}',
+    '  - acme dash prod (reload|start|stop|restart|list|debug)',
   ))
 
 
@@ -197,17 +198,21 @@ def cli_dash(params, callname, meta):
     return
   
   type    = params[0]
-  action  = params[1] if len(params) >= 2 else 'list' # default action: list
+  action  = params[1] if len(params) >= 2 else None
 
   if type == 'dev':
     web = f'{meta.acme_dir}web/'
+    chosenPort = action if action else devPort
+    if not chosenPort.isdigit():
+      sys.exit(f'The chosen port ({chosenPort}) is not valid. Please enter a valid port.')
     sys.path.append(web)
-    print(f'Action: {action}. Running acme dash development server at port {devPort}.')
+    print(f'Action: dev. Running acme dash development server at port {chosenPort}.')
     # import & start flask app: acmedash
     import acmedash
-    acmedash.main()
+    acmedash.main(port=chosenPort)
 
   elif type == 'prod':
+    action  = action if action else 'list' # default action: list
     print(f'Action: {action}. Running acme dash via gunicorn/runapp at port {prodPort}.')
     # the prod option currently uses the gunicorn wrapper runapp
     # from: https://github.com/ryt/runapp (requires version 1.4+)

@@ -171,12 +171,12 @@ def default_modules(module='index'):
   return render_template('acmedash.html', view=view)
 
 
-def main():
+def main(port=5000):
   sslck = sslcertkey.split(' ')
   if len(sslck) == 2:
-    app.run(ssl_context=(sslck[0], sslck[1]), debug=True)
+    app.run(ssl_context=(sslck[0], sslck[1]), debug=True, port=port)
   else:
-    app.run(debug=True)
+    app.run(debug=True, port=port)
 
 
 if __name__ == '__main__':
