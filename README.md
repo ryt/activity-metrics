@@ -164,7 +164,7 @@ acme  util  garmin merge-gencsv {year}
 
 #### Development Notes
 
-<i>Activity Metrics is an ongoing personal and business study project aimed at exploring various aspects of activity tracking. You can find a live workspace directory example in the repository at [/ryt/Metrics](https://github.com/ryt/Metrics).</i>
+<i>Activity Metrics is an ongoing personal and business study project aimed at exploring various aspects of activity tracking. You can find a live workspace directory example at the [/ryt/Metrics](https://github.com/ryt/Metrics) repository.</i>
 
 <i>This repository includes scripts, modules, and examples of personal and general activity logs across a range of categories. If you're interested in accessing it, please feel free to request access on GitHub.</i>
 
