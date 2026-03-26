@@ -74,6 +74,7 @@ acme util garmin merge-gencsv {year}
 acme dash
 acme -d
 acme dash dev
+acme dash dev 5500
 acme dash prod
 acme dash prod list
 acme dash prod reload
