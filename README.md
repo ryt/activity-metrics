@@ -2,7 +2,7 @@
 
 Overview
 --------
-Activity Metrics is a text-based tracking and analysis tool for personal activity logs.
+Activity Metrics is a text-based tracking and analysis tool for personal & business activity logs.
 
 Logs can be formatted with custom grammar and be defined as schemas to be processed as data sources.
 
@@ -12,8 +12,9 @@ The data can then be converted to CSV and other formats. They can be used in Goo
 
 * Timesheets: (Work, Projects, Academics, Assignments)
 * Fitness: (Workouts, Weight, Body Metrics)
-* Nutrition: (Macros, Supplements)
+* Nutrition: (Macros, Supplements, Diet)
 * Finance: (Accounting, Balance Sheets, Investments)
+* Business: (Inventory, Markets, Operations)
 
 <h2 id="Installation"><small>Installation</small></h2>
 
