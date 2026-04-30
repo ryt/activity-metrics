@@ -45,6 +45,9 @@ def convert_to_csv(entries: str, ymd_date=None, customize: Customize=Customize()
     dateobj = datetime.strptime(ymd_date, '%Y-%m-%d')
     datefrm = dateobj.strftime('%m/%d/%Y')
 
+  # feature update 4/30/26: double dots (..) can be used for multi line timesheet entries
+  entries = entries.replace('..\n', '.. ')
+
   lines = entries.splitlines()
   parsed_lines = []
 
@@ -55,7 +58,7 @@ def convert_to_csv(entries: str, ymd_date=None, customize: Customize=Customize()
     # group 2: description text
 
     # regex101 (ryt) v2: https://regex101.com/r/lrm5IQ/2
-    # feature update 1/21/2025: dots (.) can be used to start entries along with hyphens (-)
+    # feature update 1/21/25: dots (.) can be used to start entries along with hyphens (-)
 
     pattern = r'^[-\.](\s*(?:[\d\:\.]+(?:m|h|s)[\s\,]*[\s\;]*)+)(.*)$'
     match = re.search(pattern, line)
