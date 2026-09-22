@@ -93,8 +93,9 @@ def is_quoted_or_braced(word):
 
 def convert_to_hours(inp):
   """Converts short time format (e.g. 1:30h) into equavalent hours (e.g. 1.5)"""
-
-  sep = re.match(r'([\d\,\.\:]+)(m|h|s)', inp)
+  sep = re.match(r'(-?[\d\,\.\:]+)(m|h|s)', inp)
+  if sep is None:
+    return float(0)
   num = sep.group(1)
   typ = sep.group(2)
 
